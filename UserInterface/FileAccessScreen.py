@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-import UserInterface.DisplayStudentProgram
+import UserInterface.DisplayAssignmentScreen
 from tkinter import filedialog, ttk, Entry
 from tkinter.ttk import *
 
@@ -22,7 +22,7 @@ def fileDisplayWindow():
 
     def selectAssignment():
         print("Select Assignment button selected")
-        UserInterface.DisplayStudentProgram.displayFileContents()
+        UserInterface.DisplayAssignmentScreen.displayFileContents()
 
     def show():
 

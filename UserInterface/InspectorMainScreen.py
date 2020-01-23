@@ -1,8 +1,7 @@
 import tkinter as tk
-
-import UserInterface.programmedKeys
-import UserInterface.GradingScheme
-import UserInterface.FileAccess
+import UserInterface.ProgrammedKeysScreen
+import UserInterface.GradingSchemeScreen
+import UserInterface.FileAccessScreen
 
 
 class HomeScreen(tk.Tk):
@@ -32,7 +31,7 @@ class HomeScreen(tk.Tk):
 
 
 def changeProgButton():
-    UserInterface.programmedKeys.programmedKeysWindow()
+    UserInterface.ProgrammedKeysScreen.programmedKeysWindow()
 
 
 def saveProgButton():
@@ -41,7 +40,7 @@ def saveProgButton():
 
 def changeGradingSchemeButton():
     print("change grading scheme button pressed")
-    UserInterface.GradingScheme.gradingSchemeWindow()
+    UserInterface.GradingSchemeScreen.gradingSchemeWindow()
 
 
 def saveGradingSchemeButton():
@@ -50,7 +49,7 @@ def saveGradingSchemeButton():
 
 def proceedButton():
     print("Proceed Button pressed")
-    UserInterface.FileAccess.fileDisplayWindow()
+    UserInterface.FileAccessScreen.fileDisplayWindow()
 
 
 class MainFrame(tk.Frame):

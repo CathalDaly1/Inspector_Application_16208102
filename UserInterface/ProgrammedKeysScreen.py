@@ -1,6 +1,4 @@
 import tkinter as tk
-import re
-import time
 
 
 def programmedKeysWindow():
