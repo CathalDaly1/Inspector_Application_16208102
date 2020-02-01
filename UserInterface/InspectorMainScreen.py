@@ -19,6 +19,7 @@ class HomeScreen(tk.Tk):
         self.frames = {}
         self.geometry("800x800+100+100")
         self.title("Inspector - Grading Application")
+        self.resizable(False, False)
 
         frame = MainFrame(container, self)
         self.frames[MainFrame] = frame
@@ -34,17 +35,9 @@ def changeProgButton():
     UserInterface.ProgrammedKeysScreen.programmedKeysWindow()
 
 
-def saveProgButton():
-    print("save programmed keys button pressed")
-
-
 def changeGradingSchemeButton():
     print("change grading scheme button pressed")
     UserInterface.GradingSchemeScreen.gradingSchemeWindow()
-
-
-def saveGradingSchemeButton():
-    print("save grading scheme button pressed")
 
 
 def proceedButton():
@@ -87,12 +80,8 @@ class MainFrame(tk.Frame):
         prog_keys_lbl.place(x=470, y=90)
 
         # Create button for changing keys and saving changes
-        prog_change_button = tk.Button(self, text="Change", fg="black", command=changeProgButton, height=1, width=6)
-        prog_change_button.place(x=520, y=335)
-
-        # Create button for changing keys and saving changes
-        prog_save_button = tk.Button(self, text="Save", fg="black", command=saveProgButton, height=1, width=6)
-        prog_save_button.place(x=700, y=335)
+        prog_change_button = tk.Button(self, text="Change", fg="black", command=changeProgButton, height=1, width=8)
+        prog_change_button.place(x=590, y=335)
 
         # Created Label for grading scheme keys section
         grad_labl = tk.Label(self, width=40, height=20, relief="solid", bd=1, padx=10, bg="white")
@@ -100,13 +89,8 @@ class MainFrame(tk.Frame):
 
         # Create button for changing number of marks for assignment
         scheme_change_button = tk.Button(self, text="Change", fg="black", command=changeGradingSchemeButton, height=1,
-                                         width=6)
-        scheme_change_button.place(x=520, y=650)
-
-        # Create button for changing keys and saving changes
-        scheme_save_button = tk.Button(self, text="Save", fg="black", command=saveGradingSchemeButton, height=1,
-                                       width=6)
-        scheme_save_button.place(x=700, y=650)
+                                         width=8)
+        scheme_change_button.place(x=590, y=650)
 
         tk.Label(grad_labl, bg="white", fg="black", text="Grading Scheme\n", font=("Calibri", 15)).pack()
         tk.Label(grad_labl, bg="white", fg="black", text="Total marks out of 100", font=("Calibri", 12)).pack()

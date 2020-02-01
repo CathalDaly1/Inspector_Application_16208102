@@ -5,6 +5,7 @@ def programmedKeysWindow():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("400x400+300+300")
+    window.resizable(False, False)
 
     # Add error handling to ensure data entered is only 1 letter: re.search(pattern, string var)
     def saveButton():
@@ -32,7 +33,7 @@ def programmedKeysWindow():
     lbl_sub_title.place(x=200, y=105, anchor="center")
     saveButton = tk.Button(window, text="Save", command=saveButton, height=1, width=6)
     saveButton.place(x=200, y=350)
-    exit_button1 = tk.Button(window, text="Exit", command=exitButton, height=1, width=6)
+    exit_button1 = tk.Button(window, text="Close", command=exitButton, height=1, width=6)
     exit_button1.place(x=100, y=350)
 
     # KeyStroke A

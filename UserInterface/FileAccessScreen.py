@@ -1,8 +1,9 @@
 import os
 import tkinter as tk
 import UserInterface.DisplayAssignmentScreen
-from tkinter import filedialog, ttk, Entry
+from tkinter import ttk
 from tkinter.ttk import *
+from tkinter import *
 
 
 def fileDisplayWindow():
@@ -10,12 +11,19 @@ def fileDisplayWindow():
 
     window.title("Inspector - Grading Application")
     window.geometry("800x800+100+100")
+    window.resizable(False, False)
 
     def clear():
         displayAssignment.config(state="active")
-        # ToDo Implement clearing the listbox when clear is added in order to reset the table = Status red
-
+        # This clears the table when clear button is clicked
+        listBox.delete(*listBox.get_children())
         filePath.delete('0', 'end')
+
+    def printSelection():
+        clicked_items = listBox.focus()
+        print(listBox.item(clicked_items))
+        selectAssignment()
+        # print(listBox.get_children())
 
     def back():
         window.withdraw()
@@ -23,6 +31,7 @@ def fileDisplayWindow():
     def selectAssignment():
         print("Select Assignment button selected")
         UserInterface.DisplayAssignmentScreen.displayFileContents()
+        window.withdraw()
 
     def show():
 
@@ -34,7 +43,7 @@ def fileDisplayWindow():
         errorLbl = tk.Label(window, text="Directory does not exists", font=("Arial", 8), fg="red")
 
         if os.path.exists(test1):
-            os.startfile(path1)
+            # os.startfile(path1) //This opens the machine local files
             errorLbl.destroy()
             print("Directory Exists")
             dirLabel.place(x=320, y=180)
@@ -60,8 +69,7 @@ def fileDisplayWindow():
                 # for i, (filename) in enumerate(tempList, start=1):
                 for (file) in os.listdir(test1):
                     listBox.insert("", "end", values=file)
-                    #print(os.path.splitext("StudentID: " + filename)[0])
-
+                    # print(os.path.splitext("StudentID: " + filename)[0])
 
     # create Treeview with 3 columns
     cols = ('Filename', 'Graded', 'Grade')
@@ -94,12 +102,9 @@ def fileDisplayWindow():
     clearButton = tk.Button(window, text="Clear", command=clear, height=1, width=6)
     clearButton.place(x=700, y=150)
 
-    selectStudentAssignButton = tk.Button(window, text="Select Assignment", fg="black", command=selectAssignment,
+    selectStudentAssignButton = tk.Button(window, text="Select Assignment", fg="black", command=printSelection,
                                           width=15)
     selectStudentAssignButton.place(x=250, y=550)
 
-    closeButton = tk.Button(window, text="Close", width=15, command=exit)
-    closeButton.place(x=450, y=550)
-
-    proceed_button = tk.Button(window, text="Back", fg="black", command=back, height=2, width=12)
-    proceed_button.place(x=350, y=700)
+    backButton = tk.Button(window, text="Back", width=15, command=back)
+    backButton.place(x=450, y=550)

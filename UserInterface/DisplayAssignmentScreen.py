@@ -5,9 +5,39 @@ def displayFileContents():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("800x800+100+100")
+    window.resizable(False, False)
 
     def back():
         window.withdraw()
+
+    def submitAssignment():
+        window.withdraw()
+        print("Submit button pressed")
+
+    # Highlights code when pressed
+    # ToDo make it so it only highlights one selected code segment and not all of them in the code 
+    def highlight():
+        print("selected text: '%s'" % T.get(tk.SEL_FIRST, tk.SEL_LAST))
+
+        s = T.get(tk.SEL_FIRST, tk.SEL_LAST)
+        if s:
+            # start from the beginning (and when we come to the end, stop)
+            idx = '1.0'
+
+            while 1:
+                # find next occurrence, exit loop if no more
+                idx = T.search(s, idx, nocase=1, stopindex=tk.END)
+                if not idx: break
+                # index right after the end of the occurrence
+
+                lastidx = '%s+%dc' % (idx, len(s))
+
+                # tag the whole occurrence (start included, stop excluded)
+                T.tag_add('found', idx, lastidx)
+                # prepare to search for next occurrence
+                idx = lastidx
+            # use a red foreground for all the tagged occurrences
+            T.tag_config('found', background='yellow')
 
     studentID = "Implement"
 
@@ -15,53 +45,34 @@ def displayFileContents():
     lbl_title.place(x=400, y=25, anchor="center")
 
     lbl_sub_title = tk.Label(window, text="Student: //" + studentID + "'s program", font=("Arial", 15))
-    lbl_sub_title.place(x=400, y=200, anchor="center")
+    lbl_sub_title.place(x=400, y=70, anchor="center")
 
     # ToDo Get the name and student ID number of the student and display on this screen
     # ToDo Add keylogger in python in order to keep track of the totalling keys pressed in application
     # ToDo Display what keys have been pressed and there must be a way that the lecturer can remove choices if mistake has been made
     # ToDo Create a small table which will display logs and also display total amount of marks - LIVE
 
-    T = tk.Text(window, state="normal", height=20, width=80)
-    T.place(x=70, y=250)
+    # Created scroll bars horizontal and vertical in order to view code
+    T = tk.Text(window, wrap=tk.NONE, height=35, width=90, borderwidth=0)
+    scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=T.yview)
+    T['yscroll'] = scrollbar.set
+
+    scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=T.xview)
+    T['yscroll'] = scrollbar.set
+
+    scrollbar.place(in_=T, relx=1.0, relheight=1.0, bordermode="outside")
+    scrollbarHor.place(in_=T, rely=1.0, relwidth=1.0, bordermode="outside")
+    T.place(x=45, y=90)
 
     backButton = tk.Button(window, text="Back", width=15, command=back)
-    backButton.place(x=150, y=600)
+    backButton.place(x=150, y=670)
+
+    # ToDo once submit button has been pressed: decide where the lecturer is taken to next, probably back to assignment section
+    submitButton = tk.Button(window, text="Submit", width=15, command=submitAssignment)
+    submitButton.place(x=400, y=670)
+
+    highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
+    highlightButton.place(x=550, y=670)
 
     file = 'C:/Users/catha/OneDrive - University of Limerick/test2/test111.py'
     T.insert(tk.END, open(file).read())
-
-
-    # x = filedialog.askopenfilename()
-    # print(x)
-    #
-    # T = tk.Text(window, state="normal", height=15, width=60)
-    # T.pack()
-    # T.insert(tk.END, open(x).read())
-    # b = T.get("1.0", tk.END)
-    #
-    # f = open(x, 'wt')
-    # f.write(b)
-    # f.close()
-
-# openButton1 = tk.Button(window, text="open now", command=DisplayStudentProgram.displayFileContents, height=1, width=6)
-# openButton1.place(x=500, y=50)
-
-# window = tk.Tk()
-# window.fileName = filedialog.askopenfilename(filetypes=(("Python Stuff", ".py"), ("All files", "*,*")))
-# print(window.fileName)
-#
-# text1 = open(window.fileName).read()
-# print(text1)
-#
-# T = tk.Text(window, height=15, width=95)
-# T.place(x=10, y=200)
-#
-# T.insert(tk.END, text1)
-#
-# b = T.get("1.0", tk.END)
-# print(b)
-#
-# f = open(text1, 'wt')
-# f.write(b)
-# f.close()

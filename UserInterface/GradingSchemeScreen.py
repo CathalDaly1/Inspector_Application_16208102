@@ -6,6 +6,7 @@ def gradingSchemeWindow():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("400x400+300+300")
+    window.resizable(False, False)
 
     def saveButtonGrading():
         newGrade = tk.Label(window, fg="black", text="New grading scheme total = " + gradingSchemeTotal.get() + " marks", font=("Calibri", 12))
@@ -22,7 +23,7 @@ def gradingSchemeWindow():
     lbl_sub_title_grading.place(x=200, y=105, anchor="center")
     saveButton = tk.Button(window, text="Save", command=saveButtonGrading, height=1, width=6)
     saveButton.place(x=200, y=350)
-    exit_button1 = tk.Button(window, text="Exit", command=exitButtonGrading, height=1, width=6)
+    exit_button1 = tk.Button(window, text="Close", command=exitButtonGrading, height=1, width=6)
     exit_button1.place(x=100, y=350)
 
     # Total amount of marks
