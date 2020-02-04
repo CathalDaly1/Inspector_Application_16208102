@@ -45,6 +45,10 @@ def proceedButton():
     UserInterface.FileAccessScreen.fileDisplayWindow()
 
 
+def menuOptions():
+    file = tk.Toplevel(MainFrame)
+
+
 class MainFrame(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -59,24 +63,24 @@ class MainFrame(tk.Frame):
         about_text.place(x=30, y=90)
         tk.Label(about_text, bg="white", fg="black",
                  text="\n\nInspector is a rapid-fire keystroke driven grading assessment\n"
-                      + "application in which lecturers can grade assignments with a very\n "
+                      + "application in which lecturers can grade assignments with a\n "
                       + "high turnaround time and decrease the time spent of repetitive\n "
                       + " and rote tasks. The time taken to complete this tedious and  \n "
                       + " repetitive task can be significantly reduced by developing a \n"
-                      + " keystroke driven application\n"
-                      + "\n\nThe pre programmed keys and grading scheme can be tailored to\n"
-                      + "suit your needs in order to assist you in the grading process", font=("Calibri", 12)).pack()
-        about_text.place(x=30, y=90)
+                      + " keystroke driven application.\n"
+                      + "\n\nThe pre programmed keys and grading scheme can be tailored\n"
+                      + "to suit your needs in order to assist you in the grading process.\n", font=("Calibri", 12)).pack()
 
         # Created Label for pre programmed keys section
         prog_keys_lbl = tk.Label(self, width=40, height=19, relief="solid", bd=1, padx=10, bg="white")
         prog_keys_lbl.pack_propagate(0)
 
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n\n", font=("Calibri", 16)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n", font=("Calibri", 16)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Click the change button below to change\n keystroke values\n", font=("Calibri", 12)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -2", font=("Calibri", 12)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A =  2", font=("Calibri", 12)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B =  1", font=("Calibri", 12)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = -1", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -2", font=("Calibri", 12)).pack()
         prog_keys_lbl.place(x=470, y=90)
 
         # Create button for changing keys and saving changes
@@ -94,7 +98,7 @@ class MainFrame(tk.Frame):
 
         tk.Label(grad_labl, bg="white", fg="black", text="Grading Scheme\n", font=("Calibri", 15)).pack()
         tk.Label(grad_labl, bg="white", fg="black", text="Total marks out of 100", font=("Calibri", 12)).pack()
-        tk.Label(grad_labl, bg="white", fg="black", text="\nUse the change button below to change\n total amount of "
+        tk.Label(grad_labl, bg="white", fg="black", text="\nClick the change button below to change\n total amount of "
                                                          "marks", font=("Calibri", 12)).pack()
         grad_labl.place(x=470, y=390)
 
@@ -102,5 +106,6 @@ class MainFrame(tk.Frame):
         proceed_button.place(x=350, y=700)
 
 
-app = HomeScreen()
-app.mainloop()
+if __name__ == "__main__":
+    app = HomeScreen()
+    app.mainloop()

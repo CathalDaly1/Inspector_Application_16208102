@@ -17,6 +17,8 @@ def programmedKeysWindow():
         key_C_lbl.place(x=250, y=250)
         key_D_lbl = tk.Label(window, fg="black", text="Key: D = " + key_D.get(), font=("Calibri", 12))
         key_D_lbl.place(x=250, y=300)
+        window.withdraw()
+
         print("Value for Key A = " + key_A.get())
         print("Value for Key B = " + key_B.get())
         print("Value for Key C = " + key_C.get())

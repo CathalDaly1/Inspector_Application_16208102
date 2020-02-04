@@ -1,4 +1,5 @@
 import tkinter as tk
+import UserInterface.FileAccessScreen
 
 
 def displayFileContents():
@@ -9,6 +10,7 @@ def displayFileContents():
 
     def back():
         window.withdraw()
+        UserInterface.FileAccessScreen.fileDisplayWindow()
 
     def submitAssignment():
         window.withdraw()
@@ -31,12 +33,9 @@ def displayFileContents():
                 # index right after the end of the occurrence
 
                 lastidx = '%s+%dc' % (idx, len(s))
-
                 # tag the whole occurrence (start included, stop excluded)
                 T.tag_add('found', idx, lastidx)
-                # prepare to search for next occurrence
                 idx = lastidx
-            # use a red foreground for all the tagged occurrences
             T.tag_config('found', background='yellow')
 
     studentID = "Implement"
@@ -74,5 +73,5 @@ def displayFileContents():
     highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
     highlightButton.place(x=550, y=670)
 
-    file = 'C:/Users/catha/OneDrive - University of Limerick/test2/test111.py'
+    file = 'C:/Users/catha/OneDrive - University of Limerick/test2/10000001.txt'
     T.insert(tk.END, open(file).read())

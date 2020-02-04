@@ -20,15 +20,18 @@ def fileDisplayWindow():
         filePath.delete('0', 'end')
 
     def printSelection():
-        clicked_items = listBox.focus()
+        clicked_items = listBox.selection()
         print(listBox.item(clicked_items))
+        # ToDo Get the entry file path from the entry box and concatenate it with the listbox selection
+        st = 'C:/Users/catha/OneDrive - University of Limerick/test2/'
+        os.popen(st + listBox.item(clicked_items)['values'][0])
         selectAssignment()
-        # print(listBox.get_children())
 
     def back():
         window.withdraw()
 
     def selectAssignment():
+
         print("Select Assignment button selected")
         UserInterface.DisplayAssignmentScreen.displayFileContents()
         window.withdraw()
@@ -36,14 +39,10 @@ def fileDisplayWindow():
     def show():
 
         test1 = filePath.get()
-        path1 = os.path.realpath(test1)
-
-        # Have to fix this in order to destroy the label after new label appears
         dirLabel = tk.Label(window, text="Directory Exists\t\t", font=("Arial", 8))
         errorLbl = tk.Label(window, text="Directory does not exists", font=("Arial", 8), fg="red")
 
         if os.path.exists(test1):
-            # os.startfile(path1) //This opens the machine local files
             errorLbl.destroy()
             print("Directory Exists")
             dirLabel.place(x=320, y=180)
@@ -67,9 +66,9 @@ def fileDisplayWindow():
                 displayAssignment.config(state="disabled")
                 tempList.sort(key=lambda e: e[0], reverse=True)
                 # for i, (filename) in enumerate(tempList, start=1):
+
                 for (file) in os.listdir(test1):
                     listBox.insert("", "end", values=file)
-                    # print(os.path.splitext("StudentID: " + filename)[0])
 
     # create Treeview with 3 columns
     cols = ('Filename', 'Graded', 'Grade')
