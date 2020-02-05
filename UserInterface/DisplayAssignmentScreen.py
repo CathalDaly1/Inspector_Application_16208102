@@ -1,5 +1,6 @@
 import tkinter as tk
 import UserInterface.FileAccessScreen
+from UserInterface.FileAccessScreen import *
 
 
 def displayFileContents():

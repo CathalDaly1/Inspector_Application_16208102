@@ -38,11 +38,11 @@ def fileDisplayWindow():
 
     def show():
 
-        test1 = filePath.get()
+        assignmentFilePath = filePath.get()
         dirLabel = tk.Label(window, text="Directory Exists\t\t", font=("Arial", 8))
         errorLbl = tk.Label(window, text="Directory does not exists", font=("Arial", 8), fg="red")
 
-        if os.path.exists(test1):
+        if os.path.exists(assignmentFilePath):
             errorLbl.destroy()
             print("Directory Exists")
             dirLabel.place(x=320, y=180)
@@ -53,12 +53,12 @@ def fileDisplayWindow():
             dirLabel.destroy()
 
         with open("files.txt", "w") as a:
-            for path, subdirs, files in os.walk(test1):
+            for path, subdirs, files in os.walk(assignmentFilePath):
                 for filename in files:
                     a.write(str(filename + "\n"))
 
                 # ToDo Have to add it so that it displays the files from the entered filepath in Entry box
-                for filename in os.listdir(test1):
+                for filename in os.listdir(assignmentFilePath):
                     # ToDo Change filename for files in order to display all files in one line - Fix
                     tempList = [[filename]]
 
@@ -67,7 +67,7 @@ def fileDisplayWindow():
                 tempList.sort(key=lambda e: e[0], reverse=True)
                 # for i, (filename) in enumerate(tempList, start=1):
 
-                for (file) in os.listdir(test1):
+                for (file) in os.listdir(assignmentFilePath):
                     listBox.insert("", "end", values=file)
 
     # create Treeview with 3 columns
