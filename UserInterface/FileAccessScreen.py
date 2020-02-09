@@ -12,6 +12,10 @@ def fileDisplayWindow():
     window.title("Inspector - Grading Application")
     window.geometry("800x800+100+100")
     window.resizable(False, False)
+    # Initializing error labels
+    filepathErrorLbl = tk.Label(window, text="Please enter a filepath", font=("Arial", 8), fg="red")
+    dirLabel = tk.Label(window, text="Directory Exists\t\t", font=("Arial", 8))
+    errorLbl = tk.Label(window, text="Directory does not exists", font=("Arial", 8), fg="red")
 
     def clear():
         displayAssignment.config(state="active")
@@ -20,27 +24,29 @@ def fileDisplayWindow():
         filePath.delete('0', 'end')
 
     def printSelection():
-        clicked_items = listBox.selection()
-        print(listBox.item(clicked_items))
-        # ToDo Get the entry file path from the entry box and concatenate it with the listbox selection
-        st = 'C:/Users/catha/OneDrive - University of Limerick/test2/'
-        os.popen(st + listBox.item(clicked_items)['values'][0])
-        selectAssignment()
+        # Check if the filepath has been entered
+        if filePath.get() != "":
+            clicked_items = listBox.selection()
+            print(listBox.item(clicked_items))
+            # ToDo Get the entry file path from the entry box and concatenate it with the listbox selection
+            # Get the filepath and add / in order to get the file
+            st = filePath.get() + "/"
+            # os.popen(st + listBox.item(clicked_items)['values'][0])
+            selectAssignment()
+            filepathErrorLbl.destroy()
+        else:
+            filepathErrorLbl.place(x=320, y=180)
 
     def back():
         window.withdraw()
 
     def selectAssignment():
-
         print("Select Assignment button selected")
         UserInterface.DisplayAssignmentScreen.displayFileContents()
-        window.withdraw()
 
     def show():
 
         assignmentFilePath = filePath.get()
-        dirLabel = tk.Label(window, text="Directory Exists\t\t", font=("Arial", 8))
-        errorLbl = tk.Label(window, text="Directory does not exists", font=("Arial", 8), fg="red")
 
         if os.path.exists(assignmentFilePath):
             errorLbl.destroy()
@@ -69,6 +75,9 @@ def fileDisplayWindow():
 
                 for (file) in os.listdir(assignmentFilePath):
                     listBox.insert("", "end", values=file)
+
+    def comments():
+        print("Add comment button clicked")
 
     # create Treeview with 3 columns
     cols = ('Filename', 'Graded', 'Grade')
@@ -103,7 +112,10 @@ def fileDisplayWindow():
 
     selectStudentAssignButton = tk.Button(window, text="Select Assignment", fg="black", command=printSelection,
                                           width=15)
-    selectStudentAssignButton.place(x=250, y=550)
+    selectStudentAssignButton.place(x=280, y=550)
 
     backButton = tk.Button(window, text="Back", width=15, command=back)
-    backButton.place(x=450, y=550)
+    backButton.place(x=480, y=550)
+
+    addComments = tk.Button(window, text="Add Comment", width=15, command=comments)
+    addComments.place(x=100, y=550)

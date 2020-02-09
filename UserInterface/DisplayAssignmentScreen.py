@@ -6,12 +6,13 @@ from UserInterface.FileAccessScreen import *
 def displayFileContents():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("800x800+100+100")
+    window.geometry("950x950+50+50")
     window.resizable(False, False)
+
+    file = 'C:/Users/catha/OneDrive - University of Limerick/test2/10000001.txt'
 
     def back():
         window.withdraw()
-        UserInterface.FileAccessScreen.fileDisplayWindow()
 
     def submitAssignment():
         window.withdraw()
@@ -74,5 +75,4 @@ def displayFileContents():
     highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
     highlightButton.place(x=550, y=670)
 
-    file = 'C:/Users/catha/OneDrive - University of Limerick/test2/10000001.txt'
     T.insert(tk.END, open(file).read())
