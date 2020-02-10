@@ -48,6 +48,9 @@ def displayFileContents():
     lbl_sub_title = tk.Label(window, text="Student: //" + studentID + "'s program", font=("Arial", 15))
     lbl_sub_title.place(x=400, y=70, anchor="center")
 
+    shortcutLbl = tk.Label(window, text="Key Shortcuts", font=("Arial", 15))
+    shortcutLbl.place(x=850, y=70, anchor="center")
+
     # ToDo Get the name and student ID number of the student and display on this screen
     # ToDo Add keylogger in python in order to keep track of the totalling keys pressed in application
     # ToDo Display what keys have been pressed and there must be a way that the lecturer can remove choices if mistake has been made

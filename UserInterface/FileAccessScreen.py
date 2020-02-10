@@ -1,5 +1,8 @@
 import os
+import tkinter
 import tkinter as tk
+from _ast import Str
+
 import UserInterface.DisplayAssignmentScreen
 from tkinter import ttk
 from tkinter.ttk import *
@@ -16,6 +19,7 @@ def fileDisplayWindow():
     filepathErrorLbl = tk.Label(window, text="Please enter a filepath", font=("Arial", 8), fg="red")
     dirLabel = tk.Label(window, text="Directory Exists\t\t", font=("Arial", 8))
     errorLbl = tk.Label(window, text="Directory does not exists", font=("Arial", 8), fg="red")
+    commentsEntry: Entry = tk.Entry(window, width="10")
 
     def clear():
         displayAssignment.config(state="active")
@@ -77,7 +81,35 @@ def fileDisplayWindow():
                     listBox.insert("", "end", values=file)
 
     def comments():
-        print("Add comment button clicked")
+        # Entry for number of canned comments
+        commentsLbl = tk.Label(window, fg="black", text="Enter number of comments: ", font=("Calibri", 12))
+        commentsLbl.place(x=75, y=600)
+
+        commentsEntry.place(x=265, y=605)
+        commentsEntry.insert(0, "")
+
+        enterButton = tk.Button(window, text="Enter", width=13, command=entryResult)
+        enterButton.place(x=350, y=600)
+
+    def entryResult():
+        print("Enter button pressed")
+        res = int(commentsEntry.get())
+        print(res)
+        window1 = tk.Tk()
+
+        window1.title("Inspector - Grading Application")
+        window1.geometry("400x400+200+200")
+        window1.resizable(False, False)
+
+        for col in range(res):
+
+            commentsTitle = tk.Label(window1, fg="black", text="Comment " + str(col), font=("Calibri", 12))
+            commentsTitle.grid(row=col, column=5, padx=10, pady=10)
+            commentsEntry1: Entry = tk.Entry(window1, width="30")
+            commentsEntry1.grid(row=col, column=7, padx=10, pady=10)
+            commentsEntry1.insert(0, "")
+            saveButton = tk.Button(window1, text="Save", width=13, command="")
+            saveButton.place(x=290, y=350)
 
     # create Treeview with 3 columns
     cols = ('Filename', 'Graded', 'Grade')
@@ -93,7 +125,7 @@ def fileDisplayWindow():
     lbl_sub_title = tk.Label(window, text="List of Student Files", font=("Arial", 15))
     lbl_sub_title.place(x=400, y=250, anchor="center")
 
-    lbl_student_files = tk.Label(window, text="Table of student files listed below //Implement this functionality",
+    lbl_student_files = tk.Label(window, text="Table of student files listed below",
                                  font=("Arial", 12))
     lbl_student_files.place(x=400, y=280, anchor="center")
 
@@ -117,5 +149,6 @@ def fileDisplayWindow():
     backButton = tk.Button(window, text="Back", width=15, command=back)
     backButton.place(x=480, y=550)
 
-    addComments = tk.Button(window, text="Add Comment", width=15, command=comments)
+    # ToDo add canned comments which will be incremental when one comment is added
+    addComments = tk.Button(window, text="Add Canned Comment", width=18, command=comments)
     addComments.place(x=100, y=550)
