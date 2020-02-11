@@ -45,17 +45,16 @@ class create_account(tk.Frame):
 
         # create a Form label
         Label(self, text="Choose Login Or Register", bg="grey", width="300", height="2", font=("Calibri", 13)).pack()
-        Label(text="").pack()
+        Label(self, text="").pack()
 
         # create Login Button
-        loginButton = Button(self, text="Login", command=login, height=1, width=6)
-        Label(text="").pack()
+        loginButton = Button(self, text="Login", command=login, width=10, height=1)
+        Label(self, text="").pack()
         loginButton.pack()
-        Label(text="").pack()
+        Label(self, text="").pack()
 
         # create a register button
-        Label(text="").pack()
-        registerButton = Button(self, text="Register", command=register, height=1, width=6)
+        registerButton = Button(self, text="Register", command=register,  width=10, height=1)
         registerButton.pack()
 
 
