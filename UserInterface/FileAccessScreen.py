@@ -94,7 +94,6 @@ def fileDisplayWindow():
     def entryResult():
         print("Enter button pressed")
         res = int(commentsEntry.get())
-        print(res)
         window1 = tk.Tk()
 
         window1.title("Inspector - Grading Application")
@@ -102,14 +101,16 @@ def fileDisplayWindow():
         window1.resizable(False, False)
 
         for col in range(res):
-
-            commentsTitle = tk.Label(window1, fg="black", text="Comment " + str(col), font=("Calibri", 12))
+            commentsTitle = tk.Label(window1, fg="black", text="Comment " + str(col+1), font=("Calibri", 12))
             commentsTitle.grid(row=col, column=5, padx=10, pady=10)
             commentsEntry1: Entry = tk.Entry(window1, width="30")
             commentsEntry1.grid(row=col, column=7, padx=10, pady=10)
             commentsEntry1.insert(0, "")
-            saveButton = tk.Button(window1, text="Save", width=13, command="")
+            saveButton = tk.Button(window1, text="Save", width=13, command=saveCommentsButton)
             saveButton.place(x=290, y=350)
+
+    def saveCommentsButton():
+        print("Save button pressed")
 
     # create Treeview with 3 columns
     cols = ('Filename', 'Graded', 'Grade')
