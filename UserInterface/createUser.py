@@ -3,6 +3,7 @@ import tkinter as tk
 import UserInterface.loginUser
 import UserInterface.registerUser
 
+
 class UserMainScreen(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -15,7 +16,7 @@ class UserMainScreen(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        self.geometry("300x250")
+        self.geometry("300x250+100+100")
         self.title("Inspector - Grading Application")
         self.resizable(False, False)
 
@@ -54,7 +55,7 @@ class create_account(tk.Frame):
         Label(self, text="").pack()
 
         # create a register button
-        registerButton = Button(self, text="Register", command=register,  width=10, height=1)
+        registerButton = Button(self, text="Register", command=register, width=10, height=1)
         registerButton.pack()
 
 

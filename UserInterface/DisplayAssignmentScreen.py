@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import filedialog
+
 import UserInterface.FileAccessScreen
 from UserInterface.FileAccessScreen import *
 
@@ -9,7 +11,7 @@ def displayFileContents():
     window.geometry("950x950+50+50")
     window.resizable(False, False)
 
-    file = 'C:/Users/catha/OneDrive - University of Limerick/test2/10000001.txt'
+    file = 'C:/Users/catha/OneDrive - University of Limerick/test2/test2/test.py'
 
     def back():
         window.withdraw()
@@ -78,4 +80,5 @@ def displayFileContents():
     highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
     highlightButton.place(x=550, y=670)
 
-    T.insert(tk.END, open(file).read())
+    filename = filedialog.askopenfilename(title="select file", filetypes=(("all files", "*.*"), ("text files", "*.txt")))
+    T.insert(tk.END, open(filename).read())

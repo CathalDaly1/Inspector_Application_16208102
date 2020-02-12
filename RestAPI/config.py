@@ -1,7 +1,6 @@
-from flask import Flask 
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource, reqparse
-
 
 app = Flask(__name__)
 
@@ -15,6 +14,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Create the SqlAlchemy db instance
 db = SQLAlchemy(app)
 
+
 class User(db.Model):
     id = db.Column(db.Integer)
     name = db.Column(db.String(50))
@@ -27,4 +27,3 @@ def index(name, location):
     db.session.commit()
 
     print("Added new user")
-

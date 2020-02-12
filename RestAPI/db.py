@@ -2,7 +2,9 @@ import psycopg2
 import psycopg2.extras
 
 from flask import Flask, render_template, request
+
 app = Flask(__name__)
+
 
 def connectToDB():
     connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
@@ -12,6 +14,7 @@ def connectToDB():
         return psycopg2.connect(connectionString)
     except:
         print("Cannot connect to the DB")
+
 
 conn = connectToDB()
 cur = conn.cursor()
@@ -25,8 +28,8 @@ conn.commit()
 for r in results:
     print(f"username {r[0]}")
 
-#close the cursor
+# close the cursor
 cur.close()
 
-#close the connection
+# close the connection
 conn.close()

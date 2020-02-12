@@ -7,8 +7,6 @@ from flask_restful import Api, Resource, reqparse
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
-
 app = Flask(__name__)
 api = Api(app)
 uri = "postgres://postgres:Detlef228425@localhost/InspectorFYP_DB"

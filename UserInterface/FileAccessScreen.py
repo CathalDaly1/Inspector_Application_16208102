@@ -4,6 +4,7 @@ import tkinter as tk
 from _ast import Str
 
 import UserInterface.DisplayAssignmentScreen
+import UserInterface.app
 from tkinter import ttk
 from tkinter.ttk import *
 from tkinter import *
@@ -62,23 +63,34 @@ def fileDisplayWindow():
             errorLbl.place(x=320, y=180)
             dirLabel.destroy()
 
-        with open("files.txt", "w") as a:
-            for path, subdirs, files in os.walk(assignmentFilePath):
-                for filename in files:
-                    a.write(str(filename + "\n"))
-
-                # ToDo Have to add it so that it displays the files from the entered filepath in Entry box
-                for filename in os.listdir(assignmentFilePath):
-                    # ToDo Change filename for files in order to display all files in one line - Fix
-                    tempList = [[filename]]
+            # ToDo Have to add it so that it displays the files from the entered filepath in Entry box
+            for filename in os.listdir(assignmentFilePath):
+                # ToDo Change filename for files in order to display all files in one line - Fix
+                tempList = [[filename]]
 
                 # Disable button after it has been clicked once in order for the data to only appear once
                 displayAssignment.config(state="disabled")
                 tempList.sort(key=lambda e: e[0], reverse=True)
                 # for i, (filename) in enumerate(tempList, start=1):
 
-                for (file) in os.listdir(assignmentFilePath):
-                    listBox.insert("", "end", values=file)
+        # displays the folder and files in that folder
+        abspath = os.path.abspath(assignmentFilePath)
+        root_node = listBox.insert('', 'end', text=abspath, open=True)
+        process_directory(root_node, abspath)
+
+        # This displays the files in a dir
+        # for (file) in os.listdir(assignmentFilePath):
+        #     listBox.insert("", "end", values=file)
+
+    def process_directory(parent, assignmentFilePath):
+        for file in os.listdir(assignmentFilePath):
+            abspath = os.path.join(assignmentFilePath, file)
+            isdir = os.path.isdir(abspath)
+            print(isdir)
+            oid = listBox.insert(parent, 'end', values=file, open=False)
+            if isdir:
+                print("test")
+                process_directory(oid, abspath)
 
     def comments():
         # Entry for number of canned comments
@@ -101,7 +113,7 @@ def fileDisplayWindow():
         window1.resizable(False, False)
 
         for col in range(res):
-            commentsTitle = tk.Label(window1, fg="black", text="Comment " + str(col+1), font=("Calibri", 12))
+            commentsTitle = tk.Label(window1, fg="black", text="Comment " + str(col + 1), font=("Calibri", 12))
             commentsTitle.grid(row=col, column=5, padx=10, pady=10)
             commentsEntry1: Entry = tk.Entry(window1, width="30")
             commentsEntry1.grid(row=col, column=7, padx=10, pady=10)

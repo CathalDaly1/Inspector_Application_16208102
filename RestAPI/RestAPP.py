@@ -6,8 +6,6 @@ from paths import *
 app = Flask(__name__)
 api = Api(app)
 
-api.add_resource(UserPath, "/user/")
-
 #Adding the user to the DB
 api.add_resource(UserNamePath,"/user/<string:name>")
 

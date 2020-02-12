@@ -7,7 +7,7 @@ import UserInterface.InspectorMainScreen
 def registerUser():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("300x250")
+    window.geometry("300x250+100+100")
     window.resizable(False, False)
     username = StringVar()
     password = StringVar()
@@ -15,6 +15,7 @@ def registerUser():
     def register():
         print("login session started")
         UserInterface.InspectorMainScreen.HomeScreen()
+        window.withdraw()
 
     def back():
         window.withdraw()
