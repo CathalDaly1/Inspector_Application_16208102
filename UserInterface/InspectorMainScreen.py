@@ -2,6 +2,8 @@ import tkinter as tk
 import UserInterface.ProgrammedKeysScreen
 import UserInterface.GradingSchemeScreen
 import UserInterface.FileAccessScreen
+import UserInterface.loginUser
+from UserInterface.loginUser import *
 
 
 class HomeScreen(tk.Tk):
@@ -42,7 +44,7 @@ def changeGradingSchemeButton():
 
 def proceedButton():
     print("Proceed Button pressed")
-    UserInterface.FileAccessScreen.fileDisplayWindow()
+    UserInterface.FileAccessScreen.FileDisplayWindow()
 
 
 def menuOptions():

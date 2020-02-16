@@ -1,8 +1,6 @@
-import tkinter as tk
 from tkinter import filedialog
-
-import UserInterface.FileAccessScreen
 from UserInterface.FileAccessScreen import *
+import Assignment_correction.keystrokeGrading
 
 
 def displayFileContents():
@@ -42,6 +40,50 @@ def displayFileContents():
                 idx = lastidx
             T.tag_config('found', background='yellow')
 
+    def keys():
+        global total
+        keystroke = str(input("Please enter a command"))
+        if keystroke == 's':
+            print("You have started the grading process")
+            total = 0
+            keys()
+
+        elif keystroke == 'a':
+            print("You pressed key b")
+            total += 2
+            print(total)
+            keys()
+
+        elif keystroke == 'b':
+            print("You pressed key b")
+            total += 1
+            print(total)
+            keys()
+
+        elif keystroke == "c":
+            print("You pressed key c")
+            total -= 1
+            print(total)
+            keys()
+
+        elif keystroke == "d":
+            print("You pressed key d")
+            total -= 2
+            print(total)
+            keys()
+
+        elif keystroke == "esc":
+            print("You pressed key esc")
+            total = total
+            print("Total number of marks is: " + total)
+            exit(0)
+
+        else:
+            print("Incorrect Selection: Please choose (a,b,c,d)")
+            keys()
+
+        print(total)
+
     studentID = "Implement"
 
     lbl_title = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
@@ -80,5 +122,9 @@ def displayFileContents():
     highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
     highlightButton.place(x=550, y=670)
 
-    filename = filedialog.askopenfilename(title="select file", filetypes=(("all files", "*.*"), ("text files", "*.txt")))
+    beginGrading = tk.Button(window, text="Begin Grading", width=15, command=keys)
+    beginGrading.place(x=700, y=670)
+
+    filename = filedialog.askopenfilename(title="select file",
+                                          filetypes=(("all files", "*.*"), ("text files", "*.txt")))
     T.insert(tk.END, open(filename).read())

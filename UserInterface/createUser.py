@@ -16,7 +16,7 @@ class UserMainScreen(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        self.geometry("300x250+100+100")
+        self.geometry("300x250+400+300")
         self.title("Inspector - Grading Application")
         self.resizable(False, False)
 
