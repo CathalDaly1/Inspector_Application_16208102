@@ -1,6 +1,6 @@
 import threading
 import time
-from tkinter import filedialog
+from multiprocessing import process, Process
 from UserInterface.FileAccessScreen import *
 
 
@@ -145,7 +145,8 @@ def displayFileContents():
     highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
     highlightButton.place(x=550, y=670)
 
-    beginGrading = tk.Button(window, text="Begin Grading", width=15, command=keys)
+    p1 = Process(target=keys)
+    beginGrading = tk.Button(window, text="Begin Grading", width=15, command=p1)
     beginGrading.place(x=700, y=670)
 
     # filename = filedialog.askopenfilename(title="select file",
