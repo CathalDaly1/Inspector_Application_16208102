@@ -145,6 +145,7 @@ def displayFileContents():
     highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
     highlightButton.place(x=550, y=670)
 
+    # Multiprocessing implemented
     p1 = Process(target=keys)
     beginGrading = tk.Button(window, text="Begin Grading", width=15, command=p1)
     beginGrading.place(x=700, y=670)
