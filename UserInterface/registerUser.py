@@ -35,11 +35,8 @@ def registerUser():
 
         print("login session started")
         username_info = username_entry.get()
-        print("Username: " + username_info)
         password_info = password_entry.get()
-        print("Password: " + password_info)
         confirm_password_info = confirm_password_entry.get()
-        print("Confirm Password: " + confirm_password_info)
 
         if username_info and password_info != "":
             if password_info != confirm_password_info:

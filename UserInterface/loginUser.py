@@ -55,6 +55,8 @@ def loginUser():
                 if username1 == row[0] or password1 == row[1]:
                     login()
         else:
+            username1.delete('0', 'end')
+            password1.delete('0', 'end')
             errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Arial", 8), fg="red")
             errorLbl.place(x=60, y=125)
 

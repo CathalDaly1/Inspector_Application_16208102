@@ -57,9 +57,12 @@ class FileWindow(tk.Frame):
         def printSelection():
             # Check if the filepath has been entered
             if filePath.get() != "":
-                global clicked_items
-                clicked_items = listBox.selection()
-                print(listBox.item(clicked_items))
+                global item_text
+                # clicked_items = listBox.selection()
+                # # print(listBox.item(clicked_items))
+
+                for item in listBox.selection():
+                    item_text = listBox.item(item, "values")
 
                 # ToDo Have to print the selection of the listboz
                 # for item in listBox.selection():
@@ -86,8 +89,9 @@ class FileWindow(tk.Frame):
             window.resizable(False, False)
 
             global file
-            file = filePath.get() + "/" + str(clicked_items)
-           # file = "C:/Users/catha/OneDrive - University of Limerick/test2/DocTest.txt"
+            file = filePath.get().replace("\\", "/") + "/" + str(item_text[0])
+            print(file)
+            # file = "C:/Users/catha/OneDrive - University of Limerick/test2/DocTest.txt"
             KeyA = 2
             KeyB = 1
             KeyC = -1
