@@ -54,6 +54,13 @@ class FileWindow(tk.Frame):
             listBox.delete(*listBox.get_children())
             filePath.delete('0', 'end')
 
+        def OnDoubleClick():
+            item = listBox.selection()[0]
+            print("you clicked on", listBox.item(item, "text"))
+            global itemSelected
+            itemSelected = listBox.item(item, 'text')
+            printSelection()
+
         def printSelection():
             # Check if the filepath has been entered
             if filePath.get() != "":
@@ -63,6 +70,7 @@ class FileWindow(tk.Frame):
 
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
+                    print((itemSelected + "/" + str(item_text)))
 
                 # ToDo Have to print the selection of the listboz
                 # for item in listBox.selection():
@@ -102,6 +110,11 @@ class FileWindow(tk.Frame):
 
             def submitAssignment():
                 window.withdraw()
+                # Opens file ans copys what was in T text box and places back in file and saves
+                s = T.get("1.0", END)
+                f = open(file, "w")
+                f.write(s)
+                f.close()
                 print("Submit button pressed")
 
             # Highlights code when pressed
@@ -227,6 +240,7 @@ class FileWindow(tk.Frame):
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=715)
 
+            global assignment
             assignment = open(file).read()
             T.insert("1.0", assignment)
 
@@ -337,7 +351,7 @@ class FileWindow(tk.Frame):
         clearButton = tk.Button(self, text="Clear", command=clear, height=1, width=6)
         clearButton.place(x=700, y=150)
 
-        selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=printSelection,
+        selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=OnDoubleClick,
                                               width=15)
         selectStudentAssignButton.place(x=280, y=550)
 
