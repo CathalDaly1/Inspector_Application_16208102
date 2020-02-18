@@ -27,3 +27,4 @@ def index(name, location):
     db.session.commit()
 
     print("Added new user")
+    

@@ -10,6 +10,7 @@ def displayFileContents():
     window.geometry("950x950+50+50")
     window.resizable(False, False)
 
+    global file
     file = 'C:/Users/catha/OneDrive - University of Limerick/test2/test2/test.py'
     KeyA = 2
     KeyB = 1
@@ -45,54 +46,50 @@ def displayFileContents():
                 idx = lastidx
             T.tag_config('found', background='yellow')
 
-    GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
-    GradeTextBox.place(x=45, y=715)
-
     def keys():
         global total
         global total1
         keystroke = str(input())
-        if keystroke == 's':
+
+        if keystroke.lower() == 's':
             print("You have started the grading process")
             total = 80
             print(total)
             keys()
 
-        elif keystroke == 'a':
+        elif keystroke.lower() == 'a':
             print("You pressed key a")
             total += 2
             print(total)
             keys()
-            time.sleep(5)
 
-        elif keystroke == 'b':
+        elif keystroke.lower() == 'b':
             print("You pressed key b")
             total += 1
             print(total)
             keys()
 
-        elif keystroke == "c":
+        elif keystroke.lower() == "c":
             print("You pressed key c")
             total -= 1
             print(total)
             keys()
 
-        elif keystroke == "d":
+        elif keystroke.lower() == "d":
             print("You pressed key d")
             total -= 2
             print(total)
             keys()
 
-        elif keystroke == "esc":
-            print("You pressed key esc")
+        elif keystroke.lower() == 'e':
+            print("You pressed key e")
             total1 = total
-            print("Total number of marks is: " + str(total1))
-            totalGrade = tk.Label(window, text="Grade: " + str(total1) + "/100", font=("Arial", 15))
-            totalGrade.place(x=850, y=190, anchor="center")
+            print("Total grade is: " + str(total1))
 
         else:
             print("Incorrect Selection: Please choose (a,b,c,d)")
             keys()
+
     threading.Thread(target=keys).start()
 
     studentID = "Implement"
@@ -107,16 +104,12 @@ def displayFileContents():
     shortcutLbl.place(x=850, y=70, anchor="center")
 
     keysValue = tk.Label(window, text="Key A: +" + str(KeyA) + "\n"
-                                                                   "Key B: +" + str(KeyB) + "\n"
-                                                                                            "Key C: " + str(KeyC) + "\n"
-                                                                                                                    "Key D: " + str(
+                                                               "Key B: +" + str(KeyB) + "\n"
+                                                                                        "Key C: " + str(KeyC) + "\n"
+                                                                                                                "Key D: " + str(
         KeyD) + "\n"
-                "", font=("Arial", 12))
+                "Key E: Exit grading", font=("Arial", 12))
     keysValue.place(x=850, y=150, anchor="center")
-
-
-
-
 
     # ToDo Get the name and student ID number of the student and display on this screen
     # ToDo Add keylogger in python in order to keep track of the totalling keys pressed in application
@@ -149,6 +142,11 @@ def displayFileContents():
     p1 = Process(target=keys)
     beginGrading = tk.Button(window, text="Begin Grading", width=15, command=p1)
     beginGrading.place(x=700, y=670)
+
+    GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
+    GradeTextBox.place(x=45, y=715)
+
+    print(file)
 
     # filename = filedialog.askopenfilename(title="select file",
     #                                       filetypes=(("all files", "*.*"), ("text files", "*.txt")))

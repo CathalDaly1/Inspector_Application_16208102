@@ -23,3 +23,14 @@ class UserNamePath(Resource):
             args["password"]) + '''\')''')
 
         return 200
+
+class Hello(Resource):
+    def get(self):
+        return {"message": "Hello world"}
+
+    def post(self):
+        return {"message": "Hello world"}
+
+class sign_in(Resource):
+    def get(self):
+        return 200

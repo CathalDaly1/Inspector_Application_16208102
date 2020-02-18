@@ -21,6 +21,16 @@ conn = connectToDB()
 cur = conn.cursor()
 
 
+def test():
+    username
+    cur.execute("SELECT * FROM Users WHERE username = 'test'")
+    rows = cur.fetchall()
+
+    for row in rows:
+        print("Uid: ", row[0])
+        print("Username: ", row[1])
+        print("Password: ", row[2])
+
 def executeQuery(query):
     cur.execute(query)
     row_headers = [x[0] for x in cur.description]  # this will extract row headers

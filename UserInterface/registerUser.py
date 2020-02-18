@@ -1,4 +1,7 @@
 import tkinter as tk
+
+import psycopg2
+
 import UserInterface.FileAccessScreen
 from tkinter import *
 import UserInterface.InspectorMainScreen
@@ -18,6 +21,18 @@ def registerUser():
     confirmPassword = StringVar()
 
     def register():
+        def connectToDB():
+            connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
+            print(connectionString)
+            try:
+                print("Connected successfully")
+                return psycopg2.connect(connectionString)
+            except:
+                print("Cannot connect to the DB")
+
+        conn = connectToDB()
+        cur = conn.cursor()
+
         print("login session started")
         username_info = username_entry.get()
         print("Username: " + username_info)
@@ -26,25 +41,23 @@ def registerUser():
         confirm_password_info = confirm_password_entry.get()
         print("Confirm Password: " + confirm_password_info)
 
-        if password_info != confirm_password_info:
-            print("Passwords do not match. Please try again")
+        if username_info and password_info != "":
+            if password_info != confirm_password_info:
+                errorLbl = tk.Label(window, text="Passwords do not match", font=("Arial", 8), fg="red")
+                errorLbl.place(x=100, y=165)
 
-        file = open("users.txt", "r+")
-        verify = file.read().splitlines()
-        if username_info and password_info not in verify:
-            print("now")
-            file.write(username_info + "\n")
-            file.write(password_info + "\n")
-            file.close()
-            username_entry.delete(0, END)
-            password_entry.delete(0, END)
-            confirm_password_entry.delete(0, END)
-            UserInterface.loginUser.loginUser()
-            window.withdraw()
+            else:
+                sql = "INSERT INTO Users (username, password) VALUES (%s, %s)"
+                val = (username_info, password_info)
+                cur.execute(sql, val)
+                conn.commit()
+                window.withdraw()
+                UserInterface.loginUser.loginUser()
         else:
-            print("User with username or password already exists")
-        # UserInterface.InspectorMainScreen.HomeScreen()
-        # window.withdraw()
+            errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")
+            errorLbl2.place(x=100, y=165)
+
+        # Check if returned set is not empty: checks if data is correct
 
     def back():
         window.withdraw()

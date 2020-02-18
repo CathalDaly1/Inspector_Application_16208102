@@ -1,4 +1,7 @@
 import tkinter as tk
+
+import psycopg2
+
 import UserInterface.FileAccessScreen
 from tkinter import *
 import os
@@ -20,6 +23,18 @@ def loginUser():
     global username_login_entry
     global password_login_entry
 
+    def connectToDB():
+        connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
+        print(connectionString)
+        try:
+            print("Connected successfully")
+            return psycopg2.connect(connectionString)
+        except:
+            print("Cannot connect to the DB")
+
+    conn = connectToDB()
+    cur = conn.cursor()
+
     def login():
         print("login session started")
         UserInterface.InspectorMainScreen.HomeScreen()
@@ -29,19 +44,19 @@ def loginUser():
         window.withdraw()
 
     def login_verify():
-        username1 = username_verify.get()
+        username1 = username_entry.get()
         password1 = password_entry.get()
-        print("getting this far")
-        print(password1)
-        path = "C:/Users/catha/PycharmProjects/Inspector_Application/UserInterface"
-        list_of_files = os.listdir(path)
-        if "users.txt" in list_of_files:
-            file1 = open("users.txt", "r")
-            verify = file1.read().splitlines()
-            if password1 in verify:
-                login()
-            else:
-                print("User is not on the system")
+        cur.execute("SELECT username, password  FROM Users WHERE username =%s and password =%s", (username1, password1,))
+        rows = cur.fetchall()
+
+        # Check if returned set is not empty: checks if data is correct
+        if rows:
+            for row in rows:
+                if username1 == row[0] or password1 == row[1]:
+                    login()
+        else:
+            errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Arial", 8), fg="red")
+            errorLbl.place(x=60, y=125)
 
     Label(window, text="Please enter your details below").pack()
     Label(window, text="").pack()
@@ -51,6 +66,6 @@ def loginUser():
     Label(window, text="Password").pack()
     password_entry = Entry(window, textvariable=password_verify)
     password_entry.pack()
-    Label(window, text="").pack()
+    Label(window, text="\n").pack()
     Button(window, text="Login", width=10, height=1, command=login_verify).pack()
     Button(window, text="Back", width=10, height=1, command=back).pack()
