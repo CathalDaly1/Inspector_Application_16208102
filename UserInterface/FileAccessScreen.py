@@ -109,13 +109,13 @@ class FileWindow(tk.Frame):
                 window.withdraw()
 
             def submitAssignment():
+                print("Submit button pressed")
                 window.withdraw()
-                # Opens file ans copys what was in T text box and places back in file and saves
+                # Opens file ans copies what was in T text box and places back in file and saves
                 s = T.get("1.0", END)
                 f = open(file, "w")
                 f.write(s)
                 f.close()
-                print("Submit button pressed")
 
             # Highlights code when pressed
             # ToDo make it so it only highlights one selected code segment and not all of them in the code
