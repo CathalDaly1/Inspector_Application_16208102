@@ -1,11 +1,10 @@
 import os
 import threading
 import tkinter as tk
-from multiprocessing import Process
-
 import UserInterface.DisplayAssignmentScreen
 import UserInterface.InspectorMainScreen
 import UserInterface.app
+from multiprocessing import Process
 from tkinter import ttk
 from tkinter.ttk import *
 from tkinter import *
@@ -44,8 +43,6 @@ class FileWindow(tk.Frame):
 
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
-        dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Arial", 8))
-        errorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
         commentsEntry: Entry = tk.Entry(self, width="10")
 
         def clear():
@@ -65,21 +62,11 @@ class FileWindow(tk.Frame):
             # Check if the filepath has been entered
             if filePath.get() != "":
                 global item_text
-                # clicked_items = listBox.selection()
-                # # print(listBox.item(clicked_items))
 
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
                     print((itemSelected + "/" + str(item_text)))
 
-                # ToDo Have to print the selection of the listboz
-                # for item in listBox.selection():
-                #     item_text = listBox.item(item, "text")
-                #     print(item_text)
-                # ToDo Get the entry file path from the entry box and concatenate it with the listbox selection
-                # Get the filepath and add / in order to get the file
-                st = filePath.get() + "/"
-                # os.popen(st + listBox.item(clicked_items)['values'][0])
                 selectAssignment()
                 filepathErrorLbl.destroy()
             else:
@@ -112,7 +99,7 @@ class FileWindow(tk.Frame):
                 print("Submit button pressed")
                 window.withdraw()
                 # Opens file ans copies what was in T text box and places back in file and saves
-                s = T.get("1.0", END)
+                s = text.get("1.0", END)
                 f = open(file, "w")
                 f.write(s)
                 f.close()
@@ -120,24 +107,22 @@ class FileWindow(tk.Frame):
             # Highlights code when pressed
             # ToDo make it so it only highlights one selected code segment and not all of them in the code
             def highlight():
-                print("selected text: '%s'" % T.get(tk.SEL_FIRST, tk.SEL_LAST))
-
-                s = T.get(tk.SEL_FIRST, tk.SEL_LAST)
+                s = text.get(tk.SEL_FIRST, tk.SEL_LAST)
                 if s:
                     # start from the beginning (and when we come to the end, stop)
                     idx = '1.0'
 
                     while 1:
                         # find next occurrence, exit loop if no more
-                        idx = T.search(s, idx, nocase=1, stopindex=tk.END)
+                        idx = text.search(s, idx, nocase=1, stopindex=tk.END)
                         if not idx: break
                         # index right after the end of the occurrence
 
                         lastidx = '%s+%dc' % (idx, len(s))
                         # tag the whole occurrence (start included, stop excluded)
-                        T.tag_add('found', idx, lastidx)
+                        text.tag_add('found', idx, lastidx)
                         idx = lastidx
-                    T.tag_config('found', background='yellow')
+                    text.tag_config('found', background='yellow')
 
             def keys():
                 global total
@@ -211,52 +196,84 @@ class FileWindow(tk.Frame):
             # ToDo Create a small table which will display logs and also display total amount of marks - LIVE
 
             # Created scroll bars horizontal and vertical in order to view code
-            T = tk.Text(window, wrap=tk.NONE, height=35, width=90, borderwidth=0)
-            scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=T.yview)
-            T['yscroll'] = scrollbar.set
+            # T = tk.Text(window, wrap=tk.NONE, height=35, width=90, borderwidth=0)
+            # scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=T.yview)
+            # T['yscroll'] = scrollbar.set
+            #
+            # scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=T.xview)
+            # T['yscroll'] = scrollbar.set
+            #
+            # scrollbar.place(in_=T, relx=1.0, relheight=1.0, bordermode="outside")
+            # scrollbarHor.place(in_=T, rely=1.0, relwidth=1.0, bordermode="outside")
+            # T.place(x=45, y=90)
 
-            scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=T.xview)
-            T['yscroll'] = scrollbar.set
+            lineNumbers = ''
+            # The Text widget holding the line numbers.
+            lnText = tk.Text(window,
+                             width=2,
+                             height=35,
+                             padx=2,
+                             highlightthickness=0,
+                             takefocus=0,
+                             bd=0,
+                             background='lightgrey',
+                             foreground='magenta',
+                             state='disabled'
+                             )
+            lnText.place(x=55, y=95)
 
-            scrollbar.place(in_=T, relx=1.0, relheight=1.0, bordermode="outside")
-            scrollbarHor.place(in_=T, rely=1.0, relwidth=1.0, bordermode="outside")
-            T.place(x=45, y=90)
+            # The Main Text Widget
+            text = tk.Text(window,
+                           width=85,
+                           wrap=tk.NONE,
+                           height=35,
+                           bd=0,
+                           padx=4,
+                           undo=True,
+                           background='white'
+                           )
+
+            # Scrollbar on X and Y axis of text box
+            scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
+            text['yscroll'] = scrollbar.set
+
+            scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=text.xview)
+            text['yscroll'] = scrollbar.set
+
+            scrollbar.place(in_=text, relx=1.0, relheight=1.0, bordermode="outside")
+            scrollbarHor.place(in_=text, rely=1.0, relwidth=1.0, bordermode="outside")
+
+            text.place(x=80, y=95)
 
             backButton = tk.Button(window, text="Back", width=15, command=back)
-            backButton.place(x=150, y=670)
+            backButton.place(x=100, y=685)
 
             # ToDo once submit button has been pressed: decide where the lecturer is taken to next, probably back to assignment section
             submitButton = tk.Button(window, text="Submit", width=15, command=submitAssignment)
-            submitButton.place(x=400, y=670)
+            submitButton.place(x=300, y=685)
 
             highlightButton = tk.Button(window, text="Highlight", width=15, command=highlight)
-            highlightButton.place(x=550, y=670)
+            highlightButton.place(x=480, y=685)
 
             # Multiprocessing implemented
             p1 = Process(target=keys)
             beginGrading = tk.Button(window, text="Begin Grading", width=15, command=p1)
-            beginGrading.place(x=700, y=670)
+            beginGrading.place(x=680, y=685)
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
-            GradeTextBox.place(x=45, y=715)
+            GradeTextBox.place(x=45, y=730)
 
             global assignment
-            assignment = open(file).read()
-            T.insert("1.0", assignment)
+            assignment = open(file, encoding="ISO-8859-1").read()
+            text.insert("1.0", assignment)
 
         def show():
             assignmentFilePath = filePath.get()
 
             if os.path.exists(assignmentFilePath):
-                errorLbl.destroy()
                 print("Directory Exists")
+                dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Arial", 8))
                 dirLabel.place(x=320, y=180)
-
-            else:
-                print("Directory does not exists")
-                errorLbl.place(x=320, y=180)
-                dirLabel.destroy()
-
                 # ToDo Have to add it so that it displays the files from the entered filepath in Entry box
                 for filename in os.listdir(assignmentFilePath):
                     # ToDo Change filename for files in order to display all files in one line - Fix
@@ -267,16 +284,17 @@ class FileWindow(tk.Frame):
                     tempList.sort(key=lambda e: e[0], reverse=True)
                     # for i, (filename) in enumerate(tempList, start=1):
 
-            # displays the folder and files in that folder
-            abspath = os.path.abspath(assignmentFilePath)
-            root_node = listBox.insert('', 'end', text=abspath, open=True)
-            process_directory(root_node, abspath)
-            displayAssignment.config(state="disabled")
-            return assignmentFilePath
+                    # displays the folder and files in that folder
+                    abspath = os.path.abspath(assignmentFilePath)
+                    root_node = listBox.insert('', 'end', text=abspath, open=True)
+                    process_directory(root_node, abspath)
+                    displayAssignment.config(state="disabled")
+                    return assignmentFilePath
 
-            # This displays the files in a dir
-            # for (file) in os.listdir(assignmentFilePath):
-            #     listBox.insert("", "end", values=file)
+            else:
+                print("Directory does not exists")
+                errorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
+                errorLbl.place(x=320, y=180)
 
         def process_directory(parent, assignmentFilePath):
             for file in os.listdir(assignmentFilePath):
@@ -343,7 +361,7 @@ class FileWindow(tk.Frame):
 
         filePath: Entry = tk.Entry(self, width="35")
         filePath.place(x=320, y=155)
-        filePath.insert(0, "")
+        filePath.insert(0, '')
 
         displayAssignment = tk.Button(self, text="Display Assignments", command=show, width=15)
         displayAssignment.place(x=550, y=150)
