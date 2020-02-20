@@ -109,6 +109,9 @@ class FileWindow(tk.Frame):
             KeyD = -2
 
             def back():
+                # Clears listbox when returning to the file selection screen: this is in order to reselect the path
+                listBox.delete(*listBox.get_children())
+                show()
                 window.withdraw()
 
             def submitAssignment():
