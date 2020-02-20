@@ -1,6 +1,9 @@
 import os
 import threading
 import tkinter as tk
+
+from fpdf import FPDF
+
 import UserInterface.DisplayAssignmentScreen
 import UserInterface.InspectorMainScreen
 import UserInterface.app
@@ -51,12 +54,19 @@ class FileWindow(tk.Frame):
             listBox.delete(*listBox.get_children())
             filePath.delete('0', 'end')
 
-        def OnDoubleClick():
+        def fileAccess():
             item = listBox.selection()[0]
-            print("you clicked on", listBox.item(item, "text"))
             global itemSelected
             itemSelected = listBox.item(item, 'text')
             printSelection()
+
+        # Gets the click of the element in the listbox in order to open file in the next window
+        def OnDoubleClick(event):
+            item = listBox.selection()
+            for i in item:
+                global selection
+                selection = listBox.item(i, "values")[0]
+                print("You clicked: " + selection)
 
         def printSelection():
             # Check if the filepath has been entered
@@ -84,9 +94,15 @@ class FileWindow(tk.Frame):
             window.resizable(False, False)
 
             global file
-            file = filePath.get().replace("\\", "/") + "/" + str(item_text[0])
+            fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
+
+            if selection.endswith(fileExtension):
+                file = filePath.get().replace("\\", "/") + "/" + str(item_text[0])
+
+            else:
+                file = filePath.get().replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
+
             print(file)
-            # file = "C:/Users/catha/OneDrive - University of Limerick/test2/DocTest.txt"
             KeyA = 2
             KeyB = 1
             KeyC = -1
@@ -103,6 +119,13 @@ class FileWindow(tk.Frame):
                 f = open(file, "w")
                 f.write(s)
                 f.close()
+
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.set_font("Arial", size=12)
+                pdf.multi_cell(0, 5, s)
+                newFile = (filePath.get().replace("\\", "/") + "/" + "test.pdf")
+                pdf.output(newFile)
 
             # Highlights code when pressed
             # ToDo make it so it only highlights one selected code segment and not all of them in the code
@@ -190,23 +213,6 @@ class FileWindow(tk.Frame):
                         "Key E: Exit grading", font=("Arial", 12))
             keysValue.place(x=850, y=150, anchor="center")
 
-            # ToDo Get the name and student ID number of the student and display on this screen
-            # ToDo Add keylogger in python in order to keep track of the totalling keys pressed in application
-            # ToDo Display what keys have been pressed and there must be a way that the lecturer can remove choices if mistake has been made
-            # ToDo Create a small table which will display logs and also display total amount of marks - LIVE
-
-            # Created scroll bars horizontal and vertical in order to view code
-            # T = tk.Text(window, wrap=tk.NONE, height=35, width=90, borderwidth=0)
-            # scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=T.yview)
-            # T['yscroll'] = scrollbar.set
-            #
-            # scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=T.xview)
-            # T['yscroll'] = scrollbar.set
-            #
-            # scrollbar.place(in_=T, relx=1.0, relheight=1.0, bordermode="outside")
-            # scrollbarHor.place(in_=T, rely=1.0, relwidth=1.0, bordermode="outside")
-            # T.place(x=45, y=90)
-
             lineNumbers = ''
             # The Text widget holding the line numbers.
             lnText = tk.Text(window,
@@ -289,6 +295,9 @@ class FileWindow(tk.Frame):
                     root_node = listBox.insert('', 'end', text=abspath, open=True)
                     process_directory(root_node, abspath)
                     displayAssignment.config(state="disabled")
+
+                    listBox.bind("<Double-Button-1>", OnDoubleClick)
+
                     return assignmentFilePath
 
             else:
@@ -296,15 +305,25 @@ class FileWindow(tk.Frame):
                 errorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
                 errorLbl.place(x=320, y=180)
 
+        # Checks if file is in the directory, adds other columns if it is a file
+        # ToDo maybe only add for folder as folder may contain many files which will be treated as one grade  Graded=N, Grade=0
         def process_directory(parent, assignmentFilePath):
-            for file in os.listdir(assignmentFilePath):
-                abspath = os.path.join(assignmentFilePath, file)
-                isdir = os.path.isdir(abspath)
-                print(isdir)
-                oid = listBox.insert(parent, 'end', values=file, open=False)
-                if isdir:
-                    print("test")
-                    process_directory(oid, abspath)
+            graded = "N"
+            grade = 0
+            fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
+            for fileInDir in os.listdir(assignmentFilePath):
+                # Check if file ends with an extension, otherwise it is a folder
+                if fileInDir.endswith(fileExtension):
+                    abspath = os.path.join(assignmentFilePath, fileInDir)
+                    isdir = os.path.isdir(abspath)
+                    oid = listBox.insert(parent, 'end', values=(fileInDir, graded, grade), open=False)
+                    if isdir:
+                        process_directory(oid, abspath)
+                # Folder in the listbox
+                else:
+                    abspath = os.path.join(assignmentFilePath, fileInDir)
+                    oid2 = listBox.insert(parent, 'end', values=fileInDir, open=False)
+                    process_directory(oid2, abspath)
 
         def comments():
             # Entry for number of canned comments
@@ -369,7 +388,7 @@ class FileWindow(tk.Frame):
         clearButton = tk.Button(self, text="Clear", command=clear, height=1, width=6)
         clearButton.place(x=700, y=150)
 
-        selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=OnDoubleClick,
+        selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess,
                                               width=15)
         selectStudentAssignButton.place(x=280, y=550)
 
