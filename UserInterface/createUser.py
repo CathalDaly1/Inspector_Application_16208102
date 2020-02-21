@@ -30,16 +30,19 @@ class UserMainScreen(tk.Tk):
         frame.tkraise()
 
 
+# Calls login method from the LoginUser class
 def login():
     print("login button clicked")
     UserInterface.loginUser.loginUser()
 
 
+# Calls login method from the RegisterUser class
 def register():
     print("register button clicked")
     UserInterface.registerUser.registerUser()
 
 
+# Class to create a user, setup here is the GUI
 class create_account(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -59,6 +62,7 @@ class create_account(tk.Frame):
         registerButton.pack()
 
 
+# Run files
 if __name__ == "__main__":
     app = UserMainScreen()
     app.mainloop()

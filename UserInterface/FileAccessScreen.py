@@ -282,6 +282,7 @@ class FileSelectionWindow(tk.Frame):
                 print("Mouse position: (%s %s)" % (event.x, event.y))
                 return
 
+            # Keystroke driven method in which the user can enter keys in order to store the students grade
             def keystrokeGrading():
                 global total
                 global total1
@@ -367,7 +368,7 @@ class FileSelectionWindow(tk.Frame):
                              )
             lnText.place(x=55, y=95)
 
-            # The Main Text Widget
+            # The Main Text Widget which contains the Assignment
             text = tk.Text(window,
                            width=85,
                            wrap=tk.NONE,
@@ -408,8 +409,7 @@ class FileSelectionWindow(tk.Frame):
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
 
+            # Opens the file and copies the contents into the text box for editing
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
-
-window=Tk()

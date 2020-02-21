@@ -6,6 +6,7 @@ import UserInterface.loginUser
 from UserInterface.loginUser import *
 
 
+# Initialisation of the Homescreen of Inspector
 class HomeScreen(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -18,16 +19,20 @@ class HomeScreen(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        # Creates the GUI window, sets size of the window
         self.frames = {}
         self.geometry("800x800+100+100")
         self.title("Inspector - Grading Application")
+        # Window can not be increased or decreased in size
         self.resizable(False, False)
 
+        # Links the Homescreen GUI with the MainFrame class
         frame = MainFrame(container, self)
         self.frames[MainFrame] = frame
         frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(MainFrame)
 
+    # Displays the window
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -47,10 +52,12 @@ def proceedButton():
     UserInterface.FileAccessScreen.FileDisplayWindow()
 
 
+# ToDo create menu options in the Homescreen: File - close, save, exit etc
 def menuOptions():
     file = tk.Toplevel(MainFrame)
 
 
+# MainFrame contains the contents of the GUI
 class MainFrame(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -71,14 +78,16 @@ class MainFrame(tk.Frame):
                       + " repetitive task can be significantly reduced by developing a \n"
                       + " keystroke driven application.\n"
                       + "\n\nThe pre programmed keys and grading scheme can be tailored\n"
-                      + "to suit your needs in order to assist you in the grading process.\n", font=("Calibri", 12)).pack()
+                      + "to suit your needs in order to assist you in the grading process.\n",
+                 font=("Calibri", 12)).pack()
 
         # Created Label for pre programmed keys section
         prog_keys_lbl = tk.Label(self, width=40, height=19, relief="solid", bd=1, padx=10, bg="white")
         prog_keys_lbl.pack_propagate(0)
 
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n", font=("Calibri", 16)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Click the change button below to change\n keystroke values\n", font=("Calibri", 12)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black",
+                 text="Click the change button below to change\n keystroke values\n", font=("Calibri", 12)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -2", font=("Calibri", 12)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A =  2", font=("Calibri", 12)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B =  1", font=("Calibri", 12)).pack()

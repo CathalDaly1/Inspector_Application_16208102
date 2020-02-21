@@ -8,6 +8,8 @@ import UserInterface.InspectorMainScreen
 import UserInterface.loginUser
 
 
+# Created the GUI Screen and also stores each method used in this window
+# Global variables are used in order to reach all methods in this class
 def registerUser():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
@@ -20,6 +22,7 @@ def registerUser():
     password = StringVar()
     confirmPassword = StringVar()
 
+# Register user connects the the PostgreSQL database, checks connection
     def register():
         def connectToDB():
             connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
@@ -33,12 +36,16 @@ def registerUser():
         conn = connectToDB()
         cur = conn.cursor()
 
+        # Once connected gets the username and password in the entry boxes in GUI
         print("login session started")
         username_info = username_entry.get()
         password_info = password_entry.get()
         confirm_password_info = confirm_password_entry.get()
 
+        # Error handling: checks if the fields have been filled out
+        # Inserts username and password into the database - also uid is inserted
         if username_info and password_info != "":
+            # Error handling checks if password and confirm password are identical
             if password_info != confirm_password_info:
                 errorLbl = tk.Label(window, text="Passwords do not match", font=("Arial", 8), fg="red")
                 errorLbl.place(x=100, y=165)
@@ -47,20 +54,22 @@ def registerUser():
                 sql = "INSERT INTO Users (username, password) VALUES (%s, %s)"
                 val = (username_info, password_info)
                 # comm = "INSERT INTO comments (cid) SELECT uid FROM Users"
+                # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(sql, val)
                 # cur.execute(comm)
+                # Closes the connection to the database
                 conn.commit()
                 window.withdraw()
                 UserInterface.loginUser.loginUser()
         else:
+            # If password and confirm passord are now the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")
             errorLbl2.place(x=100, y=165)
-
-        # Check if returned set is not empty: checks if data is correct
 
     def back():
         window.withdraw()
 
+    # Creates the GUI elements for buttons and labels
     Label(window, text="Please enter your details below").pack()
     Label(window, text="").pack()
     Label(window, text="Username").pack()

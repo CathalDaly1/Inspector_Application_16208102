@@ -38,28 +38,32 @@ def programmedKeysWindow():
     exit_button1 = tk.Button(window, text="Close", command=exitButton, height=1, width=6)
     exit_button1.place(x=100, y=350)
 
-    # KeyStroke A
+    # KeyStroke A - enter the value for KeyA
+    # ToDo enter this data into the database
     text_A_lbl = tk.Label(window, fg="black", text="Enter New Value for A: ", font=("Calibri", 12))
     text_A_lbl.place(x=0, y=150)
     key_A = tk.Entry(window, width="10")
     key_A.place(x=160, y=150)
     key_A.insert(0, "")
 
-    # KeyStroke B
+    # KeyStroke B - enter the value for KeyB
+    # ToDo enter this data into the database
     text_B_lbl = tk.Label(window, fg="black", text="Enter New Value for B: ", font=("Calibri", 12))
     text_B_lbl.place(x=0, y=200)
     key_B = tk.Entry(window, width="10")
     key_B.place(x=160, y=200)
     key_B.insert(0, "")
 
-    # KeyStroke C
+    # KeyStroke C - enter the value for KeyC
+    # ToDo enter this data into the database
     text_C_lbl = tk.Label(window, fg="black", text="Enter New Value for C: ", font=("Calibri", 12))
     text_C_lbl.place(x=0, y=250)
     key_C = tk.Entry(window, width="10")
     key_C.place(x=160, y=250)
     key_C.insert(0, "")
 
-    # KeyStroke D
+    # KeyStroke D - enter the value for KeyD
+    # ToDo enter this data into the database
     text_D_lbl = tk.Label(window, fg="black", text="Enter New Value for D: ", font=("Calibri", 12))
     text_D_lbl.place(x=0, y=300)
     key_D = tk.Entry(window, width="10")

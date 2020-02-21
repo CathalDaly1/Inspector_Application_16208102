@@ -1,10 +1,7 @@
 import tkinter as tk
-
 import psycopg2
-
 import UserInterface.FileAccessScreen
 from tkinter import *
-import os
 import UserInterface.InspectorMainScreen
 
 
@@ -23,6 +20,8 @@ def loginUser():
     global username_login_entry
     global password_login_entry
 
+    # Connects to the database
+    # ToDo Place this into one file and instantiate into the REST API
     def connectToDB():
         connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
         print(connectionString)
@@ -35,6 +34,7 @@ def loginUser():
     conn = connectToDB()
     cur = conn.cursor()
 
+    # Login which opens up the Inspector HomeScreen
     def login():
         print("login session started")
         UserInterface.InspectorMainScreen.HomeScreen()
@@ -43,18 +43,24 @@ def loginUser():
     def back():
         window.withdraw()
 
+    # Checks if the username and password are in the database
     def login_verify():
+        # Get the text which has been entered into the entry area
         username1 = username_entry.get()
         password1 = password_entry.get()
+        # Executes a select statement which verify's if username and password are in DB
         cur.execute("SELECT username, password  FROM Users WHERE username =%s and password =%s", (username1, password1,))
         rows = cur.fetchall()
 
-        # Check if returned set is not empty: checks if data is correct
+        # Check if there is data in the database
+        # Loops through the username's and passwords
+        # Creates a set of [Username, password] and checks if they match
         if rows:
             for row in rows:
                 if username1 == row[0] or password1 == row[1]:
                     login()
         else:
+            # Clears the text in the entry box
             username1.delete('0', 'end')
             password1.delete('0', 'end')
             errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Arial", 8), fg="red")
