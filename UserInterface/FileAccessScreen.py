@@ -11,6 +11,7 @@ from multiprocessing import Process
 from tkinter import ttk
 from tkinter.ttk import *
 from tkinter import *
+from tkinter.messagebox import askyesno
 
 
 class FileDisplayWindow(tk.Tk):
@@ -47,6 +48,7 @@ class FileSelectionWindow(tk.Frame):
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
         commentsEntry: Entry = tk.Entry(self, width="10")
+        global test
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -119,6 +121,7 @@ class FileSelectionWindow(tk.Frame):
         def process_directory(parent, assignmentFilePath):
             graded = "N"
             grade = 0
+            global fileExtension
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
             for fileInDir in os.listdir(assignmentFilePath):
                 # Check if file ends with an extension, otherwise it is a folder
@@ -212,7 +215,7 @@ class FileSelectionWindow(tk.Frame):
         addComments = tk.Button(self, text="Add Canned Comment", width=18, command=cannedComments)
         addComments.place(x=100, y=550)
 
-        def displayAssignment():
+        def selectAssignment():
             print("Select Assignment button selected")
             window = tk.Tk()
             window.title("Inspector - Grading Application")
@@ -227,12 +230,6 @@ class FileSelectionWindow(tk.Frame):
 
             else:
                 file = filePath.get().replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
-
-            print(file)
-            KeyA = 2
-            KeyB = 1
-            KeyC = -1
-            KeyD = -2
 
             def back():
                 # Clears listbox when returning to the file selection screen: this is in order to reselect the path
@@ -269,12 +266,21 @@ class FileSelectionWindow(tk.Frame):
                         idx = text.search(s, idx, nocase=1, stopindex=tk.END)
                         if not idx: break
                         # index right after the end of the occurrence
-
                         lastidx = '%s+%dc' % (idx, len(s))
                         # tag the whole occurrence (start included, stop excluded)
                         text.tag_add('found', idx, lastidx)
                         idx = lastidx
-                    text.tag_config('found', background='yellow')
+                    # text.tag_config('found', background='yellow')
+                    text.tag_config('found', background='black', foreground='yellow')
+
+            KeyA = 2
+            KeyB = 1
+            KeyC = -1
+            KeyD = -2
+
+            def motion(event):
+                print("Mouse position: (%s %s)" % (event.x, event.y))
+                return
 
             def keystrokeGrading():
                 global total
@@ -285,6 +291,10 @@ class FileSelectionWindow(tk.Frame):
                     print("You have started the grading process")
                     total = 80
                     print(total)
+                    msg = Message(window, text="testtest")
+                    msg.config(bg='lightgreen', font=('times', 24, 'italic'))
+                    msg.bind('<Motion>', motion)
+                    msg.pack()
                     keystrokeGrading()
 
                 elif keystroke.lower() == 'a':
@@ -324,8 +334,8 @@ class FileSelectionWindow(tk.Frame):
 
             studentID = "Implement"
 
-            lbl_title = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
-            lbl_title.place(x=400, y=25, anchor="center")
+            assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
+            assign_correction_lbl.place(x=400, y=25, anchor="center")
 
             lbl_sub_title = tk.Label(window, text="Student: //" + studentID + "'s program", font=("Arial", 15))
             lbl_sub_title.place(x=400, y=70, anchor="center")
@@ -368,6 +378,8 @@ class FileSelectionWindow(tk.Frame):
                            background='white'
                            )
 
+            text.place(x=80, y=95)
+
             # Scrollbar on X and Y axis of text box
             scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
             text['yscroll'] = scrollbar.set
@@ -378,10 +390,8 @@ class FileSelectionWindow(tk.Frame):
             scrollbar.place(in_=text, relx=1.0, relheight=1.0, bordermode="outside")
             scrollbarHor.place(in_=text, rely=1.0, relwidth=1.0, bordermode="outside")
 
-            text.place(x=80, y=95)
-
-            backButton = tk.Button(window, text="Back", width=15, command=back)
-            backButton.place(x=100, y=685)
+            backButton2 = tk.Button(window, text="Back", width=15, command=back)
+            backButton2.place(x=100, y=685)
 
             # ToDo once submit button has been pressed: decide where the lecturer is taken to next, probably back to assignment section
             submitButton = tk.Button(window, text="Submit", width=15, command=submitAssignment)
@@ -402,3 +412,4 @@ class FileSelectionWindow(tk.Frame):
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
 
+window=Tk()

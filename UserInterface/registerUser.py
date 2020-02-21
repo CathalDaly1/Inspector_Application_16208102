@@ -46,7 +46,9 @@ def registerUser():
             else:
                 sql = "INSERT INTO Users (username, password) VALUES (%s, %s)"
                 val = (username_info, password_info)
+                # comm = "INSERT INTO comments (cid) SELECT uid FROM Users"
                 cur.execute(sql, val)
+                # cur.execute(comm)
                 conn.commit()
                 window.withdraw()
                 UserInterface.loginUser.loginUser()
