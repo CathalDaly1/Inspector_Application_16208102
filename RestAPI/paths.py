@@ -24,7 +24,7 @@ class UserNamePath(Resource):
 
         return 200
 
-class Hello(Resource):
+class Register(Resource):
     def get(self):
         return {"message": "Hello world"}
 

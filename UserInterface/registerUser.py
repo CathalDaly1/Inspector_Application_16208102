@@ -53,10 +53,8 @@ def registerUser():
             else:
                 sql = "INSERT INTO Users (username, password) VALUES (%s, %s)"
                 val = (username_info, password_info)
-                # comm = "INSERT INTO comments (cid) SELECT uid FROM Users"
                 # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(sql, val)
-                # cur.execute(comm)
                 # Closes the connection to the database
                 conn.commit()
                 window.withdraw()
@@ -76,10 +74,10 @@ def registerUser():
     username_entry = Entry(window, textvariable=username)
     username_entry.pack()
     Label(window, text="Password").pack()
-    password_entry = Entry(window, textvariable=password)
+    password_entry = Entry(window, show="*", textvariable=password)
     password_entry.pack()
     Label(window, text="Confirm Password").pack()
-    confirm_password_entry = Entry(window, textvariable=confirmPassword)
+    confirm_password_entry = Entry(window, show="*", textvariable=confirmPassword)
     confirm_password_entry.pack()
     Label(window, text="").pack()
     Button(window, text="Register", width=10, height=1, command=register).pack()

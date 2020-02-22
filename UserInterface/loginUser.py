@@ -72,7 +72,7 @@ def loginUser():
     username_entry = Entry(window, textvariable=username_verify)
     username_entry.pack()
     Label(window, text="Password").pack()
-    password_entry = Entry(window, textvariable=password_verify)
+    password_entry = Entry(window, show="*", textvariable=password_verify)
     password_entry.pack()
     Label(window, text="\n").pack()
     Button(window, text="Login", width=10, height=1, command=login_verify).pack()

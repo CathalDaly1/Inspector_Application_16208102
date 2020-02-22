@@ -1,18 +1,17 @@
 import os
 import threading
 import tkinter as tk
+from tkinter import ttk
 
 from fpdf import FPDF
 
 import UserInterface.DisplayAssignmentScreen
 import UserInterface.InspectorMainScreen
+import UserInterface.GradingSchemeScreen
 import UserInterface.app
 from multiprocessing import Process
-from tkinter import ttk
-from tkinter.ttk import *
 from tkinter import *
-from tkinter.messagebox import askyesno
-
+from tkinter.colorchooser import *
 
 class FileDisplayWindow(tk.Tk):
 
@@ -47,7 +46,7 @@ class FileSelectionWindow(tk.Frame):
 
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
-        commentsEntry: Entry = tk.Entry(self, width="10")
+        commentsEntry: tk.Entry = tk.Entry(self, width="10")
         global test
 
         def clearEntry():
@@ -75,7 +74,7 @@ class FileSelectionWindow(tk.Frame):
             # Check if the filepath has been entered
             if filePath.get() != "":
                 global item_text
-
+                global itemSelected
                 # Get the item that has been selected and concats the string with the filepath and the filename selection
                 # In order open the file; the full filepath and the name of the file must be selected
                 for item in listBox.selection():
@@ -167,7 +166,7 @@ class FileSelectionWindow(tk.Frame):
             for col in range(res):
                 commentsTitle = tk.Label(window1, fg="black", text="Comment " + str(col + 1), font=("Calibri", 12))
                 commentsTitle.grid(row=col, column=5, padx=10, pady=10)
-                commentsEntry1: Entry = tk.Entry(window1, width="30")
+                commentsEntry1: tk.Entry = tk.Entry(window1, width="30")
                 commentsEntry1.grid(row=col, column=7, padx=10, pady=10)
                 commentsEntry1.insert(0, "")
                 saveButton = tk.Button(window1, text="Save", width=13, command=saveCommentsButton)
@@ -201,7 +200,7 @@ class FileSelectionWindow(tk.Frame):
         fileAccessPath = tk.Label(self, fg="black", text="FilePath - Students Assignments: ", font=("Calibri", 12))
         fileAccessPath.place(x=100, y=150)
 
-        filePath: Entry = tk.Entry(self, width="35")
+        filePath: tk.Entry = tk.Entry(self, width="35")
         filePath.place(x=320, y=155)
         filePath.insert(0, '')
 
@@ -230,7 +229,12 @@ class FileSelectionWindow(tk.Frame):
             window.resizable(False, False)
 
             global file
+            global gradedFilesFolder
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
+
+            gradedFilesFolder = filePath.get().replace("\\", "/") + "/Graded" + "/"
+            if not os.path.exists(gradedFilesFolder):
+                os.makedirs(gradedFilesFolder)
 
             # Check if listbox selection is a filename or a folder
             # If it is a filename, concat the string of the filepath and the filename
@@ -251,8 +255,8 @@ class FileSelectionWindow(tk.Frame):
                 print("Submit button pressed")
                 window.withdraw()
                 # Opens file ans copies what is in tge text box and places back in file and saves
-                s = text.get("1.0", END)
-                f = open(file, "w")
+                s = text.get("1.0", tk.END)
+                f = open(file, "w", encoding='utf-8')
                 f.write(s)
                 f.close()
 
@@ -261,28 +265,24 @@ class FileSelectionWindow(tk.Frame):
                 pdf.add_page()
                 pdf.set_font("Arial", size=12)
                 pdf.multi_cell(0, 5, s)
-                newFile = (filePath.get().replace("\\", "/") + "/" + "test.pdf")
-                pdf.output(newFile)
+
+                print(gradedFilesFolder)
+                pdf.output(gradedFilesFolder + "\\" + item_text[0]+".pdf")
 
             # Highlights code and text when text is selected and highlight button is pressed
             # ToDo make it so it only highlights one selected code segment and not all of them in the code
             def highlightCode():
-                s = text.get(tk.SEL_FIRST, tk.SEL_LAST)
-                if s:
-                    # start from the beginning (and when we come to the end, stop)
-                    idx = '1.0'
-
-                    while 1:
-                        # find next occurrence, exit loop if no more
-                        idx = text.search(s, idx, nocase=1, stopindex=tk.END)
-                        if not idx: break
-                        # index right after the end of the occurrence
-                        lastidx = '%s+%dc' % (idx, len(s))
-                        # tag the whole occurrence (start included, stop excluded)
-                        text.tag_add('found', idx, lastidx)
-                        idx = lastidx
-                    # text.tag_config('found', background='yellow')
-                    text.tag_config('found', background='black', foreground='yellow')
+                global count
+                count = 0
+                if text.tag_ranges('sel'):
+                    text.tag_add('colortag_' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
+                    text.tag_configure('colortag_' + str(count), foreground='yellow')
+                    count += 1
+                else:
+                    # Do this if you want to overwrite all selection colors when you change color without selection
+                    # for tag in text.tag_names():
+                    #     text.tag_delete(tag)
+                    text.config(foreground='yellow')
 
             KeyA = 2
             KeyB = 1
@@ -385,6 +385,35 @@ class FileSelectionWindow(tk.Frame):
 
             text.place(x=80, y=95)
 
+            # the_queue = queue.Queue()
+            #
+            # def keysTest_thread():
+            #     on_click()
+            #     # while True:
+            #     #     message = the_queue.get()
+            #     #     if message is None:
+            #     #         print("thread_target: got None, exiting...")
+            #     #         return
+            #     #
+            #     #     print("thread_target: doing something with", message, "...")
+            #     #     time.sleep(1)
+            #     #     print("thread_target: ready for another message")
+            #
+            # def on_click():
+            #     keystroke = str(input())
+            #     print(keystroke)
+            #     a = 100
+            #
+            #     if keystroke.lower() == 's':
+            #         print("You clicked: s")
+            #         printOut = tk.Label(window, text="Final Grade: " + str(a) + "\n", font=("Arial", 12))
+            #         printOut.place(x=850, y=250, anchor="center")
+            #
+            #     else:
+            #         print("test")
+            #
+            # threading.Thread(target=keysTest_thread).start()
+
             # Scrollbar on X and Y axis of text box
             scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
             text['yscroll'] = scrollbar.set
@@ -416,13 +445,3 @@ class FileSelectionWindow(tk.Frame):
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
-
-
-print("now")
-print("now")
-print("now")
-print("now")
-print("now")
-print("now")
-print("now")
-print("now")

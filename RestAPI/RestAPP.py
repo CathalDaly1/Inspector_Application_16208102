@@ -9,7 +9,7 @@ api = Api(app)
 #Adding the user to the DB
 api.add_resource(UserNamePath,"/user/<string:name>")
 
-api.add_resource(Hello, "/Hello")
+api.add_resource(Register, "/register")
 
 api.add_resource(sign_in, "/sign_in")
 
