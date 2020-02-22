@@ -6,6 +6,7 @@ import UserInterface.FileAccessScreen
 from tkinter import *
 import UserInterface.InspectorMainScreen
 import UserInterface.loginUser
+import RestAPI.db
 
 
 # Created the GUI Screen and also stores each method used in this window

@@ -270,7 +270,6 @@ class FileSelectionWindow(tk.Frame):
                 pdf.output(gradedFilesFolder + "\\" + item_text[0]+".pdf")
 
             # Highlights code and text when text is selected and highlight button is pressed
-            # ToDo make it so it only highlights one selected code segment and not all of them in the code
             def highlightCode():
                 global count
                 count = 0
