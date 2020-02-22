@@ -56,6 +56,7 @@ class FileSelectionWindow(tk.Frame):
             listBox.delete(*listBox.get_children())
             filePath.delete('0', 'end')
 
+        # Gets the file name of the selection of the listbox - achieved by 'text'
         def fileAccess():
             item = listBox.selection()[0]
             global itemSelected
@@ -75,6 +76,8 @@ class FileSelectionWindow(tk.Frame):
             if filePath.get() != "":
                 global item_text
 
+                # Get the item that has been selected and concats the string with the filepath and the filename selection
+                # In order open the file; the full filepath and the name of the file must be selected
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
                     print((itemSelected + "/" + str(item_text)))
@@ -84,18 +87,21 @@ class FileSelectionWindow(tk.Frame):
             else:
                 filepathErrorLbl.place(x=320, y=180)
 
+        # Check of filepath has been entered and if it exists or not
+        # If the directory exists then folders and files are displayed in the listbox
+        # Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'
         def getFileSelection():
             assignmentFilePath = filePath.get()
 
+            # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath):
                 print("Directory Exists")
                 dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Arial", 8))
                 dirLabel.place(x=320, y=180)
-                # ToDo Have to add it so that it displays the files from the entered filepath in Entry box
-                for filename in os.listdir(assignmentFilePath):
-                    # ToDo Change filename for files in order to display all files in one line - Fix
-                    tempList = [[filename]]
 
+                # Loops through the files in the filepath and displays them
+                for filename in os.listdir(assignmentFilePath):
+                    tempList = [[filename]]
                     # Disable button after it has been clicked once in order for the data to only appear once
                     displayAssignment.config(state="disabled")
                     tempList.sort(key=lambda e: e[0], reverse=True)
@@ -107,6 +113,7 @@ class FileSelectionWindow(tk.Frame):
                     process_directory(root_node, abspath)
                     displayAssignment.config(state="disabled")
 
+                    # Double click on an element in the listbox will run the doubleClickListboxEvent() method
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
 
                     return assignmentFilePath
@@ -118,7 +125,7 @@ class FileSelectionWindow(tk.Frame):
 
         # Checks if file is in the directory, adds other columns if it is a file
         # ToDo maybe only add for folder as folder may contain many files which will be treated as one grade  Graded=N, Grade=0
-        def process_directory(parent, assignmentFilePath):
+        def process_directory(parentNode, assignmentFilePath):
             graded = "N"
             grade = 0
             global fileExtension
@@ -128,13 +135,13 @@ class FileSelectionWindow(tk.Frame):
                 if fileInDir.endswith(fileExtension):
                     abspath = os.path.join(assignmentFilePath, fileInDir)
                     isdir = os.path.isdir(abspath)
-                    oid = listBox.insert(parent, 'end', values=(fileInDir, graded, grade), open=False)
+                    oid = listBox.insert(parentNode, 'end', values=(fileInDir, graded, grade), open=False)
                     if isdir:
                         process_directory(oid, abspath)
                 # Folder in the listbox
                 else:
                     abspath = os.path.join(assignmentFilePath, fileInDir)
-                    oid2 = listBox.insert(parent, 'end', values=fileInDir, open=False)
+                    oid2 = listBox.insert(parentNode, 'end', values=fileInDir, open=False)
                     process_directory(oid2, abspath)
 
         def cannedComments():
@@ -225,9 +232,12 @@ class FileSelectionWindow(tk.Frame):
             global file
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
 
+            # Check if listbox selection is a filename or a folder
+            # If it is a filename, concat the string of the filepath and the filename
             if selection.endswith(fileExtension):
                 file = filePath.get().replace("\\", "/") + "/" + str(item_text[0])
 
+            # If it is a folder, concat the string of the filepath, the folder and the selection
             else:
                 file = filePath.get().replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
 
@@ -240,12 +250,13 @@ class FileSelectionWindow(tk.Frame):
             def submitAssignment():
                 print("Submit button pressed")
                 window.withdraw()
-                # Opens file ans copies what was in T text box and places back in file and saves
+                # Opens file ans copies what is in tge text box and places back in file and saves
                 s = text.get("1.0", END)
                 f = open(file, "w")
                 f.write(s)
                 f.close()
 
+                # ToDo Creates a PDF in from the text entered and saves as the name of the file
                 pdf = FPDF()
                 pdf.add_page()
                 pdf.set_font("Arial", size=12)
@@ -253,7 +264,7 @@ class FileSelectionWindow(tk.Frame):
                 newFile = (filePath.get().replace("\\", "/") + "/" + "test.pdf")
                 pdf.output(newFile)
 
-            # Highlights code when pressed
+            # Highlights code and text when text is selected and highlight button is pressed
             # ToDo make it so it only highlights one selected code segment and not all of them in the code
             def highlightCode():
                 s = text.get(tk.SEL_FIRST, tk.SEL_LAST)
@@ -278,11 +289,8 @@ class FileSelectionWindow(tk.Frame):
             KeyC = -1
             KeyD = -2
 
-            def motion(event):
-                print("Mouse position: (%s %s)" % (event.x, event.y))
-                return
-
             # Keystroke driven method in which the user can enter keys in order to store the students grade
+            # ToDo find better solution of the threading in python and then write the keystroke driven method
             def keystrokeGrading():
                 global total
                 global total1
@@ -292,10 +300,6 @@ class FileSelectionWindow(tk.Frame):
                     print("You have started the grading process")
                     total = 80
                     print(total)
-                    msg = Message(window, text="testtest")
-                    msg.config(bg='lightgreen', font=('times', 24, 'italic'))
-                    msg.bind('<Motion>', motion)
-                    msg.pack()
                     keystrokeGrading()
 
                 elif keystroke.lower() == 'a':
@@ -394,7 +398,6 @@ class FileSelectionWindow(tk.Frame):
             backButton2 = tk.Button(window, text="Back", width=15, command=back)
             backButton2.place(x=100, y=685)
 
-            # ToDo once submit button has been pressed: decide where the lecturer is taken to next, probably back to assignment section
             submitButton = tk.Button(window, text="Submit", width=15, command=submitAssignment)
             submitButton.place(x=300, y=685)
 
