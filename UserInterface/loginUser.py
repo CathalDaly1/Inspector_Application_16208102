@@ -61,8 +61,8 @@ def loginUser():
                     login()
         else:
             # Clears the text in the entry box
-            username1.delete('0', 'end')
-            password1.delete('0', 'end')
+            username_entry.delete('0', 'end')
+            password_entry.delete('0', 'end')
             errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Arial", 8), fg="red")
             errorLbl.place(x=60, y=125)
 
