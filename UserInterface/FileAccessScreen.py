@@ -4,14 +4,11 @@ import tkinter as tk
 from tkinter import ttk
 
 from fpdf import FPDF
-
-import UserInterface.DisplayAssignmentScreen
 import UserInterface.InspectorMainScreen
 import UserInterface.GradingSchemeScreen
 import UserInterface.app
 from multiprocessing import Process
-from tkinter import *
-from tkinter.colorchooser import *
+
 
 class FileDisplayWindow(tk.Tk):
 
@@ -267,7 +264,7 @@ class FileSelectionWindow(tk.Frame):
                 pdf.multi_cell(0, 5, s)
 
                 print(gradedFilesFolder)
-                pdf.output(gradedFilesFolder + "\\" + item_text[0]+".pdf")
+                pdf.output(gradedFilesFolder + "\\" + item_text[0] + ".pdf")
 
             # Highlights code and text when text is selected and highlight button is pressed
             def highlightCode():
