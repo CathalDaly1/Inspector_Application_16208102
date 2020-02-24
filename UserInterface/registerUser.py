@@ -27,9 +27,7 @@ def registerUser():
     def register():
         def connectToDB():
             connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-            print(connectionString)
             try:
-                print("Connected successfully")
                 return psycopg2.connect(connectionString)
             except:
                 print("Cannot connect to the DB")

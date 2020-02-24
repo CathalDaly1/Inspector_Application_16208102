@@ -24,9 +24,7 @@ def loginUser():
     # ToDo Place this into one file and instantiate into the REST API
     def connectToDB():
         connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-        print(connectionString)
         try:
-            print("Connected successfully")
             return psycopg2.connect(connectionString)
         except:
             print("Cannot connect to the DB")

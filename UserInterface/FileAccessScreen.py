@@ -1,5 +1,5 @@
 import os
-import threading
+import time
 import tkinter as tk
 from tkinter import ttk
 
@@ -7,7 +7,12 @@ from fpdf import FPDF
 import UserInterface.InspectorMainScreen
 import UserInterface.GradingSchemeScreen
 import UserInterface.app
+import queue
+import threading
 from multiprocessing import Process
+import UserInterface.roughWork
+
+the_queue = queue.Queue()
 
 
 class FileDisplayWindow(tk.Tk):
@@ -272,7 +277,7 @@ class FileSelectionWindow(tk.Frame):
                 count = 0
                 if text.tag_ranges('sel'):
                     text.tag_add('colortag_' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
-                    text.tag_configure('colortag_' + str(count), foreground='yellow')
+                    text.tag_configure('colortag_' + str(count), foreground='red')
                     count += 1
                 else:
                     # Do this if you want to overwrite all selection colors when you change color without selection
@@ -285,61 +290,83 @@ class FileSelectionWindow(tk.Frame):
             KeyC = -1
             KeyD = -2
 
-            # Keystroke driven method in which the user can enter keys in order to store the students grade
-            # ToDo find better solution of the threading in python and then write the keystroke driven method
-            def keystrokeGrading():
-                global total
-                global total1
-                keystroke = str(input())
+            # ToDo Keystroke driven method in which the user can enter keys in order to store the students grade
+            # Move the keystroke driven application created in rough work into this class tomorrow or this evening
 
-                if keystroke.lower() == 's':
-                    print("You have started the grading process")
+            def thread_target():
+                # window.mainloop()
+                keystroke = str(input())
+                global total
+
+                if keystroke.lower() == "s":
+
                     total = 80
-                    print(total)
-                    keystrokeGrading()
+                    the_queue.put("Grading process has started")
+                    # time.sleep(1)
+                    thread_target()
 
                 elif keystroke.lower() == 'a':
-                    print("You pressed key a")
+
+                    print("Pressed key a")
                     total += 2
-                    print(total)
-                    keystrokeGrading()
+                    the_queue.put("You pressed key A" + str(total))
+                    thread_target()
 
                 elif keystroke.lower() == 'b':
-                    print("You pressed key b")
+
+                    print("Pressed key b")
                     total += 1
-                    print(total)
-                    keystrokeGrading()
+                    the_queue.put("You pressed key B" + str(total))
+                    thread_target()
 
-                elif keystroke.lower() == "c":
-                    print("You pressed key c")
+                elif keystroke.lower() == 'c':
+
+                    print("Pressed key c")
                     total -= 1
-                    print(total)
-                    keystrokeGrading()
+                    the_queue.put("You pressed key C" + str(total))
+                    thread_target()
 
-                elif keystroke.lower() == "d":
-                    print("You pressed key d")
+                elif keystroke.lower() == 'd':
+
+                    print("Pressed key d")
                     total -= 2
-                    print(total)
-                    keystrokeGrading()
+                    the_queue.put("You pressed key D" + str(total))
+                    thread_target()
 
                 elif keystroke.lower() == 'e':
-                    print("You pressed key e")
-                    total1 = total
-                    print("Total grade is: " + str(total1))
 
+                    the_queue.put("Students Grade: " + str(total) + "marks")
+                    thread_target()
                 else:
-                    print("Incorrect Selection: Please choose (a,b,c,d)")
-                    keystrokeGrading()
+                    # let's tell after_callback that this completed
+                    print('thread_target puts None to the queue')
+                    the_queue.put(None)
 
-            threading.Thread(target=keystrokeGrading).start()
+            def after_callback():
+                try:
+                    message = the_queue.get(block=False)
+                except queue.Empty:
+                    # let's try again later
+                    window.after(100, after_callback)
+                    return
+
+                print('after_callback got', message)
+                if message is not None:
+                    # we're not done yet, let's do something with the message and
+                    # come back later
+                    # label['text'] = message
+                    window.after(10, after_callback)
+
+            threading.Thread(target=thread_target).start()
+            window.after(10, after_callback)
 
             studentID = "Implement"
 
             assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
             assign_correction_lbl.place(x=400, y=25, anchor="center")
 
-            lbl_sub_title = tk.Label(window, text="Student: //" + studentID + "'s program", font=("Arial", 15))
-            lbl_sub_title.place(x=400, y=70, anchor="center")
+            subTitle_lbl = tk.Label(window, text="Student: //" + studentID + "'s program", font=("Arial", 15))
+            subTitle_lbl.place(x=400, y=70, anchor="center")
 
             shortcutLbl = tk.Label(window, text="Key Shortcuts", font=("Arial", 15))
             shortcutLbl.place(x=850, y=70, anchor="center")
@@ -381,35 +408,6 @@ class FileSelectionWindow(tk.Frame):
 
             text.place(x=80, y=95)
 
-            # the_queue = queue.Queue()
-            #
-            # def keysTest_thread():
-            #     on_click()
-            #     # while True:
-            #     #     message = the_queue.get()
-            #     #     if message is None:
-            #     #         print("thread_target: got None, exiting...")
-            #     #         return
-            #     #
-            #     #     print("thread_target: doing something with", message, "...")
-            #     #     time.sleep(1)
-            #     #     print("thread_target: ready for another message")
-            #
-            # def on_click():
-            #     keystroke = str(input())
-            #     print(keystroke)
-            #     a = 100
-            #
-            #     if keystroke.lower() == 's':
-            #         print("You clicked: s")
-            #         printOut = tk.Label(window, text="Final Grade: " + str(a) + "\n", font=("Arial", 12))
-            #         printOut.place(x=850, y=250, anchor="center")
-            #
-            #     else:
-            #         print("test")
-            #
-            # threading.Thread(target=keysTest_thread).start()
-
             # Scrollbar on X and Y axis of text box
             scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
             text['yscroll'] = scrollbar.set
@@ -430,8 +428,7 @@ class FileSelectionWindow(tk.Frame):
             highlightButton.place(x=480, y=685)
 
             # Multiprocessing implemented
-            p1 = Process(target=keystrokeGrading)
-            beginGrading = tk.Button(window, text="Begin Grading", width=15, command=p1)
+            beginGrading = tk.Button(window, text="Begin Grading", width=15, command="")
             beginGrading.place(x=680, y=685)
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
@@ -441,3 +438,9 @@ class FileSelectionWindow(tk.Frame):
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
+
+
+if __name__ == "__main__":
+    app = FileDisplayWindow()
+    app.mainloop()
+    the_queue.put(None)
