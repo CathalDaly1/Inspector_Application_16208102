@@ -227,7 +227,7 @@ class FileSelectionWindow(tk.Frame):
             print("Select Assignment button selected")
             window = tk.Tk()
             window.title("Inspector - Grading Application")
-            window.geometry("950x950+50+50")
+            window.geometry("985x985+50+50")
             window.resizable(False, False)
 
             global file
@@ -290,56 +290,51 @@ class FileSelectionWindow(tk.Frame):
             KeyC = -1
             KeyD = -2
 
-            # ToDo Keystroke driven method in which the user can enter keys in order to store the students grade
-            # Move the keystroke driven application created in rough work into this class tomorrow or this evening
-
-            def thread_target():
-                # window.mainloop()
+            # Keystroke driven application which is completed using threads and a thread queue as Tkinter is not thread safe
+            def keystrokeApplication_thread():
+                # ToDo enter keystroke in the entry box and use this as input fot the keystroke app
                 keystroke = str(input())
                 global total
 
                 if keystroke.lower() == "s":
 
                     total = 80
-                    the_queue.put("Grading process has started")
-                    # time.sleep(1)
-                    thread_target()
+                    the_queue.put("Grading has started")
+                    keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'a':
 
-                    print("Pressed key a")
                     total += 2
-                    the_queue.put("You pressed key A" + str(total))
-                    thread_target()
+                    the_queue.put("You pressed key A: " + str(total))
+                    keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'b':
 
-                    print("Pressed key b")
                     total += 1
-                    the_queue.put("You pressed key B" + str(total))
-                    thread_target()
+                    the_queue.put("You pressed key B: " + str(total))
+                    keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'c':
 
-                    print("Pressed key c")
                     total -= 1
-                    the_queue.put("You pressed key C" + str(total))
-                    thread_target()
+                    the_queue.put("You pressed key C: " + str(total))
+                    keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'd':
 
-                    print("Pressed key d")
                     total -= 2
-                    the_queue.put("You pressed key D" + str(total))
-                    thread_target()
+                    the_queue.put("You pressed key D: " + str(total))
+                    keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'e':
 
-                    the_queue.put("Students Grade: " + str(total) + "marks")
-                    thread_target()
+                    the_queue.put("Final Grade: " + str(total) + "marks")
+                    keystrokeApplication_thread()
                 else:
                     # let's tell after_callback that this completed
-                    print('thread_target puts None to the queue')
+                    print("Please enter a correct selection")
+                    keystrokeApplication_thread()
+                    print('keystrokeApplication_thread puts None to the queue')
                     the_queue.put(None)
 
             def after_callback():
@@ -352,12 +347,12 @@ class FileSelectionWindow(tk.Frame):
 
                 print('after_callback got', message)
                 if message is not None:
-                    # we're not done yet, let's do something with the message and
-                    # come back later
-                    # label['text'] = message
+                    # Print out the message once there is something in the queue
+                    studentFinalGrade['text'] = message
                     window.after(10, after_callback)
 
-            threading.Thread(target=thread_target).start()
+            # Start the thread and run the keystrokeApplication_thread function
+            threading.Thread(target=keystrokeApplication_thread).start()
             window.after(10, after_callback)
 
             studentID = "Implement"
@@ -371,7 +366,7 @@ class FileSelectionWindow(tk.Frame):
             shortcutLbl = tk.Label(window, text="Key Shortcuts", font=("Arial", 15))
             shortcutLbl.place(x=850, y=70, anchor="center")
 
-            keysValue = tk.Label(window, text="Key A: +" + str(KeyA) + "\n"
+            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(KeyA) + "\n"
                                                                        "Key B: +" + str(KeyB) + "\n"
                                                                                                 "Key C: " + str(
                 KeyC) + "\n"
@@ -379,6 +374,9 @@ class FileSelectionWindow(tk.Frame):
                 KeyD) + "\n"
                         "Key E: Exit grading", font=("Arial", 12))
             keysValue.place(x=850, y=150, anchor="center")
+
+            studentFinalGrade = tk.Label(window, font=("Arial", 12))
+            studentFinalGrade.place(x=785, y=245)
 
             lineNumbers = ''
             # The Text widget holding the line numbers.
