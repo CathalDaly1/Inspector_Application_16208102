@@ -1,5 +1,4 @@
 import os
-import time
 import tkinter as tk
 from tkinter import ttk
 
@@ -9,9 +8,9 @@ import UserInterface.GradingSchemeScreen
 import UserInterface.app
 import queue
 import threading
-from multiprocessing import Process
 import UserInterface.roughWork
 
+# initialize queue for thread
 the_queue = queue.Queue()
 
 
@@ -328,7 +327,7 @@ class FileSelectionWindow(tk.Frame):
 
                 elif keystroke.lower() == 'e':
 
-                    the_queue.put("Final Grade: " + str(total) + "marks")
+                    the_queue.put("Final Grade: " + str(total) + " marks")
                     keystrokeApplication_thread()
                 else:
                     # let's tell after_callback that this completed
@@ -349,6 +348,9 @@ class FileSelectionWindow(tk.Frame):
                 if message is not None:
                     # Print out the message once there is something in the queue
                     studentFinalGrade['text'] = message
+                    GradeTextBox.insert(tk.END, message + "\n")
+                    # Scroll to the end of text when new text is added
+                    GradeTextBox.see("end")
                     window.after(10, after_callback)
 
             # Start the thread and run the keystrokeApplication_thread function
@@ -425,12 +427,17 @@ class FileSelectionWindow(tk.Frame):
             highlightButton = tk.Button(window, text="Highlight", width=15, command=highlightCode)
             highlightButton.place(x=480, y=685)
 
-            # Multiprocessing implemented
             beginGrading = tk.Button(window, text="Begin Grading", width=15, command="")
             beginGrading.place(x=680, y=685)
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
+
+            # Scrollbar on X and Y axis of GradeTextBox
+            scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
+            GradeTextBox['yscroll'] = scrollbar.set
+
+            scrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
 
             # Opens the file and copies the contents into the text box for editing
             global assignment
