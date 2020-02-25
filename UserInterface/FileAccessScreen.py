@@ -5,7 +5,6 @@ from tkinter import ttk
 from fpdf import FPDF
 import UserInterface.InspectorMainScreen
 import UserInterface.GradingSchemeScreen
-import UserInterface.app
 import queue
 import threading
 import UserInterface.roughWork
@@ -275,8 +274,8 @@ class FileSelectionWindow(tk.Frame):
                 global count
                 count = 0
                 if text.tag_ranges('sel'):
-                    text.tag_add('colortag_' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
-                    text.tag_configure('colortag_' + str(count), foreground='red')
+                    text.tag_add('color' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
+                    text.tag_configure('color' + str(count), foreground='red')
                     count += 1
                 else:
                     # Do this if you want to overwrite all selection colors when you change color without selection
@@ -304,25 +303,25 @@ class FileSelectionWindow(tk.Frame):
                 elif keystroke.lower() == 'a':
 
                     total += 2
-                    the_queue.put("You pressed key A: " + str(total))
+                    the_queue.put("Key A: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'b':
 
                     total += 1
-                    the_queue.put("You pressed key B: " + str(total))
+                    the_queue.put("Key B: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'c':
 
                     total -= 1
-                    the_queue.put("You pressed key C: " + str(total))
+                    the_queue.put("Key C: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'd':
 
                     total -= 2
-                    the_queue.put("You pressed key D: " + str(total))
+                    the_queue.put("Key D: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'e':
@@ -340,11 +339,11 @@ class FileSelectionWindow(tk.Frame):
                 try:
                     message = the_queue.get(block=False)
                 except queue.Empty:
-                    # let's try again later
+                    # retry
                     window.after(100, after_callback)
                     return
 
-                print('after_callback got', message)
+                print("After_callback returned " + message)
                 if message is not None:
                     # Print out the message once there is something in the queue
                     studentFinalGrade['text'] = message
@@ -378,7 +377,7 @@ class FileSelectionWindow(tk.Frame):
             keysValue.place(x=850, y=150, anchor="center")
 
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
-            studentFinalGrade.place(x=785, y=245)
+            studentFinalGrade.place(x=800, y=245)
 
             lineNumbers = ''
             # The Text widget holding the line numbers.
@@ -402,8 +401,7 @@ class FileSelectionWindow(tk.Frame):
                            height=35,
                            bd=0,
                            padx=4,
-                           undo=True,
-                           background='white'
+                           undo=True
                            )
 
             text.place(x=80, y=95)
@@ -443,7 +441,6 @@ class FileSelectionWindow(tk.Frame):
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
-
 
 if __name__ == "__main__":
     app = FileDisplayWindow()

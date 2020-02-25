@@ -57,6 +57,7 @@ def loginUser():
             for row in rows:
                 if username1 == row[0] or password1 == row[1]:
                     login()
+                    window.withdraw()
         else:
             # Clears the text in the entry box
             username_entry.delete('0', 'end')
