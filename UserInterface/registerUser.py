@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import psycopg2
+import bcrypt
 
 import UserInterface.FileAccessScreen
 from tkinter import *

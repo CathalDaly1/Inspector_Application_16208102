@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import ttk
 
+import keyboard
 from fpdf import FPDF
 import UserInterface.InspectorMainScreen
 import UserInterface.GradingSchemeScreen
@@ -26,7 +27,7 @@ class FileDisplayWindow(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        self.geometry("800x800+100+100")
+        self.geometry("800x850+100+100")
         self.title("Inspector - Grading Application")
         self.resizable(False, False)
 
@@ -46,8 +47,11 @@ class FileSelectionWindow(tk.Frame):
 
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
-        commentsEntry: tk.Entry = tk.Entry(self, width="10")
-        global test
+        global c1
+        global c2
+        global c3
+        global c4
+        global c5
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -143,37 +147,62 @@ class FileSelectionWindow(tk.Frame):
                     oid2 = listBox.insert(parentNode, 'end', values=fileInDir, open=False)
                     process_directory(oid2, abspath)
 
-        def cannedComments():
-            # Entry for number of canned comments
-            commentsLbl = tk.Label(self, fg="black", text="Enter number of comments: ", font=("Calibri", 12))
-            commentsLbl.place(x=75, y=600)
+        # def cannedComments():
+        #     # Entry for number of canned comments
+        #     commentsLbl = tk.Label(self, fg="black", text="Enter number of comments: ", font=("Calibri", 12))
+        #     commentsLbl.place(x=75, y=600)
+        #
+        #     commentsEntry.place(x=265, y=605)
+        #     commentsEntry.insert(0, "")
+        #
+        #     enterButton = tk.Button(self, text="Enter", width=13, command=entryResult)
+        #     enterButton.place(x=350, y=600)
 
-            commentsEntry.place(x=265, y=605)
-            commentsEntry.insert(0, "")
+        # def entryResult():
+        #     print("Enter button pressed")
+        #     # res = int(commentsEntry.get())
+        #     # print(res)
 
-            enterButton = tk.Button(self, text="Enter", width=13, command=entryResult)
-            enterButton.place(x=350, y=600)
+        # for col in range(res):
 
-        def entryResult():
-            print("Enter button pressed")
-            res = int(commentsEntry.get())
-            window1 = tk.Tk()
+        def canned_comments():
 
-            window1.title("Inspector - Grading Application")
-            window1.geometry("400x400+200+200")
-            window1.resizable(False, False)
+            comment1_lbl = tk.Label(self, fg="black", text="Comment 1: ", font=("Calibri", 12))
+            comment1_lbl.place(x=100, y=600)
+            commentsEntry1: tk.Text = tk.Text(self, height="2", width="60")
+            commentsEntry1.place(x=250, y=602)
+            comment2_lbl = tk.Label(self, fg="black", text="Comment 2: ", font=("Calibri", 12))
+            comment2_lbl.place(x=100, y=640)
+            commentsEntry2: tk.Text = tk.Text(self, height="2", width="60")
+            commentsEntry2.place(x=250, y=642)
+            comment3_lbl = tk.Label(self, fg="black", text="Comment 3: ", font=("Calibri", 12))
+            comment3_lbl.place(x=100, y=680)
+            commentsEntry3: tk.Text = tk.Text(self, height="2", width="60")
+            commentsEntry3.place(x=250, y=682)
+            comment4_lbl = tk.Label(self, fg="black", text="Comment 4: ", font=("Calibri", 12))
+            comment4_lbl.place(x=100, y=720)
+            commentsEntry4: tk.Text = tk.Text(self, height="2", width="60")
+            commentsEntry4.place(x=250, y=722)
+            comment5_lbl = tk.Label(self, fg="black", text="Comment 5: ", font=("Calibri", 12))
+            comment5_lbl.place(x=100, y=760)
+            commentsEntry5: tk.Text = tk.Text(self, height="2", width="60")
+            commentsEntry5.place(x=250, y=762)
 
-            for col in range(res):
-                commentsTitle = tk.Label(window1, fg="black", text="Comment " + str(col + 1), font=("Calibri", 12))
-                commentsTitle.grid(row=col, column=5, padx=10, pady=10)
-                commentsEntry1: tk.Entry = tk.Entry(window1, width="30")
-                commentsEntry1.grid(row=col, column=7, padx=10, pady=10)
-                commentsEntry1.insert(0, "")
-                saveButton = tk.Button(window1, text="Save", width=13, command=saveCommentsButton)
-                saveButton.place(x=290, y=350)
+            def saveCommentsButton():
+                print("Save button pressed")
+                comment_1 = commentsEntry1.get("1.0", tk.END)
+                print(comment_1)
+                comment_2 = commentsEntry2.get("1.0", tk.END)
+                print(comment_2)
+                comment_3 = commentsEntry3.get("1.0", tk.END)
+                print(comment_3)
+                comment_4 = commentsEntry4.get("1.0", tk.END)
+                print(comment_4)
+                comment_5 = commentsEntry5.get("1.0", tk.END)
+                print(comment_5)
 
-        def saveCommentsButton():
-            print("Save button pressed")
+            saveButton = tk.Button(self, text="Save", width=13, command=saveCommentsButton)
+            saveButton.place(x=300, y=820)
 
         def back():
             # Have to fix this issue with closing the window using withdraw
@@ -214,12 +243,11 @@ class FileSelectionWindow(tk.Frame):
                                               width=15)
         selectStudentAssignButton.place(x=280, y=550)
 
+        cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15, command=canned_comments)
+        cannedCommentsButton.place(x=100, y=550)
+
         backButton = tk.Button(self, text="Back", width=15, command=back)
         backButton.place(x=480, y=550)
-
-        # ToDo add canned comments which will be incremental when one comment is added
-        addComments = tk.Button(self, text="Add Canned Comment", width=18, command=cannedComments)
-        addComments.place(x=100, y=550)
 
         def selectAssignment():
             print("Select Assignment button selected")
@@ -289,6 +317,7 @@ class FileSelectionWindow(tk.Frame):
             KeyD = -2
 
             # Keystroke driven application which is completed using threads and a thread queue as Tkinter is not thread safe
+            # ToDo make if elif statement more efficient and faster
             def keystrokeApplication_thread():
                 # ToDo enter keystroke in the entry box and use this as input fot the keystroke app
                 keystroke = str(input())
@@ -328,6 +357,31 @@ class FileSelectionWindow(tk.Frame):
 
                     the_queue.put("Final Grade: " + str(total) + " marks")
                     keystrokeApplication_thread()
+
+                elif keystroke == '1':
+                    the_queue.put("Comment 1: ToDo add comments")
+                    keystrokeApplication_thread()
+
+                elif keystroke == '2':
+                    the_queue.put("Comment 2: ToDo add comments")
+                    keystrokeApplication_thread()
+
+                elif keystroke == '3':
+                    the_queue.put("Comment 3: ToDo add comments")
+                    keystrokeApplication_thread()
+
+                elif keystroke == '4':
+                    the_queue.put("Comment 4: ToDo add comments")
+                    keystrokeApplication_thread()
+
+                elif keystroke == '5':
+                    the_queue.put("Comment 5: ToDo add comments")
+                    keystrokeApplication_thread()
+
+                elif keystroke == 'z':
+                    the_queue.empty()
+                    keystrokeApplication_thread()
+
                 else:
                     # let's tell after_callback that this completed
                     print("Please enter a correct selection")
@@ -368,8 +422,9 @@ class FileSelectionWindow(tk.Frame):
             shortcutLbl.place(x=850, y=70, anchor="center")
 
             keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(KeyA) + "\n"
-                                                                       "Key B: +" + str(KeyB) + "\n"
-                                                                                                "Key C: " + str(
+                                                                                                          "Key B: +" + str(
+                KeyB) + "\n"
+                        "Key C: " + str(
                 KeyC) + "\n"
                         "Key D: " + str(
                 KeyD) + "\n"
@@ -441,6 +496,7 @@ class FileSelectionWindow(tk.Frame):
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
+
 
 if __name__ == "__main__":
     app = FileDisplayWindow()
