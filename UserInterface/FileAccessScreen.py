@@ -47,11 +47,6 @@ class FileSelectionWindow(tk.Frame):
 
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
-        global c1
-        global c2
-        global c3
-        global c4
-        global c5
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -256,6 +251,8 @@ class FileSelectionWindow(tk.Frame):
             window.geometry("985x985+50+50")
             window.resizable(False, False)
 
+            menubar = tk.Menu(window)
+
             global file
             global gradedFilesFolder
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
@@ -278,6 +275,20 @@ class FileSelectionWindow(tk.Frame):
                 listBox.delete(*listBox.get_children())
                 getFileSelection()
                 window.withdraw()
+
+            filemenu = tk.Menu(menubar, tearoff=0)
+            # ToDo add the display with the keystrokes in this menu
+            filemenu.add_command(label="View Keystrokes", command="")
+            filemenu.add_separator()
+            filemenu.add_command(label="Close Window", command=back)
+            menubar.add_cascade(label="File", menu=filemenu)
+
+            helpmenu = tk.Menu(menubar, tearoff=0)
+            helpmenu.add_command(label="About", command="")
+            menubar.add_cascade(label="Help", menu=helpmenu)
+
+            # display the menu
+            window.config(menu=menubar)
 
             def submitAssignment():
                 print("Submit button pressed")
