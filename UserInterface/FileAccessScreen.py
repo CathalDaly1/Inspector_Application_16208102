@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 import keyboard
 from fpdf import FPDF
@@ -272,13 +272,18 @@ class FileSelectionWindow(tk.Frame):
 
             def back():
                 # Clears listbox when returning to the file selection screen: this is in order to reselect the path
+                # Call on_closinwindow() to save assignment if backbutton is pressed
+                on_closingWindow()
                 listBox.delete(*listBox.get_children())
                 getFileSelection()
-                window.withdraw()
 
+            def viewKeystrokes():
+                print("View Keystrokes pressed")
+
+            # Menubar in the top left of the screen
             filemenu = tk.Menu(menubar, tearoff=0)
             # ToDo add the display with the keystrokes in this menu
-            filemenu.add_command(label="View Keystrokes", command="")
+            filemenu.add_command(label="View Keystrokes", command=viewKeystrokes)
             filemenu.add_separator()
             filemenu.add_command(label="Close Window", command=back)
             menubar.add_cascade(label="File", menu=filemenu)
@@ -289,6 +294,17 @@ class FileSelectionWindow(tk.Frame):
 
             # display the menu
             window.config(menu=menubar)
+
+            # If window is closed mid grading, save the file in the folder
+            def on_closingWindow():
+                if messagebox.askokcancel("Quit", "Do you want to quit grading?"):
+                    s = text.get("1.0", tk.END)
+                    f = open(file, "w", encoding='utf-8')
+                    f.write(s)
+                    f.close()
+                    window.destroy()
+
+            window.protocol("WM_DELETE_WINDOW", on_closingWindow)
 
             def submitAssignment():
                 print("Submit button pressed")
@@ -507,7 +523,6 @@ class FileSelectionWindow(tk.Frame):
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
-
 
 if __name__ == "__main__":
     app = FileDisplayWindow()

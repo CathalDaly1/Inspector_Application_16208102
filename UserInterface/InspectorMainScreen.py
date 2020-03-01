@@ -52,11 +52,6 @@ def proceedButton():
     UserInterface.FileAccessScreen.FileDisplayWindow()
 
 
-# ToDo create menu options in the Homescreen: File - close, save, exit etc
-def menuOptions():
-    file = tk.Toplevel(MainFrame)
-
-
 # MainFrame contains the contents of the GUI
 class MainFrame(tk.Frame):
 
