@@ -1,14 +1,14 @@
 import os
+import queue
 import re
+import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-import keyboard
 from fpdf import FPDF
-import UserInterface.InspectorMainScreen
+
 import UserInterface.GradingSchemeScreen
-import queue
-import threading
+import UserInterface.InspectorMainScreen
 import UserInterface.roughWork
 
 # initialize queue for thread
@@ -48,6 +48,26 @@ class FileSelectionWindow(tk.Frame):
 
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
+
+        def changeKeyValues():
+            global valueKeyA
+            global valueKeyB
+            global valueKeyC
+            global valueKeyD
+            global total
+
+            valueKeyA = int(input("Enter value for Key A"))
+            print(valueKeyA)
+            valueKeyB = int(input("Enter value for Key B"))
+            print(valueKeyB)
+            valueKeyC = int(input("Enter value for Key C"))
+            print(valueKeyC)
+            valueKeyD = int(input("Enter value for Key D"))
+            print(valueKeyD)
+            total = int(input("Enter total for grading"))
+            print(total)
+
+        changeKeyValues()
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -91,7 +111,6 @@ class FileSelectionWindow(tk.Frame):
         # Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'
         def getFileSelection():
             assignmentFilePath = filePath.get()
-
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath):
                 print("Directory Exists")
@@ -114,7 +133,6 @@ class FileSelectionWindow(tk.Frame):
 
                     # Double click on an element in the listbox will run the doubleClickListboxEvent() method
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
-
                     return assignmentFilePath
 
             else:
@@ -349,11 +367,6 @@ class FileSelectionWindow(tk.Frame):
                     #     text.tag_delete(tag)
                     text.config(foreground='yellow')
 
-            valueKeyA = 4
-            valueKeyB = 5
-            valueKeyC = 6
-            valueKeyD = 7
-
             # Keystroke driven application which is completed using threads and a thread queue as Tkinter is not thread safe
             # ToDo make if elif statement more efficient and faster
             def keystrokeApplication_thread():
@@ -363,8 +376,7 @@ class FileSelectionWindow(tk.Frame):
 
                 if keystroke.lower() == "s":
 
-                    total = 80
-                    the_queue.put("Grading has started")
+                    the_queue.put("Grading has started" + str(total))
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'a':
@@ -459,14 +471,14 @@ class FileSelectionWindow(tk.Frame):
             shortcutLbl = tk.Label(window, text="Key Shortcuts", font=("Arial", 15))
             shortcutLbl.place(x=850, y=70, anchor="center")
 
-            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
-                                                                                                          "Key B: +" + str(
-                valueKeyB) + "\n"
-                        "Key C: " + str(
-                valueKeyC) + "\n"
-                        "Key D: " + str(
-                valueKeyD) + "\n"
-                        "Key E: Exit grading", font=("Arial", 12))
+            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str("") + "\n"
+                                                                                                        "Key B: +" + str(
+                "") + "\n"
+                      "Key C: " + str(
+                "") + "\n"
+                      "Key D: " + str(
+                "") + "\n"
+                      "Key E: Exit grading", font=("Arial", 12))
             keysValue.place(x=850, y=150, anchor="center")
 
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
