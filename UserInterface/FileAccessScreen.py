@@ -54,18 +54,21 @@ class FileSelectionWindow(tk.Frame):
             global valueKeyB
             global valueKeyC
             global valueKeyD
+            global commentA
+            global commentB
+            global commentC
+            global commentD
             global total
 
             valueKeyA = int(input("Enter value for Key A"))
-            print(valueKeyA)
+            commentA = str(input("Enter comment - Key A"))
             valueKeyB = int(input("Enter value for Key B"))
-            print(valueKeyB)
+            commentB = str(input("Enter comment - Key B"))
             valueKeyC = int(input("Enter value for Key C"))
-            print(valueKeyC)
+            commentC = str(input("Enter comment - Key C"))
             valueKeyD = int(input("Enter value for Key D"))
-            print(valueKeyD)
+            commentD = str(input("Enter comment - Key D"))
             total = int(input("Enter total for grading"))
-            print(total)
 
         changeKeyValues()
 
@@ -301,7 +304,7 @@ class FileSelectionWindow(tk.Frame):
 
             def back():
                 # Clears listbox when returning to the file selection screen: this is in order to reselect the path
-                # Call on_closinwindow() to save assignment if backbutton is pressed
+                # Call on_closingwindow() to save assignment if backbutton is pressed
                 on_closingWindow()
                 listBox.delete(*listBox.get_children())
                 getFileSelection()
@@ -382,25 +385,25 @@ class FileSelectionWindow(tk.Frame):
                 elif keystroke.lower() == 'a':
 
                     total += valueKeyA
-                    the_queue.put("Key A: " + str(total) + " marks")
+                    the_queue.put("Key A: " + str(total) + " marks - " + commentA)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'b':
 
                     total += valueKeyB
-                    the_queue.put("Key B: " + str(total) + " marks")
+                    the_queue.put("Key B: " + str(total) + " marks - " + commentB)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'c':
 
                     total -= valueKeyC
-                    the_queue.put("Key C: " + str(total) + " marks")
+                    the_queue.put("Key C: " + str(total) + " marks - " + commentC)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'd':
 
                     total -= valueKeyD
-                    the_queue.put("Key D: " + str(total) + " marks")
+                    the_queue.put("Key D: " + str(total) + " marks - " + commentD)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'e':
@@ -535,6 +538,8 @@ class FileSelectionWindow(tk.Frame):
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
+
+            text.insert("1.0", GradeTextBox)
 
             # Scrollbar on X and Y axis of GradeTextBox
             scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
