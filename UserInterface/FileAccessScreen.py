@@ -128,18 +128,18 @@ class FileSelectionWindow(tk.Frame):
             grade = 0
             global fileExtension
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
-            for fileInDir in os.listdir(assignmentFilePath):
+            for studentFiles in os.listdir(assignmentFilePath):
                 # Check if file ends with an extension, otherwise it is a folder
-                if fileInDir.endswith(fileExtension):
-                    abspath = os.path.join(assignmentFilePath, fileInDir)
+                if studentFiles.endswith(fileExtension):
+                    abspath = os.path.join(assignmentFilePath, studentFiles)
                     isdir = os.path.isdir(abspath)
-                    oid = listBox.insert(parentNode, 'end', values=(fileInDir, graded, grade), open=False)
+                    oid = listBox.insert(parentNode, 'end', values=("\t" + studentFiles, graded, grade), open=False)
                     if isdir:
                         process_directory(oid, abspath)
                 # Folder in the listbox
                 else:
-                    abspath = os.path.join(assignmentFilePath, fileInDir)
-                    oid2 = listBox.insert(parentNode, 'end', values=fileInDir, open=False)
+                    abspath = os.path.join(assignmentFilePath, studentFiles)
+                    oid2 = listBox.insert(parentNode, 'end', values=studentFiles, open=False)
                     process_directory(oid2, abspath)
 
         # def cannedComments():
@@ -200,11 +200,11 @@ class FileSelectionWindow(tk.Frame):
             saveButton.place(x=300, y=820)
 
         def back():
-            # Have to fix this issue with closing the window using withdraw
+            # ToDo Have to fix this issue with closing the window using withdraw
             UserInterface.InspectorMainScreen.HomeScreen()
 
         # create Treeview with 3 columns
-        cols = ('Filename', 'Graded', 'Grade')
+        cols = ('Student ID + files', 'Graded', 'Grade')
         listBox = ttk.Treeview(self, columns=cols, show='headings')
         # set column headings
         for col in cols:
@@ -297,7 +297,7 @@ class FileSelectionWindow(tk.Frame):
 
             # If window is closed mid grading, save the file in the folder
             def on_closingWindow():
-                if messagebox.askokcancel("Quit", "Do you want to quit grading?"):
+                if messagebox.askokcancel("Quit", "Do you want to quit grading the assignment?\n File will be saved"):
                     s = text.get("1.0", tk.END)
                     f = open(file, "w", encoding='utf-8')
                     f.write(s)
@@ -523,6 +523,7 @@ class FileSelectionWindow(tk.Frame):
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
             text.insert("1.0", assignment)
+
 
 if __name__ == "__main__":
     app = FileDisplayWindow()
