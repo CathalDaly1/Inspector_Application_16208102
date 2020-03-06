@@ -350,8 +350,9 @@ class FileSelectionWindow(tk.Frame):
                 pdf.set_font("Arial", size=12)
                 pdf.multi_cell(0, 5, s)
 
-                print(gradedFilesFolder)
-                pdf.output(gradedFilesFolder + "\\" + item_text[0] + ".pdf")
+                # Removed the \t from the filepath in order to save as pdf in 'Graded' file
+                savingFilePDF = re.sub('\t', '', item_text[0]+".pdf")
+                pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
 
             # Highlights code and text when text is selected and highlight button is pressed
             def highlightCode():
@@ -373,7 +374,6 @@ class FileSelectionWindow(tk.Frame):
                 # ToDo enter keystroke in the entry box and use this as input fot the keystroke app
                 keystroke = str(input())
                 global total
-
                 if keystroke.lower() == "s":
 
                     the_queue.put("Grading has started" + str(total))
