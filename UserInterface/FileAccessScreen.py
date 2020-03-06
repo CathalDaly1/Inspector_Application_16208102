@@ -1,4 +1,5 @@
 import os
+import re
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -268,7 +269,9 @@ class FileSelectionWindow(tk.Frame):
 
             # If it is a folder, concat the string of the filepath, the folder and the selection
             else:
+                # Get the filename and remove the \t tab which is needed to display listbox with indentation
                 file = filePath.get().replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
+                file = re.sub('\t', '', file)
 
             def back():
                 # Clears listbox when returning to the file selection screen: this is in order to reselect the path
