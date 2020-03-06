@@ -205,9 +205,17 @@ class FileSelectionWindow(tk.Frame):
             UserInterface.InspectorMainScreen.HomeScreen()
 
         # create Treeview with 3 columns
+
         cols = ('Student ID + files', 'Graded', 'Grade')
         listBox = ttk.Treeview(self, columns=cols, show='headings')
+
+        # Added scrollbar onto the listbox
+        scrollbar = tk.Scrollbar(self, orient=tk.VERTICAL, command=listBox.yview)
+        listBox['yscroll'] = scrollbar.set
+
+        scrollbar.place(in_=listBox, relx=1.0, relheight=1.0, bordermode="outside")
         # set column headings
+
         for col in cols:
             listBox.heading(col, text=col)
             listBox.place(x=75, y=300)
@@ -341,10 +349,10 @@ class FileSelectionWindow(tk.Frame):
                     #     text.tag_delete(tag)
                     text.config(foreground='yellow')
 
-            KeyA = 2
-            KeyB = 1
-            KeyC = -1
-            KeyD = -2
+            valueKeyA = 4
+            valueKeyB = 5
+            valueKeyC = 6
+            valueKeyD = 7
 
             # Keystroke driven application which is completed using threads and a thread queue as Tkinter is not thread safe
             # ToDo make if elif statement more efficient and faster
@@ -361,25 +369,25 @@ class FileSelectionWindow(tk.Frame):
 
                 elif keystroke.lower() == 'a':
 
-                    total += 2
+                    total += valueKeyA
                     the_queue.put("Key A: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'b':
 
-                    total += 1
+                    total += valueKeyB
                     the_queue.put("Key B: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'c':
 
-                    total -= 1
+                    total -= valueKeyC
                     the_queue.put("Key C: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'd':
 
-                    total -= 2
+                    total -= valueKeyD
                     the_queue.put("Key D: " + str(total) + " marks")
                     keystrokeApplication_thread()
 
@@ -451,13 +459,13 @@ class FileSelectionWindow(tk.Frame):
             shortcutLbl = tk.Label(window, text="Key Shortcuts", font=("Arial", 15))
             shortcutLbl.place(x=850, y=70, anchor="center")
 
-            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(KeyA) + "\n"
+            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
                                                                                                           "Key B: +" + str(
-                KeyB) + "\n"
+                valueKeyB) + "\n"
                         "Key C: " + str(
-                KeyC) + "\n"
+                valueKeyC) + "\n"
                         "Key D: " + str(
-                KeyD) + "\n"
+                valueKeyD) + "\n"
                         "Key E: Exit grading", font=("Arial", 12))
             keysValue.place(x=850, y=150, anchor="center")
 
