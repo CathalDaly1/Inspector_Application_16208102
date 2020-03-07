@@ -1,6 +1,5 @@
 import tkinter as tk
 import UserInterface.ProgrammedKeysScreen
-import UserInterface.GradingSchemeScreen
 import UserInterface.FileAccessScreen
 import UserInterface.loginUser
 from UserInterface.loginUser import *
@@ -38,15 +37,6 @@ class HomeScreen(tk.Tk):
         frame.tkraise()
 
 
-def changeProgButton():
-    UserInterface.ProgrammedKeysScreen.programmedKeysWindow()
-
-
-def changeGradingSchemeButton():
-    print("change grading scheme button pressed")
-    UserInterface.GradingSchemeScreen.gradingSchemeWindow()
-
-
 def proceedButton():
     print("Proceed Button pressed")
     UserInterface.FileAccessScreen.FileDisplayWindow()
@@ -63,7 +53,7 @@ class MainFrame(tk.Frame):
 
         about_text = tk.Label(self, width=58, height=40, relief="solid", bd=1, padx=10, bg="white")
         about_text.pack_propagate(0)
-        tk.Label(about_text, bg="white", fg="black", text="About Inspector", font=("Calibri", 16)).pack()
+        tk.Label(about_text, bg="white", fg="black", text="About Inspector", font=("Calibri Bold", 16)).pack()
         about_text.place(x=30, y=90)
         tk.Label(about_text, bg="white", fg="black",
                  text="\n\nInspector is a rapid-fire keystroke driven grading assessment\n"
@@ -80,36 +70,20 @@ class MainFrame(tk.Frame):
         prog_keys_lbl = tk.Label(self, width=40, height=19, relief="solid", bd=1, padx=10, bg="white")
         prog_keys_lbl.pack_propagate(0)
 
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n", font=("Calibri", 16)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n", font=("Calibri Bold", 16)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black",
                  text="Click the change button below to change\n keystroke values\n", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -2", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A =  2", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B =  1", font=("Calibri", 12)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A = +2", font=("Calibri", 12)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B = +1", font=("Calibri", 12)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = -1", font=("Calibri", 12)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -2", font=("Calibri", 12)).pack()
         prog_keys_lbl.place(x=470, y=90)
 
-        # Create button for changing keys and saving changes
-        prog_change_button = tk.Button(self, text="Change", fg="black", command=changeProgButton, height=1, width=8)
-        prog_change_button.place(x=590, y=335)
-
-        # Created Label for grading scheme keys section
-        grad_labl = tk.Label(self, width=40, height=20, relief="solid", bd=1, padx=10, bg="white")
-        grad_labl.pack_propagate(0)
-
-        # Create button for changing number of marks for assignment
-        scheme_change_button = tk.Button(self, text="Change", fg="black", command=changeGradingSchemeButton, height=1,
-                                         width=8)
-        scheme_change_button.place(x=590, y=650)
-
-        tk.Label(grad_labl, bg="white", fg="black", text="Grading Scheme\n", font=("Calibri", 15)).pack()
-        tk.Label(grad_labl, bg="white", fg="black", text="Total marks out of 100", font=("Calibri", 12)).pack()
-        tk.Label(grad_labl, bg="white", fg="black", text="\nClick the change button below to change\n total amount of "
-                                                         "marks", font=("Calibri", 12)).pack()
-        grad_labl.place(x=470, y=390)
+        quit_button = tk.Button(self, text="Quit Inspector", fg="red", command=self.quit, height=2, width=12)
+        quit_button.place(x=300, y=700)
 
         proceed_button = tk.Button(self, text="Proceed", fg="black", command=proceedButton, height=2, width=12)
-        proceed_button.place(x=350, y=700)
+        proceed_button.place(x=400, y=700)
 
 
 if __name__ == "__main__":

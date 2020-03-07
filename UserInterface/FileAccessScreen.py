@@ -7,7 +7,6 @@ from tkinter import ttk, messagebox
 
 from fpdf import FPDF
 
-import UserInterface.GradingSchemeScreen
 import UserInterface.InspectorMainScreen
 import UserInterface.roughWork
 
@@ -141,7 +140,7 @@ class FileSelectionWindow(tk.Frame):
         # ToDo maybe only add for folder as folder may contain many files which will be treated as one grade  Graded=N, Grade=0
         def process_directory(parentNode, assignmentFilePath):
             graded = "N"
-            grade = 0
+            studentGrade = 0
             global fileExtension
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
             for studentFiles in os.listdir(assignmentFilePath):
@@ -155,7 +154,7 @@ class FileSelectionWindow(tk.Frame):
                 # Folder in the listbox
                 else:
                     abspath = os.path.join(assignmentFilePath, studentFiles)
-                    oid2 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", grade), open=False)
+                    oid2 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
                     process_directory(oid2, abspath)
 
         def canned_comments():
@@ -203,7 +202,7 @@ class FileSelectionWindow(tk.Frame):
 
         # create Treeview with 3 columns
 
-        cols = ('Student ID + files', 'Graded', 'Grade')
+        cols = ('Student ID + files', 'Graded', 'Student Grade')
         listBox = ttk.Treeview(self, columns=cols, show='headings')
 
         # Added scrollbar onto the listbox
@@ -323,7 +322,7 @@ class FileSelectionWindow(tk.Frame):
                 f.write(s)
                 f.close()
 
-                # ToDo Creates a PDF in from the text entered and saves as the name of the file
+                # Create a file for each student with their graded files
                 pdf = FPDF()
                 pdf.add_page()
                 pdf.set_font("Arial", size=12)
@@ -331,11 +330,13 @@ class FileSelectionWindow(tk.Frame):
 
                 # Removed the \t from the filepath in order to save as pdf in 'Graded' file
                 savingFilePDF = re.sub('\t', '', item_text[0]+".pdf")
+                print(savingFilePDF)
                 pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
 
             # Highlights code and text when text is selected and highlight button is pressed
             def highlightCode():
                 global count
+                count = 0
                 count = 0
                 if text.tag_ranges('sel'):
                     text.tag_add('color' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
@@ -430,6 +431,7 @@ class FileSelectionWindow(tk.Frame):
                 if message is not None:
                     # Print out the message once there is something in the queue
                     studentFinalGrade['text'] = message
+                    # Insert messages from the queue into the text box
                     GradeTextBox.insert(tk.END, message + "\n")
                     # Scroll to the end of text when new text is added
                     GradeTextBox.see("end")
@@ -463,7 +465,6 @@ class FileSelectionWindow(tk.Frame):
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
             studentFinalGrade.place(x=800, y=245)
 
-            lineNumbers = ''
             # The Text widget holding the line numbers.
             lnText = tk.Text(window,
                              width=2,
@@ -514,11 +515,17 @@ class FileSelectionWindow(tk.Frame):
 
             text.insert("1.0", GradeTextBox)
 
+            def addComments():
+                text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
+
             # Scrollbar on X and Y axis of GradeTextBox
-            scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
+            GradeTextBoxScrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
             GradeTextBox['yscroll'] = scrollbar.set
 
-            scrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
+            GradeTextBoxScrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
+
+            addComments = tk.Button(window, text="Add comments above", width=25, command=addComments)
+            addComments.place(x=285, y=910)
 
             # Opens the file and copies the contents into the text box for editing
             global assignment
