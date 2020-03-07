@@ -53,15 +53,15 @@ class FileSelectionWindow(tk.Frame):
             global commentA, commentB, commentC, commentD
             global total
 
-            valueKeyA = int(input("Enter value for Key A"))
+            valueKeyA = int(input("Enter value for Key A: "))
             commentA = "Comment A - this is it"
-            valueKeyB = int(input("Enter value for Key B"))
+            valueKeyB = int(input("Enter value for Key B: "))
             commentB = "Comment B - this is it"
-            valueKeyC = int(input("Enter value for Key C"))
+            valueKeyC = int(input("Enter value for Key C: "))
             commentC = "Comment C - this is it"
-            valueKeyD = int(input("Enter value for Key D"))
+            valueKeyD = int(input("Enter value for Key D: "))
             commentD = "Comment D - this is it"
-            total = int(input("Enter total for grading"))
+            total = int(input("Enter total for grading: "))
 
         changeKeyValues()
 
@@ -287,6 +287,9 @@ class FileSelectionWindow(tk.Frame):
             def viewKeystrokes():
                 print("View Keystrokes pressed")
 
+            def howToVideo():
+                print("Implement functionality to play video on window")
+
             # Menubar in the top left of the screen
             filemenu = tk.Menu(menubar, tearoff=0)
             # ToDo add the display with the keystrokes in this menu
@@ -295,9 +298,9 @@ class FileSelectionWindow(tk.Frame):
             filemenu.add_command(label="Close Window", command=back)
             menubar.add_cascade(label="File", menu=filemenu)
 
-            helpmenu = tk.Menu(menubar, tearoff=0)
-            helpmenu.add_command(label="About", command="")
-            menubar.add_cascade(label="Help", menu=helpmenu)
+            helpMenu = tk.Menu(menubar, tearoff=0)
+            helpMenu.add_command(label="How to grade assignments?", command=howToVideo)
+            menubar.add_cascade(label="Help", menu=helpMenu)
 
             # display the menu
             window.config(menu=menubar)
@@ -413,18 +416,18 @@ class FileSelectionWindow(tk.Frame):
                     keystrokeApplication_thread()
 
                 else:
-                    # let's tell after_callback that this completed
+                    # let's tell queue_callback that this completed
                     print("Please enter a correct selection")
                     keystrokeApplication_thread()
                     print('keystrokeApplication_thread puts None to the queue')
                     the_queue.put(None)
 
-            def after_callback():
+            def queue_callback():
                 try:
                     message = the_queue.get(block=False)
                 except queue.Empty:
                     # retry
-                    window.after(100, after_callback)
+                    window.after(100, queue_callback)
                     return
 
                 print("After_callback returned " + message)
@@ -435,11 +438,11 @@ class FileSelectionWindow(tk.Frame):
                     GradeTextBox.insert(tk.END, message + "\n")
                     # Scroll to the end of text when new text is added
                     GradeTextBox.see("end")
-                    window.after(10, after_callback)
+                    window.after(10, queue_callback)
 
             # Start the thread and run the keystrokeApplication_thread function
             threading.Thread(target=keystrokeApplication_thread).start()
-            window.after(10, after_callback)
+            window.after(10, queue_callback)
 
             studentID = "Implement"
 
