@@ -50,24 +50,18 @@ class FileSelectionWindow(tk.Frame):
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
 
         def changeKeyValues():
-            global valueKeyA
-            global valueKeyB
-            global valueKeyC
-            global valueKeyD
-            global commentA
-            global commentB
-            global commentC
-            global commentD
+            global valueKeyA, valueKeyB, valueKeyC, valueKeyD
+            global commentA, commentB, commentC, commentD
             global total
 
             valueKeyA = int(input("Enter value for Key A"))
-            commentA = str(input("Enter comment - Key A"))
+            commentA = "Comment A - this is it"
             valueKeyB = int(input("Enter value for Key B"))
-            commentB = str(input("Enter comment - Key B"))
+            commentB = "Comment B - this is it"
             valueKeyC = int(input("Enter value for Key C"))
-            commentC = str(input("Enter comment - Key C"))
+            commentC = "Comment C - this is it"
             valueKeyD = int(input("Enter value for Key D"))
-            commentD = str(input("Enter comment - Key D"))
+            commentD = "Comment D - this is it"
             total = int(input("Enter total for grading"))
 
         changeKeyValues()
@@ -155,32 +149,14 @@ class FileSelectionWindow(tk.Frame):
                 if studentFiles.endswith(fileExtension):
                     abspath = os.path.join(assignmentFilePath, studentFiles)
                     isdir = os.path.isdir(abspath)
-                    oid = listBox.insert(parentNode, 'end', values=("\t" + studentFiles, graded, grade), open=False)
+                    oid = listBox.insert(parentNode, 'end', values=("\t" + studentFiles, graded), open=False)
                     if isdir:
                         process_directory(oid, abspath)
                 # Folder in the listbox
                 else:
                     abspath = os.path.join(assignmentFilePath, studentFiles)
-                    oid2 = listBox.insert(parentNode, 'end', values=studentFiles, open=False)
+                    oid2 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", grade), open=False)
                     process_directory(oid2, abspath)
-
-        # def cannedComments():
-        #     # Entry for number of canned comments
-        #     commentsLbl = tk.Label(self, fg="black", text="Enter number of comments: ", font=("Calibri", 12))
-        #     commentsLbl.place(x=75, y=600)
-        #
-        #     commentsEntry.place(x=265, y=605)
-        #     commentsEntry.insert(0, "")
-        #
-        #     enterButton = tk.Button(self, text="Enter", width=13, command=entryResult)
-        #     enterButton.place(x=350, y=600)
-
-        # def entryResult():
-        #     print("Enter button pressed")
-        #     # res = int(commentsEntry.get())
-        #     # print(res)
-
-        # for col in range(res):
 
         def canned_comments():
 
@@ -379,7 +355,7 @@ class FileSelectionWindow(tk.Frame):
                 global total
                 if keystroke.lower() == "s":
 
-                    the_queue.put("Grading has started" + str(total))
+                    the_queue.put("Grading has started - Total marks: " + str(total))
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'a':
@@ -474,13 +450,13 @@ class FileSelectionWindow(tk.Frame):
             shortcutLbl = tk.Label(window, text="Key Shortcuts", font=("Arial", 15))
             shortcutLbl.place(x=850, y=70, anchor="center")
 
-            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str("") + "\n"
+            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
                                                                                                         "Key B: +" + str(
-                "") + "\n"
-                      "Key C: " + str(
-                "") + "\n"
-                      "Key D: " + str(
-                "") + "\n"
+                valueKeyB) + "\n"
+                      "Key C: -" + str(
+                valueKeyC) + "\n"
+                      "Key D: -" + str(
+                valueKeyD) + "\n"
                       "Key E: Exit grading", font=("Arial", 12))
             keysValue.place(x=850, y=150, anchor="center")
 
@@ -532,9 +508,6 @@ class FileSelectionWindow(tk.Frame):
 
             highlightButton = tk.Button(window, text="Highlight", width=15, command=highlightCode)
             highlightButton.place(x=480, y=685)
-
-            beginGrading = tk.Button(window, text="Begin Grading", width=15, command="")
-            beginGrading.place(x=680, y=685)
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
