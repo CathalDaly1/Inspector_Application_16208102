@@ -29,7 +29,7 @@ class FileDisplayWindow(tk.Tk):
         self.frames = {}
         self.geometry("800x850+100+100")
         self.title("Inspector - Grading Application")
-        # self.resizable(False, False)
+        self.resizable(False, False)
 
         frame = FileSelectionWindow(container, self)
         self.frames[FileSelectionWindow] = frame
@@ -76,6 +76,7 @@ class FileSelectionWindow(tk.Frame):
             item = listBox.selection()[0]
             global itemSelected
             itemSelected = listBox.item(item, 'text')
+            print(itemSelected)
             listboxSelection()
 
         # Gets the click of the element in the listbox in order to open file in the next window
@@ -129,6 +130,7 @@ class FileSelectionWindow(tk.Frame):
 
                     # Double click on an element in the listbox will run the doubleClickListboxEvent() method
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
+
                     return assignmentFilePath
 
             else:
@@ -154,6 +156,7 @@ class FileSelectionWindow(tk.Frame):
                 # Folder in the listbox
                 else:
                     abspath = os.path.join(assignmentFilePath, studentFiles)
+                    print(studentFiles)
                     oid2 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
                     process_directory(oid2, abspath)
 
@@ -276,7 +279,9 @@ class FileSelectionWindow(tk.Frame):
             global gradedFilesFolder
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
 
-            gradedFilesFolder = filePath.get().replace("\\", "/") + "/Graded" + "/"
+            # Get the click event of the selection from the listbox, use that selection to create a new filepath and add new graded files
+            gradedFilesFolder = filePath.get().replace("\\", "/") + "/" + "/Graded Assignments" + "/" + selection + "/"
+            print(gradedFilesFolder)
             if not os.path.exists(gradedFilesFolder):
                 os.makedirs(gradedFilesFolder)
 
