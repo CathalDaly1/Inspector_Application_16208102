@@ -29,7 +29,7 @@ class FileDisplayWindow(tk.Tk):
         self.frames = {}
         self.geometry("800x850+100+100")
         self.title("Inspector - Grading Application")
-        self.resizable(False, False)
+        # self.resizable(False, False)
 
         frame = FileSelectionWindow(container, self)
         self.frames[FileSelectionWindow] = frame
@@ -52,11 +52,16 @@ class FileSelectionWindow(tk.Frame):
             global valueKeyA, valueKeyB, valueKeyC, valueKeyD
             global total
 
-            valueKeyA = int(input("Enter value for Key A: "))
-            valueKeyB = int(input("Enter value for Key B: "))
-            valueKeyC = int(input("Enter value for Key C: "))
-            valueKeyD = int(input("Enter value for Key D: "))
-            total = int(input("Enter total for grading: "))
+            # valueKeyA = int(input("Enter value for Key A: "))
+            # valueKeyB = int(input("Enter value for Key B: "))
+            # valueKeyC = int(input("Enter value for Key C: "))
+            # valueKeyD = int(input("Enter value for Key D: "))
+            # total = int(input("Enter total for grading: "))
+            valueKeyA = 1
+            valueKeyB = 1
+            valueKeyC = 1
+            valueKeyD = 1
+            total = 2
 
         changeKeyValues()
 
@@ -155,27 +160,28 @@ class FileSelectionWindow(tk.Frame):
         def canned_comments():
 
             comment1_lbl = tk.Label(self, fg="black", text="Comment 1: ", font=("Calibri", 12))
-            comment1_lbl.place(x=100, y=600)
-            commentsEntry1: tk.Text = tk.Text(self, height="2", width="60")
-            commentsEntry1.place(x=250, y=602)
+            comment1_lbl.place(x=75, y=554)
+            commentsEntry1: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry1.place(x=170, y=552)
             comment2_lbl = tk.Label(self, fg="black", text="Comment 2: ", font=("Calibri", 12))
-            comment2_lbl.place(x=100, y=640)
-            commentsEntry2: tk.Text = tk.Text(self, height="2", width="60")
-            commentsEntry2.place(x=250, y=642)
+            comment2_lbl.place(x=75, y=594)
+            commentsEntry2: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry2.place(x=170, y=592)
             comment3_lbl = tk.Label(self, fg="black", text="Comment 3: ", font=("Calibri", 12))
-            comment3_lbl.place(x=100, y=680)
-            commentsEntry3: tk.Text = tk.Text(self, height="2", width="60")
-            commentsEntry3.place(x=250, y=682)
+            comment3_lbl.place(x=75, y=634)
+            commentsEntry3: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry3.place(x=170, y=632)
             comment4_lbl = tk.Label(self, fg="black", text="Comment 4: ", font=("Calibri", 12))
-            comment4_lbl.place(x=100, y=720)
-            commentsEntry4: tk.Text = tk.Text(self, height="2", width="60")
-            commentsEntry4.place(x=250, y=722)
+            comment4_lbl.place(x=75, y=674)
+            commentsEntry4: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry4.place(x=170, y=672)
             comment5_lbl = tk.Label(self, fg="black", text="Comment 5: ", font=("Calibri", 12))
-            comment5_lbl.place(x=100, y=760)
-            commentsEntry5: tk.Text = tk.Text(self, height="2", width="60")
-            commentsEntry5.place(x=250, y=762)
+            comment5_lbl.place(x=75, y=714)
+            commentsEntry5: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry5.place(x=170, y=712)
 
             def saveCommentsButton():
+
                 global commentA, commentB, commentC, commentD, commentE
                 print("Save button pressed")
                 commentA = commentsEntry1.get("1.0", tk.END)
@@ -189,8 +195,22 @@ class FileSelectionWindow(tk.Frame):
                 commentE = commentsEntry5.get("1.0", tk.END)
                 print(commentE)
 
+                # ToDo come up with a better solution to this
+                commentsEntry1.destroy()
+                commentsEntry2.destroy()
+                commentsEntry3.destroy()
+                commentsEntry4.destroy()
+                commentsEntry5.destroy()
+                comment1_lbl.destroy()
+                comment2_lbl.destroy()
+                comment3_lbl.destroy()
+                comment4_lbl.destroy()
+                comment5_lbl.destroy()
+                saveButton.destroy()
+
+            # Canned comments save button
             saveButton = tk.Button(self, text="Save", width=13, command=saveCommentsButton)
-            saveButton.place(x=300, y=820)
+            saveButton.place(x=300, y=755)
 
         def back():
             # ToDo Have to fix this issue with closing the window using withdraw
@@ -209,40 +229,39 @@ class FileSelectionWindow(tk.Frame):
 
         for col in cols:
             listBox.heading(col, text=col)
-            listBox.place(x=75, y=300)
+            listBox.place(x=75, y=270)
 
-        lbl_title = tk.Label(self, text="File Selection", font=("Arial Bold", 20))
-        lbl_title.place(x=400, y=25, anchor="center")
+        lbl_title = tk.Label(self, text="Student File Selection", font=("Arial Bold", 20))
+        lbl_title.place(x=400, y=35, anchor="center")
 
-        lbl_sub_title = tk.Label(self, text="List of Student Files", font=("Arial", 15))
-        lbl_sub_title.place(x=400, y=250, anchor="center")
-
-        lbl_student_files = tk.Label(self, text="Table of student files listed below",
-                                     font=("Arial", 12))
-        lbl_student_files.place(x=400, y=280, anchor="center")
-
-        fileAccessPath = tk.Label(self, fg="black", text="FilePath - Students Assignments: ", font=("Calibri", 12))
-        fileAccessPath.place(x=100, y=150)
+        fileAccessPath = tk.Label(self, fg="black", text="Enter File Path of Assignments: ", font=("Calibri", 12))
+        fileAccessPath.place(x=75, y=150)
 
         filePath: tk.Entry = tk.Entry(self, width="35")
-        filePath.place(x=320, y=155)
+        filePath.place(x=300, y=155)
         filePath.insert(0, '')
 
         displayAssignment = tk.Button(self, text="Display Assignments", command=getFileSelection, width=15)
-        displayAssignment.place(x=550, y=150)
+        displayAssignment.place(x=530, y=150)
 
-        clearButton = tk.Button(self, text="Clear", command=clearEntry, height=1, width=6)
-        clearButton.place(x=700, y=150)
+        clearButton = tk.Button(self, text="Clear Path", command=clearEntry, height=1, width=13)
+        clearButton.place(x=660, y=150)
 
-        selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess,
-                                              width=15)
-        selectStudentAssignButton.place(x=280, y=550)
+        lbl_sub_title = tk.Label(self, text="List of Student Files", font=("Arial", 15))
+        lbl_sub_title.place(x=400, y=220, anchor="center")
 
+        lbl_student_files = tk.Label(self, text="Table of student files listed below", font=("Arial", 12))
+        lbl_student_files.place(x=400, y=240, anchor="center")
+
+        # Buttons at the bottom of the student file selection screen
         cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15, command=canned_comments)
-        cannedCommentsButton.place(x=100, y=550)
+        cannedCommentsButton.place(x=320, y=510)
+
+        selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
+        selectStudentAssignButton.place(x=550, y=510)
 
         backButton = tk.Button(self, text="Back", width=15, command=back)
-        backButton.place(x=480, y=550)
+        backButton.place(x=75, y=510)
 
         def selectAssignment():
             print("Select Assignment button selected")
@@ -549,7 +568,7 @@ class FileSelectionWindow(tk.Frame):
 
             # Scrollbar on X and Y axis of GradeTextBox
             GradeTextBoxScrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
-            GradeTextBox['yscroll'] = scrollbar.set
+            GradeTextBox['yscroll'] = GradeTextBoxScrollbar.set
 
             GradeTextBoxScrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
 
