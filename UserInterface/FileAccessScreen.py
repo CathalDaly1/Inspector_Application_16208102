@@ -73,10 +73,17 @@ class FileSelectionWindow(tk.Frame):
 
         # Gets the file name of the selection of the listbox - achieved by 'text'
         def fileAccess():
-            item = listBox.selection()[0]
-            global itemSelected
-            itemSelected = listBox.item(item, 'text')
-            listboxSelection()
+            try:
+                item = listBox.selection()[0]
+                global itemSelected
+                itemSelected = listBox.item(item, 'text')
+                listboxSelection()
+                itemSelected_lbl = tk.Label(self, text='Item selected from list', font=("Arial", 9))
+                itemSelected_lbl.place(x=400, y=259, anchor="center")
+
+            except IndexError:
+                itemSelectedError_lbl = tk.Label(self, text='Please select an item from the list below', fg="red", font=("Arial", 9))
+                itemSelectedError_lbl.place(x=400, y=259, anchor="center")
 
         # Gets the click of the element in the listbox in order to open file in the next window
         def doubleClickListboxEvent(event):

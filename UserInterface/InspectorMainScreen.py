@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from PIL import ImageTk, Image
+from PIL import ImageTk,Image
 
 import UserInterface.ProgrammedKeysScreen
 import UserInterface.FileAccessScreen
@@ -56,12 +56,12 @@ class MainFrame(tk.Frame):
         lbl_title = tk.Label(self, text="Inspector - Grading Application", font=("Arial Bold", 20))
         lbl_title.place(x=400, y=50, anchor="center")
 
-        about_text = tk.Label(self, width=58, height=19, relief="solid", bd=1, padx=10, bg="white")
+        about_text = tk.Label(self, width=100, height=19, relief="solid", bd=1, padx=10, bg="white")
         about_text.pack_propagate(0)
-        tk.Label(about_text, bg="white", fg="black", text="About Inspector", font=("Calibri Bold", 16)).pack()
-        about_text.place(x=30, y=300)
+        tk.Label(about_text, bg="white", fg="black", text="About Inspector", font=("Calibri Bold", 18)).pack()
+        about_text.place(x=30, y=100)
         tk.Label(about_text, bg="white", fg="black",
-                 text="\n\nInspector is a rapid-fire keystroke driven grading assessment\n"
+                 text="\nInspector is a rapid-fire keystroke driven grading assessment\n"
                       + "application in which lecturers can grade assignments with a\n "
                       + "high turnaround time and decrease the time spent of repetitive\n "
                       + " and rote tasks. The time taken to complete this tedious and  \n "
@@ -72,23 +72,33 @@ class MainFrame(tk.Frame):
                  font=("Calibri", 12)).pack()
 
         # Created Label for pre programmed keys section
-        prog_keys_lbl = tk.Label(self, width=40, height=19, relief="solid", bd=1, padx=10, bg="white")
+        prog_keys_lbl = tk.Label(self, width=100, height=19, relief="solid", bd=1, padx=10, bg="white")
         prog_keys_lbl.pack_propagate(0)
 
         tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n", font=("Calibri Bold", 16)).pack()
         tk.Label(prog_keys_lbl, bg="white", fg="black",
-                 text="Click the change button below to change\n keystroke values\n", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A = +2", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B = +1", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = -1", font=("Calibri", 12)).pack()
-        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -2", font=("Calibri", 12)).pack()
-        prog_keys_lbl.place(x=470, y=300)
+                 text="Key values can be changed after the\n proceed button is selected", font=("Calibri", 12)).pack()
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A = +x marks", font=("Calibri", 12)).place(x=200, y=120)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B = +x marks", font=("Calibri", 12)).place(x=200, y=140)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = -x marks", font=("Calibri", 12)).place(x=200, y=160)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -x marks", font=("Calibri", 12)).place(x=200, y=180)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key S = Start Grading", font=("Calibri", 12)).place(x=200, y=200)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E = End Grading", font=("Calibri", 12)).place(x=200, y=222)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 1 = Comment 1", font=("Calibri", 12)).place(x=400, y=120)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 2 = Comment 2", font=("Calibri", 12)).place(x=400, y=140)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 3 = Comment 3", font=("Calibri", 12)).place(x=400, y=160)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 4 = Comment 4", font=("Calibri", 12)).place(x=400, y=180)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 5 = Comment 5", font=("Calibri", 12)).place(x=400, y=200)
+        tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key Q = Quit Inspector", font=("Calibri", 12)).place(x=400, y=222)
+
+
+        prog_keys_lbl.place(x=30, y=400)
 
         quit_button = tk.Button(self, text="Quit Inspector", fg="red", command=self.quit, height=2, width=12)
-        quit_button.place(x=300, y=700)
+        quit_button.place(x=250, y=700)
 
         proceed_button = tk.Button(self, text="Proceed", fg="black", command=proceedButton, height=2, width=12)
-        proceed_button.place(x=400, y=700)
+        proceed_button.place(x=500, y=700)
 
 
 if __name__ == "__main__":
