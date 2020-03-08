@@ -50,17 +50,12 @@ class FileSelectionWindow(tk.Frame):
 
         def changeKeyValues():
             global valueKeyA, valueKeyB, valueKeyC, valueKeyD
-            global commentA, commentB, commentC, commentD
             global total
 
             valueKeyA = int(input("Enter value for Key A: "))
-            commentA = "Comment A - this is it"
             valueKeyB = int(input("Enter value for Key B: "))
-            commentB = "Comment B - this is it"
             valueKeyC = int(input("Enter value for Key C: "))
-            commentC = "Comment C - this is it"
             valueKeyD = int(input("Enter value for Key D: "))
-            commentD = "Comment D - this is it"
             total = int(input("Enter total for grading: "))
 
         changeKeyValues()
@@ -181,17 +176,18 @@ class FileSelectionWindow(tk.Frame):
             commentsEntry5.place(x=250, y=762)
 
             def saveCommentsButton():
+                global commentA, commentB, commentC, commentD, commentE
                 print("Save button pressed")
-                comment_1 = commentsEntry1.get("1.0", tk.END)
-                print(comment_1)
-                comment_2 = commentsEntry2.get("1.0", tk.END)
-                print(comment_2)
-                comment_3 = commentsEntry3.get("1.0", tk.END)
-                print(comment_3)
-                comment_4 = commentsEntry4.get("1.0", tk.END)
-                print(comment_4)
-                comment_5 = commentsEntry5.get("1.0", tk.END)
-                print(comment_5)
+                commentA = commentsEntry1.get("1.0", tk.END)
+                print(commentA)
+                commentB = commentsEntry2.get("1.0", tk.END)
+                print(commentB)
+                commentC = commentsEntry3.get("1.0", tk.END)
+                print(commentC)
+                commentD = commentsEntry4.get("1.0", tk.END)
+                print(commentD)
+                commentE = commentsEntry5.get("1.0", tk.END)
+                print(commentE)
 
             saveButton = tk.Button(self, text="Save", width=13, command=saveCommentsButton)
             saveButton.place(x=300, y=820)
@@ -200,8 +196,7 @@ class FileSelectionWindow(tk.Frame):
             # ToDo Have to fix this issue with closing the window using withdraw
             UserInterface.InspectorMainScreen.HomeScreen()
 
-        # create Treeview with 3 columns
-
+        # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
         listBox = ttk.Treeview(self, columns=cols, show='headings')
 
@@ -332,7 +327,7 @@ class FileSelectionWindow(tk.Frame):
                 pdf.multi_cell(0, 5, s)
 
                 # Removed the \t from the filepath in order to save as pdf in 'Graded' file
-                savingFilePDF = re.sub('\t', '', item_text[0]+".pdf")
+                savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
                 print(savingFilePDF)
                 pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
 
@@ -365,25 +360,25 @@ class FileSelectionWindow(tk.Frame):
                 elif keystroke.lower() == 'a':
 
                     total += valueKeyA
-                    the_queue.put("Key A: " + str(total) + " marks - " + commentA)
+                    the_queue.put("Key A: " + str(total) + " marks - " + "Implement comments for keys")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'b':
 
                     total += valueKeyB
-                    the_queue.put("Key B: " + str(total) + " marks - " + commentB)
+                    the_queue.put("Key B: " + str(total) + " marks - " + "Implement comments for keys")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'c':
 
                     total -= valueKeyC
-                    the_queue.put("Key C: " + str(total) + " marks - " + commentC)
+                    the_queue.put("Key C: " + str(total) + " marks - " + "Implement comments for keys")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'd':
 
                     total -= valueKeyD
-                    the_queue.put("Key D: " + str(total) + " marks - " + commentD)
+                    the_queue.put("Key D: " + str(total) + " marks - " + "Implement comments for keys")
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'e':
@@ -392,24 +387,54 @@ class FileSelectionWindow(tk.Frame):
                     keystrokeApplication_thread()
 
                 elif keystroke == '1':
-                    the_queue.put("Comment 1: ToDo add comments")
-                    keystrokeApplication_thread()
+                    try:
+                        commentA
+                    except NameError:
+                        the_queue.put("You have not added a comment for Key 1")
+                        keystrokeApplication_thread()
+                    else:
+                        the_queue.put("Comment 1: " + commentA)
+                        keystrokeApplication_thread()
 
                 elif keystroke == '2':
-                    the_queue.put("Comment 2: ToDo add comments")
-                    keystrokeApplication_thread()
+                    try:
+                        commentB
+                    except NameError:
+                        the_queue.put("You have not added a comment for Key 2")
+                        keystrokeApplication_thread()
+                    else:
+                        the_queue.put("Comment 2: " + commentB)
+                        keystrokeApplication_thread()
 
                 elif keystroke == '3':
-                    the_queue.put("Comment 3: ToDo add comments")
-                    keystrokeApplication_thread()
+                    try:
+                        commentC
+                    except NameError:
+                        the_queue.put("You have not added a comment for Key 3")
+                        keystrokeApplication_thread()
+                    else:
+                        the_queue.put("Comment 3: " + commentC)
+                        keystrokeApplication_thread()
 
                 elif keystroke == '4':
-                    the_queue.put("Comment 4: ToDo add comments")
-                    keystrokeApplication_thread()
+                    try:
+                        commentD
+                    except NameError:
+                        the_queue.put("You have not added a comment for Key 4")
+                        keystrokeApplication_thread()
+                    else:
+                        the_queue.put("Comment 4: " + commentD)
+                        keystrokeApplication_thread()
 
                 elif keystroke == '5':
-                    the_queue.put("Comment 5: ToDo add comments")
-                    keystrokeApplication_thread()
+                    try:
+                        commentE
+                    except NameError:
+                        the_queue.put("You have not added a comment for Key 5")
+                        keystrokeApplication_thread()
+                    else:
+                        the_queue.put("Comment 5: " + commentE)
+                        keystrokeApplication_thread()
 
                 elif keystroke == 'z':
                     the_queue.empty()
@@ -425,6 +450,7 @@ class FileSelectionWindow(tk.Frame):
             def queue_callback():
                 try:
                     message = the_queue.get(block=False)
+
                 except queue.Empty:
                     # retry
                     window.after(100, queue_callback)
@@ -456,13 +482,13 @@ class FileSelectionWindow(tk.Frame):
             shortcutLbl.place(x=850, y=70, anchor="center")
 
             keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
-                                                                                                        "Key B: +" + str(
+                                                                                                               "Key B: +" + str(
                 valueKeyB) + "\n"
-                      "Key C: -" + str(
+                             "Key C: -" + str(
                 valueKeyC) + "\n"
-                      "Key D: -" + str(
+                             "Key D: -" + str(
                 valueKeyD) + "\n"
-                      "Key E: Exit grading", font=("Arial", 12))
+                             "Key E: Exit grading", font=("Arial", 12))
             keysValue.place(x=850, y=150, anchor="center")
 
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
@@ -494,6 +520,11 @@ class FileSelectionWindow(tk.Frame):
 
             text.place(x=80, y=95)
 
+            # Adding comments into the students grade textbox
+            def addAssignmentComments():
+                text.insert(tk.END, "\n\n***Grade/Comments***\n\n")
+                text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
+
             # Scrollbar on X and Y axis of text box
             scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
             text['yscroll'] = scrollbar.set
@@ -516,18 +547,13 @@ class FileSelectionWindow(tk.Frame):
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
 
-            text.insert("1.0", GradeTextBox)
-
-            def addComments():
-                text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
-
             # Scrollbar on X and Y axis of GradeTextBox
             GradeTextBoxScrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
             GradeTextBox['yscroll'] = scrollbar.set
 
             GradeTextBoxScrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
 
-            addComments = tk.Button(window, text="Add comments above", width=25, command=addComments)
+            addComments = tk.Button(window, text="Add comments above", width=25, command=addAssignmentComments)
             addComments.place(x=285, y=910)
 
             # Opens the file and copies the contents into the text box for editing
