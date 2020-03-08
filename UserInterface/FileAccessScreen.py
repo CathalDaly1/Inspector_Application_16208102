@@ -76,16 +76,20 @@ class FileSelectionWindow(tk.Frame):
             item = listBox.selection()[0]
             global itemSelected
             itemSelected = listBox.item(item, 'text')
-            print(itemSelected)
             listboxSelection()
 
         # Gets the click of the element in the listbox in order to open file in the next window
         def doubleClickListboxEvent(event):
+            print("test")
             item = listBox.selection()
             for i in item:
                 global selection
                 selection = listBox.item(i, "values")[0]
-                print("You clicked: " + selection)
+                if selection.endswith('.txt'):
+                    print("ends with")
+                else:
+                    selection = listBox.item(i, "values")[0]
+                    print("You clicked: " + selection)
 
         def listboxSelection():
             # Check if the filepath has been entered
@@ -129,6 +133,7 @@ class FileSelectionWindow(tk.Frame):
                     displayAssignment.config(state="disabled")
 
                     # Double click on an element in the listbox will run the doubleClickListboxEvent() method
+
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
 
                     return assignmentFilePath
@@ -156,7 +161,6 @@ class FileSelectionWindow(tk.Frame):
                 # Folder in the listbox
                 else:
                     abspath = os.path.join(assignmentFilePath, studentFiles)
-                    print(studentFiles)
                     oid2 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
                     process_directory(oid2, abspath)
 
@@ -197,19 +201,6 @@ class FileSelectionWindow(tk.Frame):
                 print(commentD)
                 commentE = commentsEntry5.get("1.0", tk.END)
                 print(commentE)
-
-                # ToDo come up with a better solution to this
-                commentsEntry1.destroy()
-                commentsEntry2.destroy()
-                commentsEntry3.destroy()
-                commentsEntry4.destroy()
-                commentsEntry5.destroy()
-                comment1_lbl.destroy()
-                comment2_lbl.destroy()
-                comment3_lbl.destroy()
-                comment4_lbl.destroy()
-                comment5_lbl.destroy()
-                saveButton.destroy()
 
             # Canned comments save button
             saveButton = tk.Button(self, text="Save", width=13, command=saveCommentsButton)
@@ -277,11 +268,9 @@ class FileSelectionWindow(tk.Frame):
 
             global file
             global gradedFilesFolder
-            fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
 
             # Get the click event of the selection from the listbox, use that selection to create a new filepath and add new graded files
-            gradedFilesFolder = filePath.get().replace("\\", "/") + "/" + "/Graded Assignments" + "/" + selection + "/"
-            print(gradedFilesFolder)
+            gradedFilesFolder = filePath.get().replace("\\", "/") + "/" + "Graded Assignments" + "/" + selection + "/"
             if not os.path.exists(gradedFilesFolder):
                 os.makedirs(gradedFilesFolder)
 
@@ -550,13 +539,13 @@ class FileSelectionWindow(tk.Frame):
                 text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
 
             # Scrollbar on X and Y axis of text box
-            scrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
-            text['yscroll'] = scrollbar.set
+            scrollbarAssignment = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
+            text['yscroll'] = scrollbarAssignment.set
 
             scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=text.xview)
-            text['yscroll'] = scrollbar.set
+            text['yscroll'] = scrollbarAssignment.set
 
-            scrollbar.place(in_=text, relx=1.0, relheight=1.0, bordermode="outside")
+            scrollbarAssignment.place(in_=text, relx=1.0, relheight=1.0, bordermode="outside")
             scrollbarHor.place(in_=text, rely=1.0, relwidth=1.0, bordermode="outside")
 
             backButton2 = tk.Button(window, text="Back", width=15, command=back)
