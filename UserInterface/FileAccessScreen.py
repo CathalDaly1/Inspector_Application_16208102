@@ -8,7 +8,6 @@ from tkinter import ttk, messagebox
 from fpdf import FPDF
 
 import UserInterface.InspectorMainScreen
-import UserInterface.roughWork
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -57,11 +56,11 @@ class FileSelectionWindow(tk.Frame):
             # valueKeyC = int(input("Enter value for Key C: "))
             # valueKeyD = int(input("Enter value for Key D: "))
             # total = int(input("Enter total for grading: "))
-            valueKeyA = 1
-            valueKeyB = 1
-            valueKeyC = 1
-            valueKeyD = 1
-            total = 2
+            valueKeyA = 10
+            valueKeyB = 5
+            valueKeyC = 5
+            valueKeyD = 10
+            total = 50
 
         changeKeyValues()
 
@@ -82,7 +81,8 @@ class FileSelectionWindow(tk.Frame):
                 itemSelected_lbl.place(x=400, y=259, anchor="center")
 
             except IndexError:
-                itemSelectedError_lbl = tk.Label(self, text='Please select an item from the list below', fg="red", font=("Arial", 9))
+                itemSelectedError_lbl = tk.Label(self, text='Please select an item from the list below', fg="red",
+                                                 font=("Arial", 9))
                 itemSelectedError_lbl.place(x=400, y=259, anchor="center")
 
         # Gets the click of the element in the listbox in order to open file in the next window
@@ -195,7 +195,6 @@ class FileSelectionWindow(tk.Frame):
             commentsEntry5.place(x=170, y=712)
 
             def saveCommentsButton():
-
                 global commentA, commentB, commentC, commentD, commentE
                 print("Save button pressed")
                 commentA = commentsEntry1.get("1.0", tk.END)
@@ -268,8 +267,8 @@ class FileSelectionWindow(tk.Frame):
             print("Select Assignment button selected")
             window = tk.Tk()
             window.title("Inspector - Grading Application")
-            window.geometry("985x985+50+50")
-            window.resizable(False, False)
+            window.geometry("1070x985+50+50")
+            # window.resizable(False, False)
 
             menubar = tk.Menu(window)
 
@@ -302,6 +301,14 @@ class FileSelectionWindow(tk.Frame):
             def viewKeystrokes():
                 print("View Keystrokes pressed")
 
+            def viewCannedComments():
+                try :
+                    commentsCombined = "Comment 1: " + commentA + "Comment 2: " + commentB + "Comment 3: " + commentC + "Comment 4: " + commentD + "Comment 5: " + commentE
+                    messagebox.showinfo("Canned Comments", commentsCombined)
+
+                except NameError:
+                    messagebox.showinfo("Canned Comments", "You have not initialized all comments")
+
             def howToVideo():
                 print("Implement functionality to play video on window")
 
@@ -309,6 +316,7 @@ class FileSelectionWindow(tk.Frame):
             filemenu = tk.Menu(menubar, tearoff=0)
             # ToDo add the display with the keystrokes in this menu
             filemenu.add_command(label="View Keystrokes", command=viewKeystrokes)
+            filemenu.add_command(label="View Canned Comments", command=viewCannedComments)
             filemenu.add_separator()
             filemenu.add_command(label="Close Window", command=back)
             menubar.add_cascade(label="File", menu=filemenu)
@@ -353,8 +361,6 @@ class FileSelectionWindow(tk.Frame):
 
             # Highlights code and text when text is selected and highlight button is pressed
             def highlightCode():
-                global count
-                count = 0
                 count = 0
                 if text.tag_ranges('sel'):
                     text.tag_add('color' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
@@ -369,7 +375,7 @@ class FileSelectionWindow(tk.Frame):
             # Keystroke driven application which is completed using threads and a thread queue as Tkinter is not thread safe
             # ToDo make if elif statement more efficient and faster
             def keystrokeApplication_thread():
-                # ToDo enter keystroke in the entry box and use this as input fot the keystroke app
+                # ToDo enter keystroke in the entry box and use this as input for the keystroke app
                 keystroke = str(input())
                 global total
                 if keystroke.lower() == "s":
@@ -495,24 +501,35 @@ class FileSelectionWindow(tk.Frame):
             assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
             assign_correction_lbl.place(x=400, y=25, anchor="center")
 
-            subTitle_lbl = tk.Label(window, text="Student: //" + studentID + "'s program", font=("Arial", 15))
+            subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
             subTitle_lbl.place(x=400, y=70, anchor="center")
 
-            shortcutLbl = tk.Label(window, text="Key Shortcuts", font=("Arial", 15))
-            shortcutLbl.place(x=850, y=70, anchor="center")
-
-            keysValue = tk.Label(window, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
-                                                                                                               "Key B: +" + str(
+            keystrokes_lbl = tk.Label(window, width=30, height=17, relief="solid", bd=1, padx=10, bg="white")
+            keystrokes_lbl.pack_propagate(0)
+            keystrokes_lbl.place(x=790, y=95)
+            tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
+            tk.Label(keystrokes_lbl, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
+                                                                                                           "Key B: +" + str(
                 valueKeyB) + "\n"
                              "Key C: -" + str(
                 valueKeyC) + "\n"
                              "Key D: -" + str(
                 valueKeyD) + "\n"
-                             "Key E: Exit grading", font=("Arial", 12))
-            keysValue.place(x=850, y=150, anchor="center")
+                             "Key E: Exit grading"
+                                          + "\n"
+                                            "Key 1: Comment 1"
+                                          + "\n"
+                                            "Key 2: Comment 2"
+                                          + "\n"
+                                            "Key 3: Comment 3"
+                                          + "\n"
+                                            "Key 4: Comment 4"
+                                          + "\n"
+                                            "Key 5: Comment 5",
+                     font=("Arial", 12)).pack()
 
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
-            studentFinalGrade.place(x=800, y=245)
+            studentFinalGrade.place(x=790, y=360)
 
             # The Text widget holding the line numbers.
             lnText = tk.Text(window,
@@ -558,11 +575,11 @@ class FileSelectionWindow(tk.Frame):
             backButton2 = tk.Button(window, text="Back", width=15, command=back)
             backButton2.place(x=100, y=685)
 
-            submitButton = tk.Button(window, text="Submit", width=15, command=submitAssignment)
-            submitButton.place(x=300, y=685)
-
             highlightButton = tk.Button(window, text="Highlight", width=15, command=highlightCode)
-            highlightButton.place(x=480, y=685)
+            highlightButton.place(x=300, y=685)
+
+            submitButton = tk.Button(window, text="Submit", width=15, command=submitAssignment)
+            submitButton.place(x=480, y=685)
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
