@@ -2,6 +2,7 @@ import os
 import queue
 import re
 import threading
+import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -48,19 +49,20 @@ class FileSelectionWindow(tk.Frame):
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
 
         def changeKeyValues():
-            global valueKeyA, valueKeyB, valueKeyC, valueKeyD
-            global total
+            global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a
 
-            # valueKeyA = int(input("Enter value for Key A: "))
-            # valueKeyB = int(input("Enter value for Key B: "))
-            # valueKeyC = int(input("Enter value for Key C: "))
-            # valueKeyD = int(input("Enter value for Key D: "))
-            # total = int(input("Enter total for grading: "))
-            valueKeyA = 10
-            valueKeyB = 5
-            valueKeyC = 5
-            valueKeyD = 10
-            total = 50
+            valueKeyA = int(input("Enter value for Key A: "))
+            valueKeyB = int(input("Enter value for Key B: "))
+            valueKeyC = int(input("Enter value for Key C: "))
+            valueKeyD = int(input("Enter value for Key D: "))
+            total = int(input("Enter total for grading: "))
+            a = total
+            print(a)
+            # valueKeyA = 10
+            # valueKeyB = 5
+            # valueKeyC = 5
+            # valueKeyD = 10
+            # total = 50
 
         changeKeyValues()
 
@@ -378,6 +380,7 @@ class FileSelectionWindow(tk.Frame):
                 # ToDo enter keystroke in the entry box and use this as input for the keystroke app
                 keystroke = str(input())
                 global total
+
                 if keystroke.lower() == "s":
 
                     the_queue.put("Grading has started - Total marks: " + str(total))
@@ -410,6 +413,8 @@ class FileSelectionWindow(tk.Frame):
                 elif keystroke.lower() == 'e':
 
                     the_queue.put("Final Grade: " + str(total) + " marks")
+                    # sets the total to the initial value again
+                    total = a
                     keystrokeApplication_thread()
 
                 elif keystroke == '1':
@@ -482,7 +487,7 @@ class FileSelectionWindow(tk.Frame):
                     window.after(100, queue_callback)
                     return
 
-                print("After_callback returned " + message)
+                # print("After_callback returned " + message)
                 if message is not None:
                     # Print out the message once there is something in the queue
                     studentFinalGrade['text'] = message
@@ -493,10 +498,9 @@ class FileSelectionWindow(tk.Frame):
                     window.after(10, queue_callback)
 
             # Start the thread and run the keystrokeApplication_thread function
-            threading.Thread(target=keystrokeApplication_thread).start()
+            thread = threading.Thread(target=keystrokeApplication_thread)
+            thread.start()
             window.after(10, queue_callback)
-
-            studentID = "Implement"
 
             assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
             assign_correction_lbl.place(x=400, y=25, anchor="center")
@@ -559,6 +563,7 @@ class FileSelectionWindow(tk.Frame):
 
             # Adding comments into the students grade textbox
             def addAssignmentComments():
+                text.insert(tk.END, "\n")
                 text.insert(tk.END, "\n\n***Grade/Comments***\n\n")
                 text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
 
