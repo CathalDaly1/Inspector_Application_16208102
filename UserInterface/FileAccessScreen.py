@@ -2,7 +2,6 @@ import os
 import queue
 import re
 import threading
-import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -27,7 +26,7 @@ class FileDisplayWindow(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        self.geometry("800x850+100+100")
+        self.geometry("800x900+100+100")
         self.title("Inspector - Grading Application")
         self.resizable(False, False)
 
@@ -47,24 +46,6 @@ class FileSelectionWindow(tk.Frame):
 
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
-
-        def changeKeyValues():
-            global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a
-
-            valueKeyA = int(input("Enter value for Key A: "))
-            valueKeyB = int(input("Enter value for Key B: "))
-            valueKeyC = int(input("Enter value for Key C: "))
-            valueKeyD = int(input("Enter value for Key D: "))
-            total = int(input("Enter total for grading: "))
-            a = total
-            print(a)
-            # valueKeyA = 10
-            # valueKeyB = 5
-            # valueKeyC = 5
-            # valueKeyD = 10
-            # total = 50
-
-        changeKeyValues()
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -173,46 +154,145 @@ class FileSelectionWindow(tk.Frame):
                     oid2 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
                     process_directory(oid2, abspath)
 
+        def changeKeyValues():
+
+            keysHeading_lbl = tk.Label(self, fg="black", text="Enter Values for Keys and associated comments below", font=("Calibri Bold", 14))
+            keysHeading_lbl.place(x=75, y=564)
+            keyA_lbl = tk.Label(self, fg="black", text="Key A: ", font=("Calibri", 12))
+            keyA_lbl.place(x=75, y=594)
+            keyAEntry: tk.Text = tk.Text(self, height="1", width="10")
+            keyAEntry.place(x=170, y=592)
+            keyAComment_lbl = tk.Label(self, fg="black", text="Comment A: ", font=("Calibri", 12))
+            keyAComment_lbl.place(x=260, y=594)
+            keyACommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyACommentEntry.place(x=350, y=592)
+
+            keyB_lbl = tk.Label(self, fg="black", text="Key B: ", font=("Calibri", 12))
+            keyB_lbl.place(x=75, y=634)
+            keyBEntry: tk.Text = tk.Text(self, height="1", width="10")
+            keyBEntry.place(x=170, y=632)
+            keyBComment_lbl = tk.Label(self, fg="black", text="Comment B: ", font=("Calibri", 12))
+            keyBComment_lbl.place(x=260, y=634)
+            keyBCommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyBCommentEntry.place(x=350, y=632)
+
+            keyC_lbl = tk.Label(self, fg="black", text="Key C: ", font=("Calibri", 12))
+            keyC_lbl.place(x=75, y=674)
+            keyCEntry: tk.Text = tk.Text(self, height="1", width="10")
+            keyCEntry.place(x=170, y=672)
+            keyCComment_lbl = tk.Label(self, fg="black", text="Comment C: ", font=("Calibri", 12))
+            keyCComment_lbl.place(x=260, y=674)
+            keyCCommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyCCommentEntry.place(x=350, y=672)
+
+            keyD_lbl = tk.Label(self, fg="black", text="Key D: ", font=("Calibri", 12))
+            keyD_lbl.place(x=75, y=714)
+            keyDEntry: tk.Text = tk.Text(self, height="1", width="10")
+            keyDEntry.place(x=170, y=712)
+            keyDComment_lbl = tk.Label(self, fg="black", text="Comment D: ", font=("Calibri", 12))
+            keyDComment_lbl.place(x=260, y=714)
+            keyDCommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyDCommentEntry.place(x=350, y=712)
+
+            total_lbl = tk.Label(self, fg="black", text="Total Marks: ", font=("Calibri", 12))
+            total_lbl.place(x=75, y=754)
+            totalEntry: tk.Text = tk.Text(self, height="1", width="10")
+            totalEntry.place(x=170, y=752)
+
+            def saveKeysButton():
+                global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD
+                valueKeyA = int(keyAEntry.get("1.0", tk.END))
+                valueKeyB = int(keyBEntry.get("1.0", tk.END))
+                valueKeyC = int(keyCEntry.get("1.0", tk.END))
+                valueKeyD = int(keyDEntry.get("1.0", tk.END))
+                total = int(totalEntry.get("1.0", tk.END))
+                commentA = keyACommentEntry.get("1.0", tk.END)
+                commentB = keyBCommentEntry.get("1.0", tk.END)
+                commentC = keyCCommentEntry.get("1.0", tk.END)
+                commentD = keyDCommentEntry.get("1.0", tk.END)
+
+                a = int(total)
+                keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
+                keysSaved_lbl.place(x=320, y=570)
+
+                # Collapse key values entry's and labels when button is selected
+                keyAEntry.destroy()
+                keyBEntry.destroy()
+                keyCEntry.destroy()
+                keyDEntry.destroy()
+                totalEntry.destroy()
+                keyA_lbl.destroy()
+                keyB_lbl.destroy()
+                keyC_lbl.destroy()
+                keyD_lbl.destroy()
+                total_lbl.destroy()
+                keysHeading_lbl.destroy()
+                keyAComment_lbl.destroy()
+                keyACommentEntry.destroy()
+                keyBComment_lbl.destroy()
+                keyBCommentEntry.destroy()
+                keyCComment_lbl.destroy()
+                keyCCommentEntry.destroy()
+                keyDComment_lbl.destroy()
+                keyDCommentEntry.destroy()
+                saveButton.destroy()
+
+                changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15, command=changeKeyValues)
+                changeKeyValuesButton.place(x=320, y=540)
+
+            saveButton = tk.Button(self, text="Save", width=13, command=saveKeysButton)
+            saveButton.place(x=300, y=795)
+
+        changeKeyValues()
+
         def canned_comments():
 
             comment1_lbl = tk.Label(self, fg="black", text="Comment 1: ", font=("Calibri", 12))
-            comment1_lbl.place(x=75, y=554)
+            comment1_lbl.place(x=75, y=594)
             commentsEntry1: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry1.place(x=170, y=552)
+            commentsEntry1.place(x=170, y=592)
             comment2_lbl = tk.Label(self, fg="black", text="Comment 2: ", font=("Calibri", 12))
-            comment2_lbl.place(x=75, y=594)
+            comment2_lbl.place(x=75, y=634)
             commentsEntry2: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry2.place(x=170, y=592)
+            commentsEntry2.place(x=170, y=632)
             comment3_lbl = tk.Label(self, fg="black", text="Comment 3: ", font=("Calibri", 12))
-            comment3_lbl.place(x=75, y=634)
+            comment3_lbl.place(x=75, y=674)
             commentsEntry3: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry3.place(x=170, y=632)
+            commentsEntry3.place(x=170, y=672)
             comment4_lbl = tk.Label(self, fg="black", text="Comment 4: ", font=("Calibri", 12))
-            comment4_lbl.place(x=75, y=674)
+            comment4_lbl.place(x=75, y=714)
             commentsEntry4: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry4.place(x=170, y=672)
+            commentsEntry4.place(x=170, y=712)
             comment5_lbl = tk.Label(self, fg="black", text="Comment 5: ", font=("Calibri", 12))
-            comment5_lbl.place(x=75, y=714)
+            comment5_lbl.place(x=75, y=754)
             commentsEntry5: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry5.place(x=170, y=712)
+            commentsEntry5.place(x=170, y=752)
 
             def saveCommentsButton():
                 global commentA, commentB, commentC, commentD, commentE
                 print("Save button pressed")
                 commentA = commentsEntry1.get("1.0", tk.END)
-                print(commentA)
                 commentB = commentsEntry2.get("1.0", tk.END)
-                print(commentB)
                 commentC = commentsEntry3.get("1.0", tk.END)
-                print(commentC)
                 commentD = commentsEntry4.get("1.0", tk.END)
-                print(commentD)
                 commentE = commentsEntry5.get("1.0", tk.END)
-                print(commentE)
+                # When save button is pressed, save the comments and destroy the entry's and labels
+                commentsEntry1.destroy()
+                commentsEntry2.destroy()
+                commentsEntry3.destroy()
+                commentsEntry4.destroy()
+                commentsEntry5.destroy()
+                comment1_lbl.destroy()
+                comment2_lbl.destroy()
+                comment3_lbl.destroy()
+                comment4_lbl.destroy()
+                comment5_lbl.destroy()
+                saveButton.destroy()
 
-            # Canned comments save button
+                # Canned comments save button
+
             saveButton = tk.Button(self, text="Save", width=13, command=saveCommentsButton)
-            saveButton.place(x=300, y=755)
+            saveButton.place(x=300, y=795)
 
         def back():
             # ToDo Have to fix this issue with closing the window using withdraw
@@ -304,7 +384,7 @@ class FileSelectionWindow(tk.Frame):
                 print("View Keystrokes pressed")
 
             def viewCannedComments():
-                try :
+                try:
                     commentsCombined = "Comment 1: " + commentA + "Comment 2: " + commentB + "Comment 3: " + commentC + "Comment 4: " + commentD + "Comment 5: " + commentE
                     messagebox.showinfo("Canned Comments", commentsCombined)
 
@@ -315,13 +395,12 @@ class FileSelectionWindow(tk.Frame):
                 print("Implement functionality to play video on window")
 
             # Menubar in the top left of the screen
-            filemenu = tk.Menu(menubar, tearoff=0)
-            # ToDo add the display with the keystrokes in this menu
-            filemenu.add_command(label="View Keystrokes", command=viewKeystrokes)
-            filemenu.add_command(label="View Canned Comments", command=viewCannedComments)
-            filemenu.add_separator()
-            filemenu.add_command(label="Close Window", command=back)
-            menubar.add_cascade(label="File", menu=filemenu)
+            file_menu = tk.Menu(menubar, tearoff=0)
+            file_menu.add_command(label="View Keystrokes", command=viewKeystrokes)
+            file_menu.add_command(label="View Canned Comments", command=viewCannedComments)
+            file_menu.add_separator()
+            file_menu.add_command(label="Close Window", command=back)
+            menubar.add_cascade(label="File", menu=file_menu)
 
             helpMenu = tk.Menu(menubar, tearoff=0)
             helpMenu.add_command(label="How to grade assignments?", command=howToVideo)
@@ -383,31 +462,32 @@ class FileSelectionWindow(tk.Frame):
 
                 if keystroke.lower() == "s":
 
+                    print(total)
                     the_queue.put("Grading has started - Total marks: " + str(total))
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'a':
 
                     total += valueKeyA
-                    the_queue.put("Key A: " + str(total) + " marks - " + "Implement comments for keys")
+                    the_queue.put("Key A: " + str(total) + " marks - " + commentA)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'b':
 
                     total += valueKeyB
-                    the_queue.put("Key B: " + str(total) + " marks - " + "Implement comments for keys")
+                    the_queue.put("Key B: " + str(total) + " marks - " + commentB)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'c':
 
                     total -= valueKeyC
-                    the_queue.put("Key C: " + str(total) + " marks - " + "Implement comments for keys")
+                    the_queue.put("Key C: " + str(total) + " marks - " + commentC)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'd':
 
                     total -= valueKeyD
-                    the_queue.put("Key D: " + str(total) + " marks - " + "Implement comments for keys")
+                    the_queue.put("Key D: " + str(total) + " marks - " + commentD)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'e':
@@ -487,7 +567,7 @@ class FileSelectionWindow(tk.Frame):
                     window.after(100, queue_callback)
                     return
 
-                # print("After_callback returned " + message)
+                print("After_callback returned " + message)
                 if message is not None:
                     # Print out the message once there is something in the queue
                     studentFinalGrade['text'] = message
@@ -495,12 +575,12 @@ class FileSelectionWindow(tk.Frame):
                     GradeTextBox.insert(tk.END, message + "\n")
                     # Scroll to the end of text when new text is added
                     GradeTextBox.see("end")
-                    window.after(10, queue_callback)
+                    window.after(100, queue_callback)
 
             # Start the thread and run the keystrokeApplication_thread function
             thread = threading.Thread(target=keystrokeApplication_thread)
             thread.start()
-            window.after(10, queue_callback)
+            window.after(100, queue_callback)
 
             assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
             assign_correction_lbl.place(x=400, y=25, anchor="center")
@@ -508,7 +588,7 @@ class FileSelectionWindow(tk.Frame):
             subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
             subTitle_lbl.place(x=400, y=70, anchor="center")
 
-            keystrokes_lbl = tk.Label(window, width=30, height=17, relief="solid", bd=1, padx=10, bg="white")
+            keystrokes_lbl = tk.Label(window, width=30, height=22, relief="solid", bd=1, padx=10, bg="white")
             keystrokes_lbl.pack_propagate(0)
             keystrokes_lbl.place(x=790, y=95)
             tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
@@ -533,7 +613,7 @@ class FileSelectionWindow(tk.Frame):
                      font=("Arial", 12)).pack()
 
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
-            studentFinalGrade.place(x=790, y=360)
+            studentFinalGrade.place(x=790, y=430)
 
             # The Text widget holding the line numbers.
             lnText = tk.Text(window,
@@ -564,7 +644,6 @@ class FileSelectionWindow(tk.Frame):
             # Adding comments into the students grade textbox
             def addAssignmentComments():
                 text.insert(tk.END, "\n")
-                text.insert(tk.END, "\n\n***Grade/Comments***\n\n")
                 text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
 
             # Scrollbar on X and Y axis of text box
@@ -592,6 +671,7 @@ class FileSelectionWindow(tk.Frame):
             # Scrollbar on X and Y axis of GradeTextBox
             GradeTextBoxScrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
             GradeTextBox['yscroll'] = GradeTextBoxScrollbar.set
+            GradeTextBox.insert(tk.END, "***Grade/Comments***\n")
 
             GradeTextBoxScrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
 
