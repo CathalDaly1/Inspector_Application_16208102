@@ -1,13 +1,10 @@
+import hashlib
 import tkinter as tk
-
 import psycopg2
-import bcrypt
+from tkinter import *
 
 import UserInterface.FileAccessScreen
-from tkinter import *
-import UserInterface.InspectorMainScreen
 import UserInterface.loginUser
-import RestAPI.db
 
 
 # Created the GUI Screen and also stores each method used in this window
@@ -24,7 +21,7 @@ def registerUser():
     password = StringVar()
     confirmPassword = StringVar()
 
-# Register user connects the the PostgreSQL database, checks connection
+    # Register user connects the the PostgreSQL database, checks connection
     def register():
         def connectToDB():
             connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
@@ -51,16 +48,20 @@ def registerUser():
                 errorLbl.place(x=100, y=165)
 
             else:
+                # Hashing the users password and inserting into the database
+                t_hashed = hashlib.sha256(password_info.encode())
+                t_password = t_hashed.hexdigest()
                 sql = "INSERT INTO Users (username, password) VALUES (%s, %s)"
-                val = (username_info, password_info)
+                val = (username_info, t_password)
                 # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(sql, val)
                 # Closes the connection to the database
                 conn.commit()
+
                 window.withdraw()
-                UserInterface.loginUser.loginUser()
+                UserInterface.loginUser.LoginUserScreen()
         else:
-            # If password and confirm passord are now the same, display error message
+            # If password and confirm password are not the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")
             errorLbl2.place(x=100, y=165)
 

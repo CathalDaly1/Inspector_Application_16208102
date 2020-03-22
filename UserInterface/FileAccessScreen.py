@@ -2,12 +2,12 @@ import os
 import queue
 import re
 import threading
+import tkinter
 import tkinter as tk
 from tkinter import ttk, messagebox
 
 from fpdf import FPDF
 
-import UserInterface.InspectorMainScreen
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -70,16 +70,18 @@ class FileSelectionWindow(tk.Frame):
 
         # Gets the click of the element in the listbox in order to open file in the next window
         def doubleClickListboxEvent(event):
-            print("test")
             item = listBox.selection()
-            for i in item:
-                global selection
-                selection = listBox.item(i, "values")[0]
-                if selection.endswith('.txt'):
-                    print("ends with")
-                else:
+            try:
+                for i in item:
+                    global selection
                     selection = listBox.item(i, "values")[0]
-                    print("You clicked: " + selection)
+                    # ToDo fix this = fileSelection_errorlbl.destroy()
+                    if selection.endswith('.txt'):
+                        pass
+                    else:
+                        selection = listBox.item(i, "values")[0]
+            except IndexError:
+                pass
 
         def listboxSelection():
             # Check if the filepath has been entered
@@ -156,7 +158,8 @@ class FileSelectionWindow(tk.Frame):
 
         def changeKeyValues():
 
-            keysHeading_lbl = tk.Label(self, fg="black", text="Enter Values for Keys and associated comments below", font=("Calibri Bold", 14))
+            keysHeading_lbl = tk.Label(self, fg="black", text="Enter Values for Keys and associated comments below",
+                                       font=("Calibri Bold", 14))
             keysHeading_lbl.place(x=75, y=564)
             keyA_lbl = tk.Label(self, fg="black", text="Key A: ", font=("Calibri", 12))
             keyA_lbl.place(x=75, y=594)
@@ -201,44 +204,51 @@ class FileSelectionWindow(tk.Frame):
 
             def saveKeysButton():
                 global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD
-                valueKeyA = int(keyAEntry.get("1.0", tk.END))
-                valueKeyB = int(keyBEntry.get("1.0", tk.END))
-                valueKeyC = int(keyCEntry.get("1.0", tk.END))
-                valueKeyD = int(keyDEntry.get("1.0", tk.END))
-                total = int(totalEntry.get("1.0", tk.END))
-                commentA = keyACommentEntry.get("1.0", tk.END)
-                commentB = keyBCommentEntry.get("1.0", tk.END)
-                commentC = keyCCommentEntry.get("1.0", tk.END)
-                commentD = keyDCommentEntry.get("1.0", tk.END)
+                try:
+                    valueKeyA = int(keyAEntry.get("1.0", tk.END))
+                    valueKeyB = int(keyBEntry.get("1.0", tk.END))
+                    valueKeyC = int(keyCEntry.get("1.0", tk.END))
+                    valueKeyD = int(keyDEntry.get("1.0", tk.END))
+                    total = int(totalEntry.get("1.0", tk.END))
+                    commentA = keyACommentEntry.get("1.0", tk.END)
+                    commentB = keyBCommentEntry.get("1.0", tk.END)
+                    commentC = keyCCommentEntry.get("1.0", tk.END)
+                    commentD = keyDCommentEntry.get("1.0", tk.END)
 
-                a = int(total)
-                keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
-                keysSaved_lbl.place(x=320, y=570)
+                    a = int(total)
+                    keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
+                    keysSaved_lbl.place(x=320, y=570)
 
-                # Collapse key values entry's and labels when button is selected
-                keyAEntry.destroy()
-                keyBEntry.destroy()
-                keyCEntry.destroy()
-                keyDEntry.destroy()
-                totalEntry.destroy()
-                keyA_lbl.destroy()
-                keyB_lbl.destroy()
-                keyC_lbl.destroy()
-                keyD_lbl.destroy()
-                total_lbl.destroy()
-                keysHeading_lbl.destroy()
-                keyAComment_lbl.destroy()
-                keyACommentEntry.destroy()
-                keyBComment_lbl.destroy()
-                keyBCommentEntry.destroy()
-                keyCComment_lbl.destroy()
-                keyCCommentEntry.destroy()
-                keyDComment_lbl.destroy()
-                keyDCommentEntry.destroy()
-                saveButton.destroy()
+                    # Collapse key values entry's and labels when button is selected
+                    keyAEntry.destroy()
+                    keyBEntry.destroy()
+                    keyCEntry.destroy()
+                    keyDEntry.destroy()
+                    totalEntry.destroy()
+                    keyA_lbl.destroy()
+                    keyB_lbl.destroy()
+                    keyC_lbl.destroy()
+                    keyD_lbl.destroy()
+                    total_lbl.destroy()
+                    keysHeading_lbl.destroy()
+                    keyAComment_lbl.destroy()
+                    keyACommentEntry.destroy()
+                    keyBComment_lbl.destroy()
+                    keyBCommentEntry.destroy()
+                    keyCComment_lbl.destroy()
+                    keyCCommentEntry.destroy()
+                    keyDComment_lbl.destroy()
+                    keyDCommentEntry.destroy()
+                    saveButton.destroy()
 
-                changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15, command=changeKeyValues)
-                changeKeyValuesButton.place(x=320, y=540)
+                    changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
+                                                      command=changeKeyValues)
+                    changeKeyValuesButton.place(x=320, y=540)
+
+                except ValueError:
+                    keyValueError_lbl = tk.Label(self, text="Please enter values for all keys above", font=("Arial", 8),
+                                                 fg="red")
+                    keyValueError_lbl.place(x=270, y=775)
 
             saveButton = tk.Button(self, text="Save", width=13, command=saveKeysButton)
             saveButton.place(x=300, y=795)
@@ -373,13 +383,6 @@ class FileSelectionWindow(tk.Frame):
                 file = filePath.get().replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
                 file = re.sub('\t', '', file)
 
-            def back():
-                # Clears listbox when returning to the file selection screen: this is in order to reselect the path
-                # Call on_closingwindow() to save assignment if backbutton is pressed
-                on_closingWindow()
-                listBox.delete(*listBox.get_children())
-                getFileSelection()
-
             def viewKeystrokes():
                 print("View Keystrokes pressed")
 
@@ -409,49 +412,6 @@ class FileSelectionWindow(tk.Frame):
             # display the menu
             window.config(menu=menubar)
 
-            # If window is closed mid grading, save the file in the folder
-            def on_closingWindow():
-                if messagebox.askokcancel("Quit", "Do you want to quit grading the assignment?\n File will be saved"):
-                    s = text.get("1.0", tk.END)
-                    f = open(file, "w", encoding='utf-8')
-                    f.write(s)
-                    f.close()
-                    window.destroy()
-
-            window.protocol("WM_DELETE_WINDOW", on_closingWindow)
-
-            def submitAssignment():
-                print("Submit button pressed")
-                window.withdraw()
-                # Opens file ans copies what is in tge text box and places back in file and saves
-                s = text.get("1.0", tk.END)
-                f = open(file, "w", encoding='utf-8')
-                f.write(s)
-                f.close()
-
-                # Create a file for each student with their graded files
-                pdf = FPDF()
-                pdf.add_page()
-                pdf.set_font("Arial", size=12)
-                pdf.multi_cell(0, 5, s)
-
-                # Removed the \t from the filepath in order to save as pdf in 'Graded' file
-                savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
-                print(savingFilePDF)
-                pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
-
-            # Highlights code and text when text is selected and highlight button is pressed
-            def highlightCode():
-                count = 0
-                if text.tag_ranges('sel'):
-                    text.tag_add('color' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
-                    text.tag_configure('color' + str(count), foreground='red')
-                    count += 1
-                else:
-                    # Do this if you want to overwrite all selection colors when you change color without selection
-                    # for tag in text.tag_names():
-                    #     text.tag_delete(tag)
-                    text.config(foreground='yellow')
 
             # Keystroke driven application which is completed using threads and a thread queue as Tkinter is not thread safe
             # ToDo make if elif statement more efficient and faster
@@ -615,56 +575,6 @@ class FileSelectionWindow(tk.Frame):
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
             studentFinalGrade.place(x=790, y=430)
 
-            # The Text widget holding the line numbers.
-            lnText = tk.Text(window,
-                             width=2,
-                             height=35,
-                             padx=2,
-                             highlightthickness=0,
-                             takefocus=0,
-                             bd=0,
-                             background='lightgrey',
-                             foreground='magenta',
-                             state='disabled'
-                             )
-            lnText.place(x=55, y=95)
-
-            # The Main Text Widget which contains the Assignment
-            text = tk.Text(window,
-                           width=85,
-                           wrap=tk.NONE,
-                           height=35,
-                           bd=0,
-                           padx=4,
-                           undo=True
-                           )
-
-            text.place(x=80, y=95)
-
-            # Adding comments into the students grade textbox
-            def addAssignmentComments():
-                text.insert(tk.END, "\n")
-                text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
-
-            # Scrollbar on X and Y axis of text box
-            scrollbarAssignment = tk.Scrollbar(window, orient=tk.VERTICAL, command=text.yview)
-            text['yscroll'] = scrollbarAssignment.set
-
-            scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=text.xview)
-            text['yscroll'] = scrollbarAssignment.set
-
-            scrollbarAssignment.place(in_=text, relx=1.0, relheight=1.0, bordermode="outside")
-            scrollbarHor.place(in_=text, rely=1.0, relwidth=1.0, bordermode="outside")
-
-            backButton2 = tk.Button(window, text="Back", width=15, command=back)
-            backButton2.place(x=100, y=685)
-
-            highlightButton = tk.Button(window, text="Highlight", width=15, command=highlightCode)
-            highlightButton.place(x=300, y=685)
-
-            submitButton = tk.Button(window, text="Submit", width=15, command=submitAssignment)
-            submitButton.place(x=480, y=685)
-
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
 
@@ -675,13 +585,150 @@ class FileSelectionWindow(tk.Frame):
 
             GradeTextBoxScrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
 
-            addComments = tk.Button(window, text="Add comments above", width=25, command=addAssignmentComments)
-            addComments.place(x=285, y=910)
-
             # Opens the file and copies the contents into the text box for editing
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
-            text.insert("1.0", assignment)
+
+            class TextLineNumbers(tk.Canvas):
+
+                def __init__(self, *args, **kwargs):
+                    tk.Canvas.__init__(self, *args, **kwargs)
+                    self.textwidget = None
+
+                def attach(self, text_widget):
+                    self.textwidget = text_widget
+
+                def redraw(self, *args):
+                    '''redraw line numbers'''
+                    self.delete("all")
+
+                    i = self.textwidget.index("@0,0")
+                    while True:
+                        dline = self.textwidget.dlineinfo(i)
+                        if dline is None: break
+                        y = dline[1]
+                        linenum = str(i).split(".")[0]
+                        self.create_text(2, y, anchor="nw", text=linenum)
+                        i = self.textwidget.index("%s+1line" % i)
+
+            class CustomText(tk.Text):
+                def __init__(self, *args, **kwargs):
+                    tk.Text.__init__(self, *args, **kwargs)
+
+                    # create a proxy for the underlying widget
+                    self._orig = self._w + "_orig"
+                    self.tk.call("rename", self._w, self._orig)
+                    self.tk.createcommand(self._w, self._proxy)
+
+                def _proxy(self, *args):
+                    # let the actual widget perform the requested action
+                    cmd = (self._orig,) + args
+                    result = self.tk.call(cmd)
+
+                    # generate an event if something was added or deleted,
+                    # or the cursor position changed
+                    if (args[0] in ("insert", "replace", "delete") or
+                            args[0:3] == ("mark", "set", "insert")
+                    ):
+                        self.event_generate("<<Change>>", when="tail")
+
+                    # return what the actual widget returned
+                    return result
+
+            class Example(tk.Frame):
+                def __init__(self, *args, **kwargs):
+                    tk.Frame.__init__(self, *args, **kwargs)
+                    self.text = CustomText(self, width=84, wrap=tk.NONE, height=35)
+                    self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
+                    self.linenumbers = TextLineNumbers(self, width=30, bg="yellow")
+                    self.linenumbers.attach(self.text)
+
+                    self.linenumbers.pack(side="left", fill="y")
+                    self.text.pack(side="right", fill="both", expand=True)
+
+                    self.text.bind("<<Change>>", self._on_change)
+                    self.text.bind("<Configure>", self._on_change)
+
+                    scrollbarAssignment = tk.Scrollbar(window, orient=tk.VERTICAL, command=self.text.yview)
+                    self.text['yscroll'] = scrollbarAssignment.set
+
+                    scrollbarHor = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=self.text.xview)
+                    self.text['xscroll'] = scrollbarHor.set
+
+                    self.text.insert("end", assignment)
+
+                    scrollbarAssignment.place(in_=self.text, relx=1.0, relheight=1.0, bordermode="outside")
+                    scrollbarHor.place(in_=self.text, rely=1.0, relwidth=1.0, bordermode="outside")
+
+                    addComments = tk.Button(window, text="Add comments above", width=25, command=self.addAssignmentComments)
+                    addComments.place(x=285, y=910)
+
+                    highlightButton = tk.Button(window, text="Highlight", width=15, command=self.highlightCode)
+                    highlightButton.place(x=300, y=685)
+
+                    submitButton = tk.Button(window, text="Submit", width=15, command=self.submitAssignment)
+                    submitButton.place(x=480, y=685)
+
+                    backButton2 = tk.Button(window, text="Back", width=15, command=self.back)
+                    backButton2.place(x=100, y=685)
+
+                def _on_change(self, event):
+                    self.linenumbers.redraw()
+
+                def submitAssignment(self):
+                    print("Submit button pressed")
+                    window.withdraw()
+                    # Opens file ans copies what is in tge text box and places back in file and saves
+                    s = self.text.get("1.0", tk.END)
+                    f = open(file, "w", encoding='utf-8')
+                    f.write(s)
+                    f.close()
+
+                    # Create a file for each student with their graded files
+                    pdf = FPDF()
+                    pdf.add_page()
+                    pdf.set_font("Arial", size=12)
+                    pdf.multi_cell(0, 5, s)
+
+                    # Removed the \t from the filepath in order to save as pdf in 'Graded' file
+                    savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
+                    print(savingFilePDF)
+                    pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
+
+                # Highlights code and text when text is selected and highlight button is pressed
+                def highlightCode(self):
+                    count = 0
+                    if self.text.tag_ranges('sel'):
+                        self.text.tag_add('color' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
+                        self.text.tag_configure('color' + str(count), foreground='red')
+                        count += 1
+                    else:
+                        # Do this if you want to overwrite all selection colors when you change color without selection
+                        # for tag in text.tag_names():
+                        #     text.tag_delete(tag)
+                        self.text.config(foreground='yellow')
+
+                def addAssignmentComments(self):
+                    self.text.insert(tk.END, "\n")
+                    self.text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
+
+                # If window is closed mid grading, save the file in the folder
+                def on_closingWindow(self):
+                    if messagebox.askokcancel("Quit",
+                                              "Do you want to quit grading the assignment?\n File will be saved"):
+                        self.submitAssignment()
+
+                # ToDo implement window.protocol("WM_DELETE_WINDOW", on_closingWindow)
+
+                def back(self):
+                    # Clears listbox when returning to the file selection screen: this is in order to reselect the path
+                    # Call on_closingwindow() to save assignment if backbutton is pressed
+                    self.on_closingWindow()
+                    listBox.delete(*listBox.get_children())
+                    getFileSelection()
+
+            Example(window).place(x=60, y=95)
+
 
 
 if __name__ == "__main__":

@@ -35,7 +35,7 @@ class UserMainScreen(tk.Tk):
 # Calls login method from the LoginUser class
 def login():
     print("login button clicked")
-    UserInterface.loginUser.loginUser()
+    UserInterface.loginUser.LoginUserScreen()
 
 
 # Calls login method from the RegisterUser class
