@@ -7,40 +7,82 @@ from tkinter import *
 import UserInterface.registerUser
 
 
-class LoginUserScreen(tk.Tk):
+def LoginUser():
+    window = tk.Tk()
+    window.title("Inspector - Grading Application")
+    window.geometry("300x250+400+300")
 
-    def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+    username_verify = StringVar()
+    password_verify = StringVar()
 
-        tk.Tk.iconbitmap(self, default='Inspector.ico')
+    global username_login_entry
+    global password_login_entry
 
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand=True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+    def back():
+        window.withdraw()
 
-        # Creates the GUI window, sets size of the window
-        self.frames = {}
-        self.geometry("300x250+400+300")
-        self.title("Inspector - Grading Application")
-        # Window can not be increased or decreased in size
-        self.resizable(False, False)
+    # Checks if the username and password are in the database
+    def login_verify(event):
+        global username1
+        global time_logged_in
 
-        # Links the Homescreen GUI with the MainFrame class
-        frame = LoginFrame(container, self)
-        self.frames[LoginFrame] = frame
-        frame.grid(row=0, column=0, sticky="nsew")
-        self.show_frame(LoginFrame)
+        # Connects to the database
+        # ToDo Place this into one file and instantiate into the REST API
+        def connectToDB():
+            connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
+            try:
+                return psycopg2.connect(connectionString)
+            except:
+                print("Cannot connect to the DB")
 
-    # Displays the window
-    def show_frame(self, cont):
-        frame = self.frames[cont]
-        frame.tkraise()
+        conn = connectToDB()
+        cur = conn.cursor()
 
+        # Get the text which has been entered into the entry area
+        username1 = username_entry.get()
+        password1 = password_entry.get()
+        # Retrieving the users hashed password
+        t_hashed = hashlib.sha256(password1.encode())
+        t_password = t_hashed.hexdigest()
+        # Executes a select statement which verify's if username and password are in DB
+        cur.execute("SELECT username, password  FROM Users WHERE username =%s and password =%s",
+                    (username1, t_password,))
+        rows = cur.fetchall()
 
-def proceedButton():
-    print("Proceed Button pressed")
-    UserInterface.FileAccessScreen.FileDisplayWindow()
+        cur.execute("SELECT account_created  FROM Users WHERE username =%s and password =%s",
+                    (username1, t_password,))
+        time_created = cur.fetchall()
+        print("Account created on: ", time_created)
+        time_logged_in = datetime.datetime.now()
+
+        # Check if there is data in the database
+        # Loops through the username's and passwords
+        # Creates a set of [Username, password] and checks if they match
+        errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Arial", 8), fg="red")
+        if rows:
+            for row in rows:
+                if username1 == row[0] or password1 == row[1]:
+                    Homescreen()
+                    window.destroy()
+        else:
+            # Clears the text in the entry box
+            username_entry.delete('0', 'end')
+            password_entry.delete('0', 'end')
+            errorLbl.place(x=60, y=145)
+
+    window.bind('<Return>', login_verify)
+
+    Label(window, text="Please enter your details below", font=("Calibri Bold", 14)).pack()
+    Label(window, text="").pack()
+    Label(window, text="Username", font=("Calibri", 12)).pack()
+    username_entry = Entry(window, textvariable=username_verify)
+    username_entry.pack()
+    Label(window, text="Password", font=("Calibri", 12)).pack()
+    password_entry = Entry(window, show="*", textvariable=password_verify)
+    password_entry.pack()
+    Label(window, text="\n").pack()
+    Button(window, text="Login", width=10, height=1, command=login_verify).pack()
+    Button(window, text="Back", width=10, height=1, command=back).pack()
 
 
 def Homescreen():
@@ -48,8 +90,12 @@ def Homescreen():
     window.title("Inspector - Grading Application")
     window.geometry("800x800+100+100")
 
+    def proceedButton():
+        print("Proceed Button pressed")
+        UserInterface.FileAccessScreen.FileDisplayWindow()
+
     lbl_title = tk.Label(window, text="Inspector - Grading Application", font=("Arial Bold", 20))
-    lbl_title.place(x=400, y=50, anchor="center")
+    lbl_title.place(x=400, y=70, anchor="center")
 
     username_lbl = tk.Label(window, fg="black", text="Welcome: " + username1, font=("Calibri", 16))
     username_lbl.place(x=5, y=5)
@@ -102,78 +148,3 @@ def Homescreen():
 
     proceed_button = tk.Button(window, text="Proceed", fg="black", command=proceedButton, height=2, width=12)
     proceed_button.place(x=500, y=700)
-
-
-class LoginFrame(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-
-        username_verify = StringVar()
-        password_verify = StringVar()
-
-        global username_login_entry
-        global password_login_entry
-
-        # Connects to the database
-        # ToDo Place this into one file and instantiate into the REST API
-        def connectToDB():
-            connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-            try:
-                return psycopg2.connect(connectionString)
-            except:
-                print("Cannot connect to the DB")
-
-        conn = connectToDB()
-        cur = conn.cursor()
-        cur1 = conn.cursor()
-
-        def back():
-            LoginFrame.destroy(self)
-
-        # Checks if the username and password are in the database
-        def login_verify():
-            global username1
-            global time_logged_in
-            # Get the text which has been entered into the entry area
-            username1 = username_entry.get()
-            password1 = password_entry.get()
-            # Retrieving the users hashed password
-            t_hashed = hashlib.sha256(password1.encode())
-            t_password = t_hashed.hexdigest()
-            # Executes a select statement which verify's if username and password are in DB
-            cur.execute("SELECT username, password  FROM Users WHERE username =%s and password =%s",
-                        (username1, t_password,))
-            rows = cur.fetchall()
-
-            cur.execute("SELECT account_created  FROM Users WHERE username =%s and password =%s",
-                        (username1, t_password,))
-            time_created = cur.fetchall()
-            print("Account created on: ", time_created)
-            time_logged_in = datetime.datetime.now()
-
-            # Check if there is data in the database
-            # Loops through the username's and passwords
-            # Creates a set of [Username, password] and checks if they match
-            errorLbl = tk.Label(self, text="Incorrect Username or password", font=("Arial", 8), fg="red")
-            if rows:
-                for row in rows:
-                    if username1 == row[0] or password1 == row[1]:
-                        Homescreen()
-                        # LoginFrame.destroy(self)
-            else:
-                # Clears the text in the entry box
-                username_entry.delete('0', 'end')
-                password_entry.delete('0', 'end')
-                errorLbl.place(x=60, y=125)
-
-        Label(self, text="Please enter your details below").pack()
-        Label(self, text="").pack()
-        Label(self, text="Username").pack()
-        username_entry = Entry(self, textvariable=username_verify)
-        username_entry.pack()
-        Label(self, text="Password").pack()
-        password_entry = Entry(self, show="*", textvariable=password_verify)
-        password_entry.pack()
-        Label(self, text="\n").pack()
-        Button(self, text="Login", width=10, height=1, command=login_verify).pack()
-        Button(self, text="Back", width=10, height=1, command=back).pack()

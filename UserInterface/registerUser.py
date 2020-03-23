@@ -22,7 +22,7 @@ def registerUser():
     confirmPassword = StringVar()
 
     # Register user connects the the PostgreSQL database, checks connection
-    def register():
+    def register(event):
         def connectToDB():
             connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
             try:
@@ -45,7 +45,7 @@ def registerUser():
             # Error handling checks if password and confirm password are identical
             if password_info != confirm_password_info:
                 errorLbl = tk.Label(window, text="Passwords do not match", font=("Arial", 8), fg="red")
-                errorLbl.place(x=100, y=165)
+                errorLbl.place(x=90, y=185)
 
             else:
                 # Hashing the users password and inserting into the database
@@ -59,25 +59,27 @@ def registerUser():
                 conn.commit()
 
                 window.withdraw()
-                UserInterface.loginUser.LoginUserScreen()
+                UserInterface.loginUser.LoginUser()
         else:
             # If password and confirm password are not the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")
             errorLbl2.place(x=100, y=165)
 
+    window.bind('<Return>', register)
+
     def back():
         window.withdraw()
 
     # Creates the GUI elements for buttons and labels
-    Label(window, text="Please enter your details below").pack()
+    Label(window, text="Please enter your details below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()
-    Label(window, text="Username").pack()
+    Label(window, text="Username",  font=("Calibri", 12)).pack()
     username_entry = Entry(window, textvariable=username)
     username_entry.pack()
-    Label(window, text="Password").pack()
+    Label(window, text="Password",  font=("Calibri", 12)).pack()
     password_entry = Entry(window, show="*", textvariable=password)
     password_entry.pack()
-    Label(window, text="Confirm Password").pack()
+    Label(window, text="Confirm Password", font=("Calibri", 12)).pack()
     confirm_password_entry = Entry(window, show="*", textvariable=confirmPassword)
     confirm_password_entry.pack()
     Label(window, text="").pack()
