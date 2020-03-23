@@ -2,12 +2,12 @@ import os
 import queue
 import re
 import threading
-import tkinter
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+import psycopg2
 from fpdf import FPDF
-
+import UserInterface.loginUser
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -43,9 +43,20 @@ class FileDisplayWindow(tk.Tk):
 class FileSelectionWindow(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.controller = controller
 
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
+
+        def connectToDB():
+            connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
+            try:
+                return psycopg2.connect(connectionString)
+            except:
+                print("Cannot connect to the DB")
+
+        conn = connectToDB()
+        cur = conn.cursor()
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -87,13 +98,12 @@ class FileSelectionWindow(tk.Frame):
             # Check if the filepath has been entered
             if filePath.get() != "":
                 global item_text
-                global itemSelected
+                # global itemSelected
                 # Get the item that has been selected and concats the string with the filepath and the filename selection
                 # In order open the file; the full filepath and the name of the file must be selected
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
                     print((itemSelected + "/" + str(item_text)))
-
                 selectAssignment()
                 filepathErrorLbl.destroy()
             else:
@@ -138,23 +148,34 @@ class FileSelectionWindow(tk.Frame):
         # Checks if file is in the directory, adds other columns if it is a file
         # ToDo maybe only add for folder as folder may contain many files which will be treated as one grade  Graded=N, Grade=0
         def process_directory(parentNode, assignmentFilePath):
-            graded = "N"
-            studentGrade = 0
+
+            cur1 = conn.cursor()
+            cur2 = conn.cursor()
             global fileExtension
+
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
             for studentFiles in os.listdir(assignmentFilePath):
                 # Check if file ends with an extension, otherwise it is a folder
+                abspath = os.path.join(assignmentFilePath, studentFiles)
                 if studentFiles.endswith(fileExtension):
-                    abspath = os.path.join(assignmentFilePath, studentFiles)
+                    cur1.execute("SELECT graded_status FROM assignments WHERE filename =%s",
+                                 (studentFiles,))
+                    graded = cur1.fetchall()
+                    cur2.execute("SELECT final_grade FROM assignments WHERE filename =%s",
+                                 (studentFiles,))
+                    studentGrade = cur2.fetchall()
+
                     isdir = os.path.isdir(abspath)
-                    oid = listBox.insert(parentNode, 'end', values=("\t" + studentFiles, graded), open=False)
+                    oid = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade), open=False)
                     if isdir:
                         process_directory(oid, abspath)
-                # Folder in the listbox
+
                 else:
-                    abspath = os.path.join(assignmentFilePath, studentFiles)
-                    oid2 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
-                    process_directory(oid2, abspath)
+                    cur1.execute("SELECT SUM(final_grade) FROM assignments WHERE student_id=%s",
+                                 (studentFiles,))
+                    studentGrade = cur1.fetchall()
+                    oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
+                    process_directory(oid3, abspath)
 
         def changeKeyValues():
 
@@ -203,7 +224,7 @@ class FileSelectionWindow(tk.Frame):
             totalEntry.place(x=170, y=752)
 
             def saveKeysButton():
-                global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD
+                global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD, final
                 try:
                     valueKeyA = int(keyAEntry.get("1.0", tk.END))
                     valueKeyB = int(keyBEntry.get("1.0", tk.END))
@@ -306,7 +327,8 @@ class FileSelectionWindow(tk.Frame):
 
         def back():
             # ToDo Have to fix this issue with closing the window using withdraw
-            UserInterface.InspectorMainScreen.HomeScreen()
+            self.destroy()
+            UserInterface.loginUser.Homescreen()
 
         # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
@@ -381,7 +403,7 @@ class FileSelectionWindow(tk.Frame):
             else:
                 # Get the filename and remove the \t tab which is needed to display listbox with indentation
                 file = filePath.get().replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
-                file = re.sub('\t', '', file)
+                # file = re.sub('\t', '', file)
 
             def viewKeystrokes():
                 print("View Keystrokes pressed")
@@ -412,14 +434,13 @@ class FileSelectionWindow(tk.Frame):
             # display the menu
             window.config(menu=menubar)
 
-
             # Keystroke driven application which is completed using threads and a thread queue as Tkinter is not thread safe
             # ToDo make if elif statement more efficient and faster
             def keystrokeApplication_thread():
                 # ToDo enter keystroke in the entry box and use this as input for the keystroke app
                 keystroke = str(input())
                 global total
-
+                global final
                 if keystroke.lower() == "s":
 
                     print(total)
@@ -454,6 +475,8 @@ class FileSelectionWindow(tk.Frame):
 
                     the_queue.put("Final Grade: " + str(total) + " marks")
                     # sets the total to the initial value again
+                    final = total
+
                     total = a
                     keystrokeApplication_thread()
 
@@ -660,7 +683,8 @@ class FileSelectionWindow(tk.Frame):
                     scrollbarAssignment.place(in_=self.text, relx=1.0, relheight=1.0, bordermode="outside")
                     scrollbarHor.place(in_=self.text, rely=1.0, relwidth=1.0, bordermode="outside")
 
-                    addComments = tk.Button(window, text="Add comments above", width=25, command=self.addAssignmentComments)
+                    addComments = tk.Button(window, text="Add comments above", width=25,
+                                            command=self.addAssignmentComments)
                     addComments.place(x=285, y=910)
 
                     highlightButton = tk.Button(window, text="Highlight", width=15, command=self.highlightCode)
@@ -678,6 +702,11 @@ class FileSelectionWindow(tk.Frame):
                 def submitAssignment(self):
                     print("Submit button pressed")
                     window.withdraw()
+                    sql = "INSERT INTO assignments (student_id, filename, final_grade, graded_status) VALUES (%s, %s, %s, %s)"
+                    val = (selection, item_text[0], final, 'Y')
+                    # Executes the insertion ans passes values username and password into the insertion
+                    cur.execute(sql, val)
+                    conn.commit()
                     # Opens file ans copies what is in tge text box and places back in file and saves
                     s = self.text.get("1.0", tk.END)
                     f = open(file, "w", encoding='utf-8')
@@ -728,7 +757,6 @@ class FileSelectionWindow(tk.Frame):
                     getFileSelection()
 
             Example(window).place(x=60, y=95)
-
 
 
 if __name__ == "__main__":

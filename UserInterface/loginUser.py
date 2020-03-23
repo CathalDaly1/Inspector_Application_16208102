@@ -5,6 +5,7 @@ import psycopg2
 import UserInterface.FileAccessScreen
 from tkinter import *
 import UserInterface.registerUser
+import UserInterface.createUser
 
 
 def LoginUser():
@@ -22,7 +23,7 @@ def LoginUser():
         window.withdraw()
 
     # Checks if the username and password are in the database
-    def login_verify(event):
+    def login_verify():
         global username1
         global time_logged_in
 
@@ -70,9 +71,9 @@ def LoginUser():
             password_entry.delete('0', 'end')
             errorLbl.place(x=60, y=145)
 
-    window.bind('<Return>', login_verify)
+    # window.bind('<Return>', login_verify)
 
-    Label(window, text="Please enter your details below", font=("Calibri Bold", 14)).pack()
+    Label(window, text="Please enter your credentials below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()
     Label(window, text="Username", font=("Calibri", 12)).pack()
     username_entry = Entry(window, textvariable=username_verify)

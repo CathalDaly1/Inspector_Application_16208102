@@ -71,7 +71,7 @@ def registerUser():
         window.withdraw()
 
     # Creates the GUI elements for buttons and labels
-    Label(window, text="Please enter your details below", font=("Calibri Bold", 14)).pack()
+    Label(window, text="Please enter your credentials below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()
     Label(window, text="Username",  font=("Calibri", 12)).pack()
     username_entry = Entry(window, textvariable=username)
