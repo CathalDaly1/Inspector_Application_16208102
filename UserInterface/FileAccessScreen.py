@@ -64,6 +64,13 @@ class FileSelectionWindow(tk.Frame):
             listBox.delete(*listBox.get_children())
             filePath.delete('0', 'end')
 
+        def refreshListbox():
+            listBox.delete(*listBox.get_children())
+            assignmentFilePath = filePath.get()
+            abspath = os.path.abspath(assignmentFilePath)
+            root_node = listBox.insert('', 'end', text=abspath, open=True)
+            process_directory(root_node, abspath)
+
         # Gets the file name of the selection of the listbox - achieved by 'text'
         def fileAccess():
             try:
@@ -106,6 +113,7 @@ class FileSelectionWindow(tk.Frame):
                     print((itemSelected + "/" + str(item_text)))
                 selectAssignment()
                 filepathErrorLbl.destroy()
+
             else:
                 filepathErrorLbl.place(x=320, y=180)
 
@@ -113,6 +121,7 @@ class FileSelectionWindow(tk.Frame):
         # If the directory exists then folders and files are displayed in the listbox
         # Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'
         def getFileSelection():
+            # refreshListbox()
             assignmentFilePath = filePath.get()
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath):
@@ -151,6 +160,7 @@ class FileSelectionWindow(tk.Frame):
 
             cur1 = conn.cursor()
             cur2 = conn.cursor()
+
             global fileExtension
 
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
@@ -181,14 +191,14 @@ class FileSelectionWindow(tk.Frame):
 
             keysHeading_lbl = tk.Label(self, fg="black", text="Enter Values for Keys and associated comments below",
                                        font=("Calibri Bold", 14))
-            keysHeading_lbl.place(x=75, y=564)
+            keysHeading_lbl.place(x=75, y=555)
             keyA_lbl = tk.Label(self, fg="black", text="Key A: ", font=("Calibri", 12))
             keyA_lbl.place(x=75, y=594)
             keyAEntry: tk.Text = tk.Text(self, height="1", width="10")
             keyAEntry.place(x=170, y=592)
             keyAComment_lbl = tk.Label(self, fg="black", text="Comment A: ", font=("Calibri", 12))
             keyAComment_lbl.place(x=260, y=594)
-            keyACommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyACommentEntry: tk.Text = tk.Text(self, height="2", width="45")
             keyACommentEntry.place(x=350, y=592)
 
             keyB_lbl = tk.Label(self, fg="black", text="Key B: ", font=("Calibri", 12))
@@ -197,7 +207,7 @@ class FileSelectionWindow(tk.Frame):
             keyBEntry.place(x=170, y=632)
             keyBComment_lbl = tk.Label(self, fg="black", text="Comment B: ", font=("Calibri", 12))
             keyBComment_lbl.place(x=260, y=634)
-            keyBCommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyBCommentEntry: tk.Text = tk.Text(self, height="2", width="45")
             keyBCommentEntry.place(x=350, y=632)
 
             keyC_lbl = tk.Label(self, fg="black", text="Key C: ", font=("Calibri", 12))
@@ -206,7 +216,7 @@ class FileSelectionWindow(tk.Frame):
             keyCEntry.place(x=170, y=672)
             keyCComment_lbl = tk.Label(self, fg="black", text="Comment C: ", font=("Calibri", 12))
             keyCComment_lbl.place(x=260, y=674)
-            keyCCommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyCCommentEntry: tk.Text = tk.Text(self, height="2", width="45")
             keyCCommentEntry.place(x=350, y=672)
 
             keyD_lbl = tk.Label(self, fg="black", text="Key D: ", font=("Calibri", 12))
@@ -215,13 +225,13 @@ class FileSelectionWindow(tk.Frame):
             keyDEntry.place(x=170, y=712)
             keyDComment_lbl = tk.Label(self, fg="black", text="Comment D: ", font=("Calibri", 12))
             keyDComment_lbl.place(x=260, y=714)
-            keyDCommentEntry: tk.Text = tk.Text(self, height="2", width="35")
+            keyDCommentEntry: tk.Text = tk.Text(self, height="2", width="45")
             keyDCommentEntry.place(x=350, y=712)
 
             total_lbl = tk.Label(self, fg="black", text="Total Marks: ", font=("Calibri", 12))
-            total_lbl.place(x=75, y=754)
+            total_lbl.place(x=75, y=755)
             totalEntry: tk.Text = tk.Text(self, height="1", width="10")
-            totalEntry.place(x=170, y=752)
+            totalEntry.place(x=170, y=755)
 
             def saveKeysButton():
                 global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD, final
@@ -231,10 +241,10 @@ class FileSelectionWindow(tk.Frame):
                     valueKeyC = int(keyCEntry.get("1.0", tk.END))
                     valueKeyD = int(keyDEntry.get("1.0", tk.END))
                     total = int(totalEntry.get("1.0", tk.END))
-                    commentA = keyACommentEntry.get("1.0", tk.END)
-                    commentB = keyBCommentEntry.get("1.0", tk.END)
-                    commentC = keyCCommentEntry.get("1.0", tk.END)
-                    commentD = keyDCommentEntry.get("1.0", tk.END)
+                    commentA = keyACommentEntry.get("1.0", 'end-1c')
+                    commentB = keyBCommentEntry.get("1.0", 'end-1c')
+                    commentC = keyCCommentEntry.get("1.0", 'end-1c')
+                    commentD = keyDCommentEntry.get("1.0", 'end-1c')
 
                     a = int(total)
                     keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
@@ -280,33 +290,32 @@ class FileSelectionWindow(tk.Frame):
 
             comment1_lbl = tk.Label(self, fg="black", text="Comment 1: ", font=("Calibri", 12))
             comment1_lbl.place(x=75, y=594)
-            commentsEntry1: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry1: tk.Text = tk.Text(self, height="1", width="63")
             commentsEntry1.place(x=170, y=592)
             comment2_lbl = tk.Label(self, fg="black", text="Comment 2: ", font=("Calibri", 12))
             comment2_lbl.place(x=75, y=634)
-            commentsEntry2: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry2: tk.Text = tk.Text(self, height="1", width="63")
             commentsEntry2.place(x=170, y=632)
             comment3_lbl = tk.Label(self, fg="black", text="Comment 3: ", font=("Calibri", 12))
             comment3_lbl.place(x=75, y=674)
-            commentsEntry3: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry3: tk.Text = tk.Text(self, height="1", width="63")
             commentsEntry3.place(x=170, y=672)
             comment4_lbl = tk.Label(self, fg="black", text="Comment 4: ", font=("Calibri", 12))
             comment4_lbl.place(x=75, y=714)
-            commentsEntry4: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry4: tk.Text = tk.Text(self, height="1", width="63")
             commentsEntry4.place(x=170, y=712)
             comment5_lbl = tk.Label(self, fg="black", text="Comment 5: ", font=("Calibri", 12))
             comment5_lbl.place(x=75, y=754)
-            commentsEntry5: tk.Text = tk.Text(self, height="2", width="63")
+            commentsEntry5: tk.Text = tk.Text(self, height="1", width="63")
             commentsEntry5.place(x=170, y=752)
 
             def saveCommentsButton():
                 global commentA, commentB, commentC, commentD, commentE
-                print("Save button pressed")
-                commentA = commentsEntry1.get("1.0", tk.END)
-                commentB = commentsEntry2.get("1.0", tk.END)
-                commentC = commentsEntry3.get("1.0", tk.END)
-                commentD = commentsEntry4.get("1.0", tk.END)
-                commentE = commentsEntry5.get("1.0", tk.END)
+                commentA = commentsEntry1.get("1.0", 'end-1c')
+                commentB = commentsEntry2.get("1.0", 'end-1c')
+                commentC = commentsEntry3.get("1.0", 'end-1c')
+                commentD = commentsEntry4.get("1.0", 'end-1c')
+                commentE = commentsEntry5.get("1.0", 'end-1c')
                 # When save button is pressed, save the comments and destroy the entry's and labels
                 commentsEntry1.destroy()
                 commentsEntry2.destroy()
@@ -327,8 +336,29 @@ class FileSelectionWindow(tk.Frame):
 
         def back():
             # ToDo Have to fix this issue with closing the window using withdraw
-            self.destroy()
             UserInterface.loginUser.Homescreen()
+
+        def changeValueOfAllAssignments():
+            change = str(input("Do you wish to add/subtract marks? (A(dd) or S(ubtract))"))
+            
+            if change.lower() == "a":
+                marks = int(input("Enter number of marks you wish to add or subtract"))
+                sql_update_query = """Update assignments set final_grade = final_grade + %s"""
+                cur.execute(sql_update_query, [marks])
+
+            elif change.lower() == "s":
+                marks = int(input("Enter number of marks you wish to add or subtract"))
+                sql_update_query = """Update assignments set final_grade = final_grade - %s"""
+                cur.execute(sql_update_query, [marks])
+
+            else:
+                print("Please enter a valid option")
+                changeValueOfAllAssignments()
+                
+            conn.commit()
+            count = cur.rowcount
+            print(count, "Record Updated successfully ")
+            refreshListbox()
 
         # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
@@ -374,6 +404,9 @@ class FileSelectionWindow(tk.Frame):
         selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
         selectStudentAssignButton.place(x=550, y=510)
 
+        selectStudentAssignButton = tk.Button(self, text="Change assignments marks", fg="black", command=changeValueOfAllAssignments, width=20)
+        selectStudentAssignButton.place(x=550, y=540)
+
         backButton = tk.Button(self, text="Back", width=15, command=back)
         backButton.place(x=75, y=510)
 
@@ -382,7 +415,7 @@ class FileSelectionWindow(tk.Frame):
             window = tk.Tk()
             window.title("Inspector - Grading Application")
             window.geometry("1070x985+50+50")
-            # window.resizable(False, False)
+            window.resizable(False, False)
 
             menubar = tk.Menu(window)
 
@@ -461,13 +494,13 @@ class FileSelectionWindow(tk.Frame):
 
                 elif keystroke.lower() == 'c':
 
-                    total -= valueKeyC
+                    total += valueKeyC
                     the_queue.put("Key C: " + str(total) + " marks - " + commentC)
                     keystrokeApplication_thread()
 
                 elif keystroke.lower() == 'd':
 
-                    total -= valueKeyD
+                    total += valueKeyD
                     the_queue.put("Key D: " + str(total) + " marks - " + commentD)
                     keystrokeApplication_thread()
 
@@ -578,9 +611,9 @@ class FileSelectionWindow(tk.Frame):
             tk.Label(keystrokes_lbl, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
                                                                                                            "Key B: +" + str(
                 valueKeyB) + "\n"
-                             "Key C: -" + str(
+                             "Key C: +" + str(
                 valueKeyC) + "\n"
-                             "Key D: -" + str(
+                             "Key D: +" + str(
                 valueKeyD) + "\n"
                              "Key E: Exit grading"
                                           + "\n"
@@ -707,6 +740,8 @@ class FileSelectionWindow(tk.Frame):
                     # Executes the insertion ans passes values username and password into the insertion
                     cur.execute(sql, val)
                     conn.commit()
+
+                    refreshListbox()
                     # Opens file ans copies what is in tge text box and places back in file and saves
                     s = self.text.get("1.0", tk.END)
                     f = open(file, "w", encoding='utf-8')
