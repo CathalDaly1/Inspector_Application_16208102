@@ -1,11 +1,28 @@
 import datetime
 import hashlib
 import tkinter as tk
+import webbrowser
+
 import psycopg2
 import UserInterface.FileAccessScreen
 from tkinter import *
 import UserInterface.registerUser
 import UserInterface.createUser
+import UserInterface.forgotPassword
+import UserInterface.userAnalytics
+
+# Connects to the database
+# ToDo Place this into one file and instantiate into the REST API
+def connectToDB():
+    connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
+    try:
+        return psycopg2.connect(connectionString)
+    except:
+        print("Cannot connect to the DB")
+
+
+conn = connectToDB()
+cur = conn.cursor()
 
 
 def LoginUser():
@@ -16,9 +33,6 @@ def LoginUser():
     username_verify = StringVar()
     password_verify = StringVar()
 
-    global username_login_entry
-    global password_login_entry
-
     def back():
         window.withdraw()
 
@@ -26,18 +40,6 @@ def LoginUser():
     def login_verify():
         global username1
         global time_logged_in
-
-        # Connects to the database
-        # ToDo Place this into one file and instantiate into the REST API
-        def connectToDB():
-            connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-            try:
-                return psycopg2.connect(connectionString)
-            except:
-                print("Cannot connect to the DB")
-
-        conn = connectToDB()
-        cur = conn.cursor()
 
         # Get the text which has been entered into the entry area
         username1 = username_entry.get()
@@ -71,7 +73,8 @@ def LoginUser():
             password_entry.delete('0', 'end')
             errorLbl.place(x=60, y=145)
 
-    # window.bind('<Return>', login_verify)
+    def callback(event):
+        UserInterface.forgotPassword.forgotPasswordScreen()
 
     Label(window, text="Please enter your credentials below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()
@@ -82,8 +85,19 @@ def LoginUser():
     password_entry = Entry(window, show="*", textvariable=password_verify)
     password_entry.pack()
     Label(window, text="\n").pack()
+    lbl = tk.Label(window, text=r"Forgot Password?", fg="blue", cursor="hand2")
+    lbl.place(x=100, y=140)
+    lbl.bind("<Button-1>", callback)
     Button(window, text="Login", width=10, height=1, command=login_verify).pack()
     Button(window, text="Back", width=10, height=1, command=back).pack()
+
+
+def getUsername():
+    cur.execute("SELECT uid::int FROM USERS WHERE username =%s",
+                (username1,))
+    uid = cur.fetchone()
+    uid2 = int(uid[0])
+    return uid2
 
 
 def Homescreen():
@@ -125,7 +139,8 @@ def Homescreen():
 
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n", font=("Calibri Bold", 16)).pack()
     tk.Label(prog_keys_lbl, bg="white", fg="black",
-             text="Key values can be changed after the\n proceed button is selected", font=("Calibri", 12)).pack()
+             text="In the next screen, enter the value of the pre-programmed keys and\n "
+                  "comments in order to be able to select an assignment to grade.", font=("Calibri", 12)).pack()
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A = +x marks", font=("Calibri", 12)).place(x=200, y=120)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B = +x marks", font=("Calibri", 12)).place(x=200, y=140)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = -x marks", font=("Calibri", 12)).place(x=200, y=160)
@@ -141,11 +156,14 @@ def Homescreen():
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 5 = Comment 5", font=("Calibri", 12)).place(x=400, y=200)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key Q = Quit Inspector", font=("Calibri", 12)).place(x=400,
                                                                                                                y=222)
-
     prog_keys_lbl.place(x=30, y=400)
 
     quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=quit, height=2, width=12)
-    quit_button.place(x=250, y=700)
+    quit_button.place(x=100, y=730)
+
+    view_analytics = tk.Button(window, text="View Analytics", fg="black",
+                               command=UserInterface.userAnalytics.analyticsScreen, height=2, width=12)
+    view_analytics.place(x=350, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black", command=proceedButton, height=2, width=12)
-    proceed_button.place(x=500, y=700)
+    proceed_button.place(x=600, y=730)
