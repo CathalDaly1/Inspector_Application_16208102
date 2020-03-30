@@ -11,6 +11,7 @@ import UserInterface.createUser
 import UserInterface.forgotPassword
 import UserInterface.userAnalytics
 
+
 # Connects to the database
 # ToDo Place this into one file and instantiate into the REST API
 def connectToDB():
@@ -52,10 +53,6 @@ def LoginUser():
                     (username1, t_password,))
         rows = cur.fetchall()
 
-        cur.execute("SELECT account_created  FROM Users WHERE username =%s and password =%s",
-                    (username1, t_password,))
-        time_created = cur.fetchall()
-        print("Account created on: ", time_created)
         time_logged_in = datetime.datetime.now()
 
         # Check if there is data in the database
@@ -143,11 +140,11 @@ def Homescreen():
                   "comments in order to be able to select an assignment to grade.", font=("Calibri", 12)).pack()
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A = +x marks", font=("Calibri", 12)).place(x=200, y=120)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B = +x marks", font=("Calibri", 12)).place(x=200, y=140)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = -x marks", font=("Calibri", 12)).place(x=200, y=160)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = -x marks", font=("Calibri", 12)).place(x=200, y=180)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = +x marks", font=("Calibri", 12)).place(x=200, y=160)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = +x marks", font=("Calibri", 12)).place(x=200, y=180)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key S = Start Grading", font=("Calibri", 12)).place(x=200,
                                                                                                               y=200)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E = End Grading", font=("Calibri", 12)).place(x=200,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E = Complete Grading", font=("Calibri", 12)).place(x=200,
                                                                                                             y=222)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 1 = Comment 1", font=("Calibri", 12)).place(x=400, y=120)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 2 = Comment 2", font=("Calibri", 12)).place(x=400, y=140)

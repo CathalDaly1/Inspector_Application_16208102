@@ -1,14 +1,12 @@
 import os
 import queue
 import re
-import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 import datetime
 import psycopg2
 from fpdf import FPDF
-from pynput import keyboard
-from pynput.keyboard import Key
+from psycopg2._psycopg import OperationalError
 
 import UserInterface.loginUser
 
@@ -126,7 +124,6 @@ class FileSelectionWindow(tk.Frame):
             assignmentFilePath = filePath.get()
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath):
-                print("Directory Exists")
                 dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Arial", 8))
                 dirLabel.place(x=320, y=135)
 
@@ -151,7 +148,6 @@ class FileSelectionWindow(tk.Frame):
                     return assignmentFilePath
 
             else:
-                print("Directory does not exists")
                 errorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
                 errorLbl.place(x=320, y=135)
 
@@ -160,7 +156,6 @@ class FileSelectionWindow(tk.Frame):
         def process_directory(parentNode, assignmentFilePath):
 
             cur1 = conn.cursor()
-            cur2 = conn.cursor()
 
             global fileExtension
 
@@ -172,9 +167,9 @@ class FileSelectionWindow(tk.Frame):
                     cur1.execute("SELECT graded_status FROM assignments WHERE filename =%s",
                                  (studentFiles,))
                     graded = cur1.fetchall()
-                    cur2.execute("SELECT final_grade FROM assignments WHERE filename =%s",
+                    cur1.execute("SELECT final_grade FROM assignments WHERE filename =%s",
                                  (studentFiles,))
-                    studentGrade = cur2.fetchall()
+                    studentGrade = cur1.fetchall()
 
                     isdir = os.path.isdir(abspath)
                     oid = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade), open=False)
@@ -182,12 +177,16 @@ class FileSelectionWindow(tk.Frame):
                         process_directory(oid, abspath)
 
                 else:
-                    # cur3.execute("SELECT SUM (final_grade) FROM assignments WHERE student_id=%s",
-                    #              (studentFiles,))
-                    # studentGrade = cur3.fetchall()
-                    studentGrade = "Implement this"
-                    oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
-                    process_directory(oid3, abspath)
+                    if studentFiles == "Graded Assignments":
+                        studentGrade = ""
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
+                        process_directory(oid3, abspath)
+                    else:
+                        cur1.execute("SELECT SUM (final_grade) FROM assignments WHERE student_id=%s",
+                                     (studentFiles,))
+                        studentGrade = cur1.fetchall()
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
+                        process_directory(oid3, abspath)
 
         def changeKeyValues():
 
@@ -417,7 +416,6 @@ class FileSelectionWindow(tk.Frame):
         backButton.place(x=75, y=470)
 
         def selectAssignment():
-            print("Select Assignment button selected")
             window = tk.Tk()
             window.title("Inspector - Grading Application")
             window.geometry("1070x985+50+50")
@@ -455,9 +453,6 @@ class FileSelectionWindow(tk.Frame):
                 except NameError:
                     messagebox.showinfo("Canned Comments", "You have not initialized all comments")
 
-            def howToVideo():
-                print("Implement functionality to play video on window")
-
             # Menubar in the top left of the screen
             file_menu = tk.Menu(menubar, tearoff=0)
             file_menu.add_command(label="View Keystrokes", command=viewKeystrokes)
@@ -467,14 +462,12 @@ class FileSelectionWindow(tk.Frame):
             menubar.add_cascade(label="File", menu=file_menu)
 
             helpMenu = tk.Menu(menubar, tearoff=0)
-            helpMenu.add_command(label="How to grade assignments?", command=howToVideo)
             menubar.add_cascade(label="Help", menu=helpMenu)
 
             # display the menu
             window.config(menu=menubar)
 
             def startGrading(event):
-                print(total)
                 the_queue.put("Grading has started - Total marks: " + str(total))
 
                 def keyA(event):
@@ -563,7 +556,6 @@ class FileSelectionWindow(tk.Frame):
                     window.after(100, queue_callback)
                     return
 
-                print("After_callback returned " + message)
                 if message is not None:
                     # Print out the message once there is something in the queue
                     studentFinalGrade['text'] = message
@@ -713,7 +705,6 @@ class FileSelectionWindow(tk.Frame):
                     self.linenumbers.redraw()
 
                 def submitAssignment(self):
-                    print("Submit button pressed")
                     window.withdraw()
                     userID = UserInterface.loginUser.getUsername()
                     time_graded = datetime.datetime.now()
@@ -738,7 +729,6 @@ class FileSelectionWindow(tk.Frame):
 
                     # Removed the \t from the filepath in order to save as pdf in 'Graded' file
                     savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
-                    print(savingFilePDF)
                     pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
 
                 # Highlights code and text when text is selected and highlight button is pressed
