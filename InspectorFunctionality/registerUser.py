@@ -2,9 +2,9 @@ import hashlib
 import tkinter as tk
 from tkinter import *
 
-import UserInterface.FileAccessScreen
-import UserInterface.connectToDB
-import UserInterface.loginUser
+import InspectorFunctionality.FileAccessScreen
+import InspectorFunctionality.connectToDB
+import InspectorFunctionality.loginUser
 
 
 # Created the GUI Screen and also stores each method used in this window
@@ -24,11 +24,10 @@ def registerUser():
     # Register user connects the the PostgreSQL database, checks connection
     def register(event):
 
-        conn = UserInterface.connectToDB.connectToDB()
+        conn = InspectorFunctionality.connectToDB.connectToDB()
         cur = conn.cursor()
 
         # Once connected gets the username and password in the entry boxes in GUI
-        print("login session started")
         username_info = username_entry.get()
         password_info = password_entry.get()
         confirm_password_info = confirm_password_entry.get()
@@ -53,7 +52,7 @@ def registerUser():
                 conn.commit()
 
                 window.withdraw()
-                UserInterface.loginUser.LoginUser()
+                InspectorFunctionality.loginUser.LoginUser()
         else:
             # If password and confirm password are not the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")

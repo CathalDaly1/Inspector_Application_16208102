@@ -1,9 +1,9 @@
 import hashlib
 import tkinter as tk
 from tkinter import *
-import UserInterface.connectToDB
+import InspectorFunctionality.connectToDB
 
-conn = UserInterface.connectToDB.connectToDB()
+conn = InspectorFunctionality.connectToDB.connectToDB()
 cur = conn.cursor()
 
 
@@ -25,11 +25,12 @@ def forgotPasswordScreen():
         cur.execute("SELECT username  FROM Users WHERE username =%s",
                     (username1,))
         rows = cur.fetchall()
+        conn.commit()
 
         errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Arial", 8), fg="red")
         if rows:
             for row in rows:
-                if username1 == row[0]:
+                if username1 == row[0] and newPassword == confirmNewPassword:
                     t_hashed = hashlib.sha256(confirmNewPassword.encode())
                     t_password = t_hashed.hexdigest()
                     cur.execute("Update Users set password = %s where username = %s",

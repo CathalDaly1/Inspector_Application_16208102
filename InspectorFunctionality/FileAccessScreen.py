@@ -7,8 +7,8 @@ from tkinter import ttk, messagebox
 
 from fpdf import FPDF
 
-import UserInterface.connectToDB
-import UserInterface.loginUser
+import InspectorFunctionality.connectToDB
+import InspectorFunctionality.loginUser
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -49,8 +49,13 @@ class FileSelectionWindow(tk.Frame):
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
 
-        conn = UserInterface.connectToDB.connectToDB()
+        conn = InspectorFunctionality.connectToDB.connectToDB()
         cur = conn.cursor()
+
+        def saveModuleCode():
+            global assignmentModuleCode
+            assignmentModuleCode = enterModuleCode.get()
+            print(assignmentModuleCode)
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -151,11 +156,12 @@ class FileSelectionWindow(tk.Frame):
             cur1 = conn.cursor()
             global fileExtension
 
-            fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
             for studentFiles in os.listdir(assignmentFilePath):
+                fileExtension = re.search(r'\.\w+$', studentFiles)
                 # Check if file ends with an extension, otherwise it is a folder
                 abspath = os.path.join(assignmentFilePath, studentFiles)
-                if studentFiles.endswith(fileExtension):
+                # if studentFiles.endswith(fileExtension):
+                if fileExtension is not None:
                     # cur1.execute("SELECT student_id FROM assignments WHERE filename =%s",
                     #              (studentFiles,))
                     # studentID = cur1.fetchone()
@@ -181,17 +187,20 @@ class FileSelectionWindow(tk.Frame):
                         cur1.execute("SELECT SUM (final_grade) FROM assignments WHERE student_id=%s",
                                      (studentFiles,))
                         studentGrade = cur1.fetchall()
+                        conn.commit()
                         cur1.execute("SELECT graded_status FROM assignments WHERE student_id =%s",
                                      (studentFiles,))
                         graded = cur1.fetchone()
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade), open=False)
+                        conn.commit()
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
+                                              open=False)
                         process_directory(oid3, abspath)
 
         def changeKeyValues():
 
             keysHeading_lbl = tk.Label(self, fg="black", text="Enter Values for Keys and associated comments below",
                                        font=("Calibri Bold", 14))
-            keysHeading_lbl.place(x=75, y=530)
+            keysHeading_lbl.place(x=75, y=535)
 
             keyA_lbl = tk.Label(self, fg="black", text="Key A: ", font=("Calibri", 12))
             keyA_lbl.place(x=75, y=565)
@@ -236,8 +245,6 @@ class FileSelectionWindow(tk.Frame):
 
             def saveKeysButton():
                 global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD, final
-                keyValueError_lbl = tk.Label(self, text="Please enter values for all keys above", font=("Arial", 8),
-                                             fg="red")
                 try:
                     valueKeyA = int(keyAEntry.get("1.0", tk.END))
                     valueKeyB = int(keyBEntry.get("1.0", tk.END))
@@ -274,13 +281,12 @@ class FileSelectionWindow(tk.Frame):
                     keyDComment_lbl.destroy()
                     keyDCommentEntry.destroy()
                     saveButton.destroy()
-                    keyValueError_lbl.destroy()
-
                     changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
                                                       command=changeKeyValues)
                     changeKeyValuesButton.place(x=320, y=500)
                 except ValueError:
-                    keyValueError_lbl.place(x=270, y=735)
+                    keysSavedError_lbl = tk.Label(self, text="Enter values for keys", fg="red", font=("Arial", 8))
+                    keysSavedError_lbl.place(x=320, y=525)
 
             saveButton = tk.Button(self, text="Save", width=13, command=saveKeysButton)
             saveButton.place(x=300, y=755)
@@ -339,7 +345,7 @@ class FileSelectionWindow(tk.Frame):
 
         def back():
             # ToDo Have to fix this issue with closing the window using withdraw
-            UserInterface.loginUser.Homescreen()
+            InspectorFunctionality.loginUser.Homescreen()
 
         def changeValueOfAllAssignments():
             change = str(input("Do you wish to add/subtract marks? (A(dd) or S(ubtract))"))
@@ -348,11 +354,13 @@ class FileSelectionWindow(tk.Frame):
                 marks = int(input("Enter number of marks you wish to add or subtract"))
                 sql_update_query = """Update assignments set final_grade = final_grade + %s"""
                 cur.execute(sql_update_query, [marks])
+                conn.commit()
 
             elif change.lower() == "s":
                 marks = int(input("Enter number of marks you wish to add or subtract"))
                 sql_update_query = """Update assignments set final_grade = final_grade - %s"""
                 cur.execute(sql_update_query, [marks])
+                conn.commit()
 
             else:
                 print("Please enter a valid option")
@@ -394,6 +402,16 @@ class FileSelectionWindow(tk.Frame):
         clearButton = tk.Button(self, text="Clear Path", command=clearEntry, height=1, width=13)
         clearButton.place(x=660, y=110)
 
+        moduleCode = tk.Label(self, fg="black", text="Enter Assignments Module Code: ", font=("Calibri", 12))
+        moduleCode.place(x=75, y=85)
+
+        enterModuleCode: tk.Entry = tk.Entry(self, width="35")
+        enterModuleCode.place(x=300, y=85)
+        enterModuleCode.insert(0, '')
+
+        saveModuleCode = tk.Button(self, text="Save Module Code", command=saveModuleCode, width=15)
+        saveModuleCode.place(x=530, y=80)
+
         lbl_sub_title = tk.Label(self, text="List of Student Files", font=("Arial", 15))
         lbl_sub_title.place(x=400, y=180, anchor="center")
 
@@ -424,7 +442,7 @@ class FileSelectionWindow(tk.Frame):
 
             global file
             global gradedFilesFolder
-
+            fileExtensionSelection = re.search(r'\.\w+$', selection)
             # Get the click event of the selection from the listbox, use that selection to create a new filepath and add new graded files
             gradedFilesFolder = filePath.get().replace("\\", "/") + "/" + "Graded Assignments" + "/" + selection + "/"
             if not os.path.exists(gradedFilesFolder):
@@ -432,7 +450,7 @@ class FileSelectionWindow(tk.Frame):
 
             # Check if listbox selection is a filename or a folder
             # If it is a filename, concat the string of the filepath and the filename
-            if selection.endswith(fileExtension):
+            if fileExtensionSelection is not None:
                 file = filePath.get().replace("\\", "/") + "/" + str(item_text[0])
 
             # If it is a folder, concat the string of the filepath, the folder and the selection
@@ -711,10 +729,10 @@ class FileSelectionWindow(tk.Frame):
 
                 def submitAssignment(self):
                     window.withdraw()
-                    userID = UserInterface.loginUser.getUsername()
+                    userID = InspectorFunctionality.loginUser.getUsername()
                     time_graded = datetime.datetime.now()
-                    sql = "INSERT INTO assignments (user_id, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s)"
-                    val = (userID, selection, item_text[0], final, 'Y', time_graded)
+                    sql = "INSERT INTO assignments (user_id, modulecode, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                    val = (userID, assignmentModuleCode, selection, item_text[0], final, 'Y', time_graded)
                     # Executes the insertion ans passes values username and password into the insertion
                     cur.execute(sql, val)
                     conn.commit()

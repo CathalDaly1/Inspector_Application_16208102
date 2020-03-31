@@ -1,7 +1,7 @@
 from tkinter import *
 import tkinter as tk
-import UserInterface.loginUser
-import UserInterface.registerUser
+import InspectorFunctionality.loginUser
+import InspectorFunctionality.registerUser
 
 
 class UserMainScreen(tk.Tk):
@@ -30,14 +30,12 @@ class UserMainScreen(tk.Tk):
 
 # Calls login method from the LoginUser class
 def login():
-    print("login button clicked")
-    UserInterface.loginUser.LoginUser()
+    InspectorFunctionality.loginUser.LoginUser()
 
 
 # Calls login method from the RegisterUser class
 def register():
-    print("register button clicked")
-    UserInterface.registerUser.registerUser()
+    InspectorFunctionality.registerUser.registerUser()
 
 
 # Class to create a user, setup here is the GUI

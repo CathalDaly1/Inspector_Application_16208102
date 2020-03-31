@@ -3,14 +3,14 @@ import hashlib
 import tkinter as tk
 from tkinter import *
 
-import UserInterface.FileAccessScreen
-import UserInterface.LoginRegScreen
-import UserInterface.connectToDB
-import UserInterface.forgotPassword
-import UserInterface.registerUser
-import UserInterface.userAnalytics
+import InspectorFunctionality.FileAccessScreen
+import InspectorFunctionality.LoginRegScreen
+import InspectorFunctionality.connectToDB
+import InspectorFunctionality.forgotPassword
+import InspectorFunctionality.registerUser
+import InspectorFunctionality.userAnalytics
 
-conn = UserInterface.connectToDB.connectToDB()
+conn = InspectorFunctionality.connectToDB.connectToDB()
 cur = conn.cursor()
 
 
@@ -40,6 +40,7 @@ def LoginUser():
         cur.execute("SELECT username, password  FROM Users WHERE username =%s and password =%s",
                     (username1, t_password,))
         rows = cur.fetchall()
+        conn.commit()
 
         time_logged_in = datetime.datetime.now()
 
@@ -59,7 +60,7 @@ def LoginUser():
             errorLbl.place(x=60, y=145)
 
     def callback(event):
-        UserInterface.forgotPassword.forgotPasswordScreen()
+        InspectorFunctionality.forgotPassword.forgotPasswordScreen()
 
     Label(window, text="Please enter your credentials below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()
@@ -81,6 +82,7 @@ def getUsername():
     cur.execute("SELECT uid::int FROM USERS WHERE username =%s",
                 (username1,))
     uid = cur.fetchone()
+    conn.commit()
     uid2 = int(uid[0])
     return uid2
 
@@ -91,8 +93,7 @@ def Homescreen():
     window.geometry("800x800+100+100")
 
     def proceedButton():
-        print("Proceed Button pressed")
-        UserInterface.FileAccessScreen.FileDisplayWindow()
+        InspectorFunctionality.FileAccessScreen.FileDisplayWindow()
 
     lbl_title = tk.Label(window, text="Inspector - Grading Application", font=("Arial Bold", 20))
     lbl_title.place(x=400, y=70, anchor="center")
@@ -147,7 +148,7 @@ def Homescreen():
     quit_button.place(x=100, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",
-                               command=UserInterface.userAnalytics.analyticsScreen, height=2, width=12)
+                               command=InspectorFunctionality.userAnalytics.analyticsScreen, height=2, width=12)
     view_analytics.place(x=350, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black", command=proceedButton, height=2, width=12)
