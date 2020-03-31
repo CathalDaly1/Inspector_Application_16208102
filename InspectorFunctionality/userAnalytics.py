@@ -56,12 +56,13 @@ def analyticsScreen():
     labelTop = tk.Label(window, text="Choose module from list: ", font=("Calibri", 14))
     labelTop.place(x=25, y=95)
 
-    cur.execute("SELECT modulecode FROM assignments WHERE user_id =%s",
+    # As there are duplicates of assignments with module codes have to use distinct
+    cur.execute("SELECT DISTINCT modulecode FROM assignments WHERE user_id =%s",
                 (userID,))
-    moduleCode = cur.fetchone()
+    moduleCode = cur.fetchall()
     conn.commit()
 
-    comboExample = ttk.Combobox(window, values=[moduleCode])
+    comboExample = ttk.Combobox(window, values=moduleCode)
     comboExample.place(x=230, y=100)
 
     def saveButton():
@@ -69,7 +70,11 @@ def analyticsScreen():
         moduleCodeSelection = comboExample.get()
         displayModuleAssignments()
 
+    def refreshTable():
+        listBox.delete(*listBox.get_children())
+
     def displayModuleAssignments():
+        refreshTable()
         cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s",
                     (userID, moduleCodeSelection))
 
@@ -79,24 +84,21 @@ def analyticsScreen():
         for row in rows:
             listBox.insert("", tk.END, values=(row[2], row[3], row[4], row[5]))
 
-        def graph_data():
-            assignmentID = []
-            grade = []
+        assignmentID = []
+        grade = []
 
-            for row1 in rows:
-                assignmentID.append(row1[0])
-                grade.append(row1[5])
+        for row1 in rows:
+            assignmentID.append(row1[0])
+            grade.append(row1[5])
 
-                figure1 = Figure(figsize=(6, 4), dpi=80)
-                subplot1 = figure1.add_subplot(111)
-                xAxis = assignmentID
-                yAxis = grade
-                subplot1.bar(xAxis, yAxis, color='lightsteelblue')
-                bar1 = FigureCanvasTkAgg(figure1, window)
-                bar1.get_tk_widget().place(x=150, y=390)
-                subplot1.set_title('Grade Distribution')
-
-        graph_data()
+            figure1 = Figure(figsize=(6, 4), dpi=80)
+            subplot1 = figure1.add_subplot(111)
+            xAxis = assignmentID
+            yAxis = grade
+            subplot1.bar(xAxis, yAxis, color='lightsteelblue')
+            bar1 = FigureCanvasTkAgg(figure1, window)
+            bar1.get_tk_widget().place(x=150, y=390)
+            subplot1.set_title('Grade Distribution')
 
     def back():
         window.destroy()
