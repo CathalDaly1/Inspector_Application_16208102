@@ -1,21 +1,9 @@
 import hashlib
 import tkinter as tk
 from tkinter import *
+import UserInterface.connectToDB
 
-# Connects to the database
-# ToDo Place this into one file and instantiate into the REST API
-import psycopg2
-
-
-def connectToDB():
-    connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-    try:
-        return psycopg2.connect(connectionString)
-    except:
-        print("Cannot connect to the DB")
-
-
-conn = connectToDB()
+conn = UserInterface.connectToDB.connectToDB()
 cur = conn.cursor()
 
 

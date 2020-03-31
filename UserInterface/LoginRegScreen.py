@@ -47,7 +47,7 @@ class create_account(tk.Frame):
         self.controller = controller
 
         # create a Form label
-        Label(self, text="Choose Login Or Register", bg="grey", width="300", height="2", font=("Calibri", 13)).pack()
+        Label(self, text="Choose Login Or Register", bg="grey", width="300", height="2", font=("Calibri Bold", 14)).pack()
         Label(self, text="").pack()
 
         # create Login Button

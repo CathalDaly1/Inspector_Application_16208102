@@ -1,13 +1,13 @@
+import datetime
 import os
 import queue
 import re
 import tkinter as tk
 from tkinter import ttk, messagebox
-import datetime
-import psycopg2
-from fpdf import FPDF
-from psycopg2._psycopg import OperationalError
 
+from fpdf import FPDF
+
+import UserInterface.connectToDB
 import UserInterface.loginUser
 
 # initialize queue for thread
@@ -49,14 +49,7 @@ class FileSelectionWindow(tk.Frame):
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
 
-        def connectToDB():
-            connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-            try:
-                return psycopg2.connect(connectionString)
-            except:
-                print("Cannot connect to the DB")
-
-        conn = connectToDB()
+        conn = UserInterface.connectToDB.connectToDB()
         cur = conn.cursor()
 
         def clearEntry():
@@ -156,7 +149,6 @@ class FileSelectionWindow(tk.Frame):
         def process_directory(parentNode, assignmentFilePath):
 
             cur1 = conn.cursor()
-
             global fileExtension
 
             fileExtension = (".txt", ".py", "*", ".java", ".docx", ".c", ".cc", ".pdf")
@@ -164,28 +156,35 @@ class FileSelectionWindow(tk.Frame):
                 # Check if file ends with an extension, otherwise it is a folder
                 abspath = os.path.join(assignmentFilePath, studentFiles)
                 if studentFiles.endswith(fileExtension):
-                    cur1.execute("SELECT graded_status FROM assignments WHERE filename =%s",
-                                 (studentFiles,))
-                    graded = cur1.fetchall()
-                    cur1.execute("SELECT final_grade FROM assignments WHERE filename =%s",
-                                 (studentFiles,))
-                    studentGrade = cur1.fetchall()
+                    # cur1.execute("SELECT student_id FROM assignments WHERE filename =%s",
+                    #              (studentFiles,))
+                    # studentID = cur1.fetchone()
+                    #
+                    # cur1.execute("SELECT graded_status FROM assignments WHERE filename =%s",
+                    #              (studentFiles,))
+                    # graded = cur1.fetchone()
+                    #
+                    # cur1.execute("SELECT (final_grade, student_id) FROM assignments WHERE filename= %s",
+                    #              (studentFiles,))
+                    # studentGrade = cur1.fetchall()
 
                     isdir = os.path.isdir(abspath)
-                    oid = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade), open=False)
+                    oid = listBox.insert(parentNode, 'end', values=(studentFiles, " ", " "), open=False)
                     if isdir:
                         process_directory(oid, abspath)
 
                 else:
                     if studentFiles == "Graded Assignments":
-                        studentGrade = ""
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", " "), open=False)
                         process_directory(oid3, abspath)
                     else:
                         cur1.execute("SELECT SUM (final_grade) FROM assignments WHERE student_id=%s",
                                      (studentFiles,))
                         studentGrade = cur1.fetchall()
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", studentGrade), open=False)
+                        cur1.execute("SELECT graded_status FROM assignments WHERE student_id =%s",
+                                     (studentFiles,))
+                        graded = cur1.fetchone()
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade), open=False)
                         process_directory(oid3, abspath)
 
         def changeKeyValues():
@@ -534,16 +533,16 @@ class FileSelectionWindow(tk.Frame):
                     except NameError:
                         the_queue.put("You have not added a comment for Key 5")
 
-                window.bind('a', keyA)
-                window.bind('b', keyB)
-                window.bind('b', keyC)
-                window.bind('d', keyD)
-                window.bind('e', keyE)
-                window.bind('1', comment1)
-                window.bind('2', comment2)
-                window.bind('3', comment3)
-                window.bind('4', comment4)
-                window.bind('5', comment5)
+                keystrokeGrading.bind('a', keyA)
+                keystrokeGrading.bind('b', keyB)
+                keystrokeGrading.bind('b', keyC)
+                keystrokeGrading.bind('d', keyD)
+                keystrokeGrading.bind('e', keyE)
+                keystrokeGrading.bind('1', comment1)
+                keystrokeGrading.bind('2', comment2)
+                keystrokeGrading.bind('3', comment3)
+                keystrokeGrading.bind('4', comment4)
+                keystrokeGrading.bind('5', comment5)
 
             window.bind('s', startGrading)
 
@@ -602,6 +601,12 @@ class FileSelectionWindow(tk.Frame):
 
             studentFinalGrade = tk.Label(window, font=("Arial", 12))
             studentFinalGrade.place(x=790, y=430)
+
+            keystrokeGrading_lbl = tk.Label(window, text="Enter keystroke selections below", font=("Arial", 12))
+            keystrokeGrading_lbl.place(x=790, y=455)
+
+            keystrokeGrading: tk.Text = tk.Text(window, height="1", width="15")
+            keystrokeGrading.place(x=790, y=475)
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)

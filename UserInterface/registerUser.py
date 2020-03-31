@@ -1,9 +1,9 @@
 import hashlib
 import tkinter as tk
-import psycopg2
 from tkinter import *
 
 import UserInterface.FileAccessScreen
+import UserInterface.connectToDB
 import UserInterface.loginUser
 
 
@@ -23,14 +23,8 @@ def registerUser():
 
     # Register user connects the the PostgreSQL database, checks connection
     def register(event):
-        def connectToDB():
-            connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-            try:
-                return psycopg2.connect(connectionString)
-            except:
-                print("Cannot connect to the DB")
 
-        conn = connectToDB()
+        conn = UserInterface.connectToDB.connectToDB()
         cur = conn.cursor()
 
         # Once connected gets the username and password in the entry boxes in GUI

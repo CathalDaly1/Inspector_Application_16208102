@@ -1,36 +1,23 @@
-import datetime
-import os
-import random
 import tkinter as tk
-from tkinter import ttk
-
-import matplotlib
-import numpy
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import pandas as pd
-from pandas import DataFrame
-
 import UserInterface.loginUser
+import UserInterface.connectToDB
 
-import psycopg2
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+from tkinter import ttk
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib import style
 
 style.use('fivethirtyeight')
 
 
-def connectToDB():
-    connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-    try:
-        return psycopg2.connect(connectionString)
-    except:
-        print("Cannot connect to the DB")
+# ToDo group assignments with module codes, the lecturer can then filter what assignments they want to see and
+# ToDo the analysis of each one. This will allow for more flexibility in the application.
+# ToDo Add new column in DB for module code and also assignment number or title
+# ToDo Add dropdown menu where user can select module code to view assignments
+# ToDo Figure out where I will be able to collect the module code
 
 
-conn = connectToDB()
+conn = UserInterface.connectToDB.connectToDB()
 cur = conn.cursor()
 
 

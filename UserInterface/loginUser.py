@@ -1,28 +1,16 @@
 import datetime
 import hashlib
 import tkinter as tk
-import webbrowser
-
-import psycopg2
-import UserInterface.FileAccessScreen
 from tkinter import *
-import UserInterface.registerUser
-import UserInterface.createUser
+
+import UserInterface.FileAccessScreen
+import UserInterface.LoginRegScreen
+import UserInterface.connectToDB
 import UserInterface.forgotPassword
+import UserInterface.registerUser
 import UserInterface.userAnalytics
 
-
-# Connects to the database
-# ToDo Place this into one file and instantiate into the REST API
-def connectToDB():
-    connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'
-    try:
-        return psycopg2.connect(connectionString)
-    except:
-        print("Cannot connect to the DB")
-
-
-conn = connectToDB()
+conn = UserInterface.connectToDB.connectToDB()
 cur = conn.cursor()
 
 
@@ -145,7 +133,7 @@ def Homescreen():
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key S = Start Grading", font=("Calibri", 12)).place(x=200,
                                                                                                               y=200)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E = Complete Grading", font=("Calibri", 12)).place(x=200,
-                                                                                                            y=222)
+                                                                                                                 y=222)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 1 = Comment 1", font=("Calibri", 12)).place(x=400, y=120)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 2 = Comment 2", font=("Calibri", 12)).place(x=400, y=140)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 3 = Comment 3", font=("Calibri", 12)).place(x=400, y=160)
