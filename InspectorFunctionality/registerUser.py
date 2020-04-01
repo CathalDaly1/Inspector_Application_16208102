@@ -22,7 +22,7 @@ def registerUser():
     confirmPassword = StringVar()
 
     # Register user connects the the PostgreSQL database, checks connection
-    def register(event):
+    def register():
 
         conn = InspectorFunctionality.connectToDB.connectToDB()
         cur = conn.cursor()
@@ -56,9 +56,7 @@ def registerUser():
         else:
             # If password and confirm password are not the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")
-            errorLbl2.place(x=100, y=165)
-
-    window.bind('<Return>', register)
+            errorLbl2.place(x=100, y=183)
 
     def back():
         window.withdraw()

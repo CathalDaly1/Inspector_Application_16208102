@@ -5,6 +5,7 @@ import re
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+import psycopg2
 from fpdf import FPDF
 
 import InspectorFunctionality.connectToDB
@@ -24,6 +25,7 @@ class FileDisplayWindow(tk.Tk):
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
@@ -55,13 +57,16 @@ class FileSelectionWindow(tk.Frame):
         def saveModuleCode():
             global assignmentModuleCode
             assignmentModuleCode = enterModuleCode.get()
-            print(assignmentModuleCode)
+            moduleCodeSaved_lbl = tk.Label(self, text="Module code saved", width=15)
+            moduleCodeSaved_lbl.place(x=525, y=85)
 
         def clearEntry():
             displayAssignment.config(state="active")
             # This clears the table when clear button is clicked
             listBox.delete(*listBox.get_children())
             filePath.delete('0', 'end')
+            # Clear module code entry box
+            enterModuleCode.delete('0', 'end')
 
         def refreshListbox():
             listBox.delete(*listBox.get_children())
@@ -95,6 +100,7 @@ class FileSelectionWindow(tk.Frame):
                         pass
                     else:
                         selection = listBox.item(i, "values")[0]
+                        print(selection)
             except IndexError:
                 pass
 
@@ -118,12 +124,12 @@ class FileSelectionWindow(tk.Frame):
         # If the directory exists then folders and files are displayed in the listbox
         # Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'
         def getFileSelection():
-            # refreshListbox()
+            saveModuleCode()
             assignmentFilePath = filePath.get()
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath):
                 dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Arial", 8))
-                dirLabel.place(x=320, y=135)
+                dirLabel.place(x=320, y=145)
 
                 # Loops through the files in the filepath and displays them
                 for filename in os.listdir(assignmentFilePath):
@@ -147,7 +153,7 @@ class FileSelectionWindow(tk.Frame):
 
             else:
                 errorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
-                errorLbl.place(x=320, y=135)
+                errorLbl.place(x=320, y=145)
 
         # Checks if file is in the directory, adds other columns if it is a file
         # ToDo maybe only add for folder as folder may contain many files which will be treated as one grade  Graded=N, Grade=0
@@ -159,42 +165,38 @@ class FileSelectionWindow(tk.Frame):
             for studentFiles in os.listdir(assignmentFilePath):
                 fileExtension = re.search(r'\.\w+$', studentFiles)
                 # Check if file ends with an extension, otherwise it is a folder
-                abspath = os.path.join(assignmentFilePath, studentFiles)
-                # if studentFiles.endswith(fileExtension):
-                if fileExtension is not None:
-                    # cur1.execute("SELECT student_id FROM assignments WHERE filename =%s",
-                    #              (studentFiles,))
-                    # studentID = cur1.fetchone()
-                    #
-                    # cur1.execute("SELECT graded_status FROM assignments WHERE filename =%s",
-                    #              (studentFiles,))
-                    # graded = cur1.fetchone()
-                    #
-                    # cur1.execute("SELECT (final_grade, student_id) FROM assignments WHERE filename= %s",
-                    #              (studentFiles,))
-                    # studentGrade = cur1.fetchall()
 
+                abspath = os.path.join(assignmentFilePath, studentFiles)
+                if fileExtension is not None:
                     isdir = os.path.isdir(abspath)
-                    oid = listBox.insert(parentNode, 'end', values=(studentFiles, " ", " "), open=False)
+                    oid = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
                     if isdir:
                         process_directory(oid, abspath)
 
                 else:
                     if studentFiles == "Graded Assignments":
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, " ", " "), open=False)
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
                         process_directory(oid3, abspath)
+
                     else:
-                        cur1.execute("SELECT SUM (final_grade) FROM assignments WHERE student_id=%s",
-                                     (studentFiles,))
-                        studentGrade = cur1.fetchall()
-                        conn.commit()
-                        cur1.execute("SELECT graded_status FROM assignments WHERE student_id =%s",
-                                     (studentFiles,))
-                        graded = cur1.fetchone()
-                        conn.commit()
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
-                                              open=False)
-                        process_directory(oid3, abspath)
+                        try:
+                            cur1.execute("SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL",
+                                         (studentFiles,))
+                            studentGrade = cur1.fetchall()
+                            conn.commit()
+                            cur1.execute("SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL",
+                                         (studentFiles,))
+                            graded = cur1.fetchone()
+                            conn.commit()
+                            oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
+                                                  open=False)
+                            process_directory(oid3, abspath)
+                        except (psycopg2.Error, AttributeError):
+                            # ToDo fix this error in postgresql transaction error, bad practice
+                            conn.rollback()
+                            oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""),
+                                                  open=False)
+                            process_directory(oid3, abspath)
 
         def changeKeyValues():
 
@@ -352,14 +354,14 @@ class FileSelectionWindow(tk.Frame):
 
             if change.lower() == "a":
                 marks = int(input("Enter number of marks you wish to add or subtract"))
-                sql_update_query = """Update assignments set final_grade = final_grade + %s"""
-                cur.execute(sql_update_query, [marks])
+                cur.execute("Update assignments set final_grade = final_grade + %s where modulecode =%s",
+                            (marks, assignmentModuleCode,))
                 conn.commit()
 
             elif change.lower() == "s":
                 marks = int(input("Enter number of marks you wish to add or subtract"))
-                sql_update_query = """Update assignments set final_grade = final_grade - %s"""
-                cur.execute(sql_update_query, [marks])
+                cur.execute("Update assignments set final_grade = final_grade - %s where modulecode =%s",
+                            (marks, assignmentModuleCode,))
                 conn.commit()
 
             else:
@@ -409,14 +411,11 @@ class FileSelectionWindow(tk.Frame):
         enterModuleCode.place(x=300, y=85)
         enterModuleCode.insert(0, '')
 
-        saveModuleCode = tk.Button(self, text="Save Module Code", command=saveModuleCode, width=15)
-        saveModuleCode.place(x=530, y=80)
-
         lbl_sub_title = tk.Label(self, text="List of Student Files", font=("Arial", 15))
-        lbl_sub_title.place(x=400, y=180, anchor="center")
+        lbl_sub_title.place(x=380, y=180, anchor="center")
 
         lbl_student_files = tk.Label(self, text="Table of student files listed below", font=("Arial", 12))
-        lbl_student_files.place(x=400, y=200, anchor="center")
+        lbl_student_files.place(x=380, y=200, anchor="center")
 
         # Buttons at the bottom of the student file selection screen
         cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15, command=canned_comments)

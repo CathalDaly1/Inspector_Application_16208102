@@ -58,7 +58,7 @@ def LoginUser():
             # Clears the text in the entry box
             username_entry.delete('0', 'end')
             password_entry.delete('0', 'end')
-            errorLbl.place(x=60, y=145)
+            errorLbl.place(x=60, y=180)
 
     def callbackPassword(event):
         InspectorFunctionality.forgotPassword.forgotPasswordScreen()
@@ -76,15 +76,15 @@ def LoginUser():
     password_entry.pack()
     Label(window, text="\n").pack()
     lblUsername = tk.Label(window, text=r"Forgot Username?", fg="blue", cursor="hand2")
-    lblUsername.place(x=40, y=170)
+    lblUsername.place(x=100, y=140)
     lblUsername.bind("<Button-1>", callbackUsername)
     lblPassword = tk.Label(window, text=r"Forgot Password?", fg="blue", cursor="hand2")
-    lblPassword.place(x=160, y=170)
+    lblPassword.place(x=100, y=160)
     lblPassword.bind("<Button-1>", callbackPassword)
     loginButton = Button(window, text="Login", width=10, height=1, command=login_verify)
-    loginButton.place(x=100, y=190)
+    loginButton.place(x=110, y=199)
     backButton = Button(window, text="Back", width=10, height=1, command=back)
-    backButton.place(x=100, y=220)
+    backButton.place(x=110, y=225)
 
 
 def getUsername():
