@@ -40,6 +40,8 @@ def forgotPasswordScreen():
         else:
             # Clears the text in the entry box
             username_entry.delete('0', 'end')
+            newPassword_entry.delete('0', 'end')
+            confirm_newPassword_entry.delete('0', 'end')
             errorLbl.place(x=80, y=180)
 
     def back():

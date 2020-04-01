@@ -7,6 +7,7 @@ import InspectorFunctionality.FileAccessScreen
 import InspectorFunctionality.LoginRegScreen
 import InspectorFunctionality.connectToDB
 import InspectorFunctionality.forgotPassword
+import InspectorFunctionality.forgotUsername
 import InspectorFunctionality.registerUser
 import InspectorFunctionality.userAnalytics
 
@@ -50,7 +51,7 @@ def LoginUser():
         errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Arial", 8), fg="red")
         if rows:
             for row in rows:
-                if username1 == row[0] or password1 == row[1]:
+                if username1 == row[0] and t_password == row[1]:
                     Homescreen()
                     window.destroy()
         else:
@@ -59,8 +60,11 @@ def LoginUser():
             password_entry.delete('0', 'end')
             errorLbl.place(x=60, y=145)
 
-    def callback(event):
+    def callbackPassword(event):
         InspectorFunctionality.forgotPassword.forgotPasswordScreen()
+
+    def callbackUsername(event):
+        InspectorFunctionality.forgotUsername.forgotUsernameScreen()
 
     Label(window, text="Please enter your credentials below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()
@@ -71,11 +75,16 @@ def LoginUser():
     password_entry = Entry(window, show="*", textvariable=password_verify)
     password_entry.pack()
     Label(window, text="\n").pack()
-    lbl = tk.Label(window, text=r"Forgot Password?", fg="blue", cursor="hand2")
-    lbl.place(x=100, y=140)
-    lbl.bind("<Button-1>", callback)
-    Button(window, text="Login", width=10, height=1, command=login_verify).pack()
-    Button(window, text="Back", width=10, height=1, command=back).pack()
+    lblUsername = tk.Label(window, text=r"Forgot Username?", fg="blue", cursor="hand2")
+    lblUsername.place(x=40, y=170)
+    lblUsername.bind("<Button-1>", callbackUsername)
+    lblPassword = tk.Label(window, text=r"Forgot Password?", fg="blue", cursor="hand2")
+    lblPassword.place(x=160, y=170)
+    lblPassword.bind("<Button-1>", callbackPassword)
+    loginButton = Button(window, text="Login", width=10, height=1, command=login_verify)
+    loginButton.place(x=100, y=190)
+    backButton = Button(window, text="Back", width=10, height=1, command=back)
+    backButton.place(x=100, y=220)
 
 
 def getUsername():
