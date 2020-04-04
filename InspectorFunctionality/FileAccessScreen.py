@@ -495,37 +495,42 @@ class FileSelectionWindow(tk.Frame):
                     try:
                         comment1 = fetchedComments[0]
                         the_queue.put("Comment 1: " + str(comment1))
-                    except TypeError:
+                    except TypeError as error:
                         the_queue.put("You have not added a comment for Key 1")
+                        print("Comment 1:" + str(error))
 
                 def cannedComment2(event):
                     try:
                         comment2 = fetchedComments[1]
                         the_queue.put("Comment 1: " + str(comment2))
-                    except TypeError:
+                    except TypeError as error:
                         the_queue.put("You have not added a comment for Key 2")
+                        print("Comment 2:" + str(error))
 
                 def cannedComment3(event):
                     try:
                         comment3 = fetchedComments[2]
 
                         the_queue.put("Comment 1: " + str(comment3))
-                    except TypeError:
+                    except TypeError as error:
                         the_queue.put("You have not added a comment for Key 3")
+                        print("Comment 3:" + str(error))
 
                 def cannedComment4(event):
                     try:
                         comment4 = fetchedComments[3]
                         the_queue.put("Comment 1: " + str(comment4))
-                    except TypeError:
+                    except TypeError as error:
                         the_queue.put("You have not added a comment for Key 4")
+                        print("Comment 4:" + str(error))
 
                 def cannedComment5(event):
                     try:
                         comment5 = fetchedComments[4]
                         the_queue.put("Comment 1: " + str(comment5))
-                    except TypeError:
+                    except TypeError as error:
                         the_queue.put("You have not added a comment for Key 5")
+                        print("Comment 5:" + str(error))
 
                 keystrokeGrading.bind('a', keyA)
                 keystrokeGrading.bind('b', keyB)
