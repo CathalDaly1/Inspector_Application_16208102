@@ -492,36 +492,37 @@ class FileSelectionWindow(tk.Frame):
                     the_queue.empty()
 
                 def cannedComment1(event):
-                    comment1 = fetchedComments[0]
                     try:
+                        comment1 = fetchedComments[0]
                         the_queue.put("Comment 1: " + str(comment1))
                     except TypeError:
                         the_queue.put("You have not added a comment for Key 1")
 
                 def cannedComment2(event):
-                    comment2 = fetchedComments[1]
                     try:
+                        comment2 = fetchedComments[1]
                         the_queue.put("Comment 1: " + str(comment2))
                     except TypeError:
                         the_queue.put("You have not added a comment for Key 2")
 
                 def cannedComment3(event):
-                    comment3 = fetchedComments[2]
                     try:
+                        comment3 = fetchedComments[2]
+
                         the_queue.put("Comment 1: " + str(comment3))
                     except TypeError:
                         the_queue.put("You have not added a comment for Key 3")
 
                 def cannedComment4(event):
-                    comment4 = fetchedComments[3]
                     try:
+                        comment4 = fetchedComments[3]
                         the_queue.put("Comment 1: " + str(comment4))
                     except TypeError:
                         the_queue.put("You have not added a comment for Key 4")
 
                 def cannedComment5(event):
-                    comment5 = fetchedComments[4]
                     try:
+                        comment5 = fetchedComments[4]
                         the_queue.put("Comment 1: " + str(comment5))
                     except TypeError:
                         the_queue.put("You have not added a comment for Key 5")
