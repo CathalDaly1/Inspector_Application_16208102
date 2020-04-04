@@ -10,6 +10,7 @@ from fpdf import FPDF
 
 import InspectorFunctionality.connectToDB
 import InspectorFunctionality.loginUser
+import InspectorFunctionality.cannedComments
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -57,8 +58,9 @@ class FileSelectionWindow(tk.Frame):
         def saveModuleCode():
             global assignmentModuleCode
             assignmentModuleCode = enterModuleCode.get()
-            moduleCodeSaved_lbl = tk.Label(self, text="Module code saved", width=15)
-            moduleCodeSaved_lbl.place(x=525, y=85)
+            moduleCodeSaved_lbl = tk.Label(self, text="Module code saved\t\t")
+            moduleCodeSaved_lbl.place(x=527, y=85)
+            return assignmentModuleCode
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -77,7 +79,15 @@ class FileSelectionWindow(tk.Frame):
 
         # Gets the file name of the selection of the listbox - achieved by 'text'
         def fileAccess():
+            global assignmentModuleCode
+            assignmentModuleCode = enterModuleCode.get()
             try:
+                if assignmentModuleCode != "":
+                    saveModuleCode()
+                else:
+                    moduleCodeError_lbl = tk.Label(self, text="Please enter module code", fg="red")
+                    moduleCodeError_lbl.place(x=527, y=85)
+
                 item = listBox.selection()[0]
                 global itemSelected
                 itemSelected = listBox.item(item, 'text')
@@ -95,12 +105,14 @@ class FileSelectionWindow(tk.Frame):
                 for i in item:
                     global selection
                     selection = listBox.item(i, "values")[0]
+                    treeviewFileExtension = re.search(r'\.\w+$', selection)
+                    print(selection)
                     # ToDo fix this = fileSelection_errorlbl.destroy()
-                    if selection.endswith('.txt'):
+                    if treeviewFileExtension is not None:
                         pass
                     else:
                         selection = listBox.item(i, "values")[0]
-                        print(selection)
+                        print(selection + "++")
             except IndexError:
                 pass
 
@@ -113,7 +125,6 @@ class FileSelectionWindow(tk.Frame):
                 # In order open the file; the full filepath and the name of the file must be selected
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
-                    print((itemSelected + "/" + str(item_text)))
                 selectAssignment()
                 filepathErrorLbl.destroy()
 
@@ -124,7 +135,6 @@ class FileSelectionWindow(tk.Frame):
         # If the directory exists then folders and files are displayed in the listbox
         # Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'
         def getFileSelection():
-            saveModuleCode()
             assignmentFilePath = filePath.get()
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath):
@@ -152,8 +162,8 @@ class FileSelectionWindow(tk.Frame):
                     return assignmentFilePath
 
             else:
-                errorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
-                errorLbl.place(x=320, y=145)
+                directoryErrorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
+                directoryErrorLbl.place(x=320, y=145)
 
         # Checks if file is in the directory, adds other columns if it is a file
         # ToDo maybe only add for folder as folder may contain many files which will be treated as one grade  Graded=N, Grade=0
@@ -180,12 +190,14 @@ class FileSelectionWindow(tk.Frame):
 
                     else:
                         try:
-                            cur1.execute("SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL",
-                                         (studentFiles,))
+                            cur1.execute(
+                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL",
+                                (studentFiles,))
                             studentGrade = cur1.fetchall()
                             conn.commit()
-                            cur1.execute("SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL",
-                                         (studentFiles,))
+                            cur1.execute(
+                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL",
+                                (studentFiles,))
                             graded = cur1.fetchone()
                             conn.commit()
                             oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
@@ -258,6 +270,14 @@ class FileSelectionWindow(tk.Frame):
                     commentC = keyCCommentEntry.get("1.0", 'end-1c')
                     commentD = keyDCommentEntry.get("1.0", 'end-1c')
 
+                    userID = InspectorFunctionality.loginUser.getUsername()
+                    sql1 = "INSERT INTO keysComments (user_id, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    val1 = (
+                    userID, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total)
+                    # Executes the insertion ans passes values username and password into the insertion
+                    cur.execute(sql1, val1)
+                    conn.commit()
+
                     a = int(total)
                     keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
                     keysSaved_lbl.place(x=320, y=525)
@@ -294,56 +314,6 @@ class FileSelectionWindow(tk.Frame):
             saveButton.place(x=300, y=755)
 
         changeKeyValues()
-
-        def canned_comments():
-
-            comments_lbl = tk.Label(self, fg="black", text="Enter canned comments below",
-                                    font=("Calibri Bold", 14))
-            comments_lbl.place(x=75, y=535)
-            comment1_lbl = tk.Label(self, fg="black", text="Comment 1: ", font=("Calibri", 12))
-            comment1_lbl.place(x=75, y=565)
-            commentsEntry1: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry1.place(x=170, y=568)
-            comment2_lbl = tk.Label(self, fg="black", text="Comment 2: ", font=("Calibri", 12))
-            comment2_lbl.place(x=75, y=605)
-            commentsEntry2: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry2.place(x=170, y=608)
-            comment3_lbl = tk.Label(self, fg="black", text="Comment 3: ", font=("Calibri", 12))
-            comment3_lbl.place(x=75, y=645)
-            commentsEntry3: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry3.place(x=170, y=648)
-            comment4_lbl = tk.Label(self, fg="black", text="Comment 4: ", font=("Calibri", 12))
-            comment4_lbl.place(x=75, y=685)
-            commentsEntry4: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry4.place(x=170, y=688)
-            comment5_lbl = tk.Label(self, fg="black", text="Comment 5: ", font=("Calibri", 12))
-            comment5_lbl.place(x=75, y=725)
-            commentsEntry5: tk.Text = tk.Text(self, height="2", width="63")
-            commentsEntry5.place(x=170, y=728)
-
-            def saveCommentsButton():
-                global comment1, comment2, comment3, comment4, comment5
-                comment1 = commentsEntry1.get("1.0", 'end-1c')
-                comment2 = commentsEntry2.get("1.0", 'end-1c')
-                comment3 = commentsEntry3.get("1.0", 'end-1c')
-                comment4 = commentsEntry4.get("1.0", 'end-1c')
-                comment5 = commentsEntry5.get("1.0", 'end-1c')
-                # When save button is pressed, save the comments and destroy the entry's and labels
-                commentsEntry1.destroy()
-                commentsEntry2.destroy()
-                commentsEntry3.destroy()
-                commentsEntry4.destroy()
-                commentsEntry5.destroy()
-                comments_lbl.destroy()
-                comment1_lbl.destroy()
-                comment2_lbl.destroy()
-                comment3_lbl.destroy()
-                comment4_lbl.destroy()
-                comment5_lbl.destroy()
-                saveButton.destroy()
-
-            saveButton = tk.Button(self, text="Save", width=13, command=saveCommentsButton)
-            saveButton.place(x=300, y=767)
 
         def back():
             # ToDo Have to fix this issue with closing the window using withdraw
@@ -418,7 +388,8 @@ class FileSelectionWindow(tk.Frame):
         lbl_student_files.place(x=380, y=200, anchor="center")
 
         # Buttons at the bottom of the student file selection screen
-        cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15, command=canned_comments)
+        cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15,
+                                         command=InspectorFunctionality.cannedComments.cannedCommentScreen)
         cannedCommentsButton.place(x=320, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
@@ -461,18 +432,18 @@ class FileSelectionWindow(tk.Frame):
             def viewKeystrokes():
                 print("View Keystrokes pressed")
 
-            def viewCannedComments():
-                try:
-                    commentsCombined = "Comment 1: " + comment1 + "Comment 2: " + comment2 + "Comment 3: " + comment3 + "Comment 4: " + comment4 + "Comment 5: " + comment5
-                    messagebox.showinfo("Canned Comments", commentsCombined)
-
-                except NameError:
-                    messagebox.showinfo("Canned Comments", "You have not initialized all comments")
+            # def viewCannedComments():
+            #     try:
+            #         commentsCombined = "Comment 1: " + comment1 + "Comment 2: " + comment2 + "Comment 3: " + comment3 + "Comment 4: " + comment4 + "Comment 5: " + comment5
+            #         messagebox.showinfo("Canned Comments", commentsCombined)
+            #
+            #     except NameError:
+            #         messagebox.showinfo("Canned Comments", "You have not initialized all comments")
 
             # Menubar in the top left of the screen
             file_menu = tk.Menu(menubar, tearoff=0)
             file_menu.add_command(label="View Keystrokes", command=viewKeystrokes)
-            file_menu.add_command(label="View Canned Comments", command=viewCannedComments)
+            # file_menu.add_command(label="View Canned Comments", command=viewCannedComments)
             file_menu.add_separator()
             file_menu.add_command(label="Close Window", command=back)
             menubar.add_cascade(label="File", menu=file_menu)
@@ -485,6 +456,11 @@ class FileSelectionWindow(tk.Frame):
 
             def startGrading(event):
                 the_queue.put("Grading has started - Total marks: " + str(total))
+                userID = InspectorFunctionality.loginUser.getUsername()
+                cur.execute("SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s",
+                            (userID, assignmentModuleCode))
+                fetchedComments = cur.fetchone()
+                conn.commit()
 
                 def keyA(event):
                     global total
@@ -515,39 +491,39 @@ class FileSelectionWindow(tk.Frame):
                     total = a
                     the_queue.empty()
 
-                def comment1(event):
-                    global comment1
+                def cannedComment1(event):
+                    comment1 = fetchedComments[0]
                     try:
-                        the_queue.put("Comment 1: " + comment1)
-                    except NameError:
+                        the_queue.put("Comment 1: " + str(comment1))
+                    except TypeError:
                         the_queue.put("You have not added a comment for Key 1")
 
-                def comment2(event):
-                    global comment2
+                def cannedComment2(event):
+                    comment2 = fetchedComments[1]
                     try:
-                        the_queue.put("Comment 2: " + comment2)
-                    except NameError:
+                        the_queue.put("Comment 1: " + str(comment2))
+                    except TypeError:
                         the_queue.put("You have not added a comment for Key 2")
 
-                def comment3(event):
-                    global comment3
+                def cannedComment3(event):
+                    comment3 = fetchedComments[2]
                     try:
-                        the_queue.put("Comment 3: " + comment3)
-                    except NameError:
+                        the_queue.put("Comment 1: " + str(comment3))
+                    except TypeError:
                         the_queue.put("You have not added a comment for Key 3")
 
-                def comment4(event):
-                    global comment4
+                def cannedComment4(event):
+                    comment4 = fetchedComments[3]
                     try:
-                        the_queue.put("Comment 4: " + comment4)
-                    except NameError:
+                        the_queue.put("Comment 1: " + str(comment4))
+                    except TypeError:
                         the_queue.put("You have not added a comment for Key 4")
 
-                def comment5(event):
-                    global comment5
+                def cannedComment5(event):
+                    comment5 = fetchedComments[4]
                     try:
-                        the_queue.put("Comment 5: " + comment5)
-                    except NameError:
+                        the_queue.put("Comment 1: " + str(comment5))
+                    except TypeError:
                         the_queue.put("You have not added a comment for Key 5")
 
                 keystrokeGrading.bind('a', keyA)
@@ -555,11 +531,11 @@ class FileSelectionWindow(tk.Frame):
                 keystrokeGrading.bind('b', keyC)
                 keystrokeGrading.bind('d', keyD)
                 keystrokeGrading.bind('e', keyE)
-                keystrokeGrading.bind('1', comment1)
-                keystrokeGrading.bind('2', comment2)
-                keystrokeGrading.bind('3', comment3)
-                keystrokeGrading.bind('4', comment4)
-                keystrokeGrading.bind('5', comment5)
+                keystrokeGrading.bind('1', cannedComment1)
+                keystrokeGrading.bind('2', cannedComment2)
+                keystrokeGrading.bind('3', cannedComment3)
+                keystrokeGrading.bind('4', cannedComment4)
+                keystrokeGrading.bind('5', cannedComment5)
 
             window.bind('s', startGrading)
 
