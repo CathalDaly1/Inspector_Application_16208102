@@ -135,6 +135,7 @@ class FileSelectionWindow(tk.Frame):
         # If the directory exists then folders and files are displayed in the listbox
         # Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'
         def getFileSelection():
+            saveModuleCode()
             assignmentFilePath = filePath.get()
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath):
@@ -258,7 +259,7 @@ class FileSelectionWindow(tk.Frame):
             totalEntry.place(x=170, y=733)
 
             def saveKeysButton():
-                global valueKeyA, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD, final
+                global valueKeyA, assignmentModuleCode, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD, final
                 try:
                     valueKeyA = int(keyAEntry.get("1.0", tk.END))
                     valueKeyB = int(keyBEntry.get("1.0", tk.END))
@@ -271,16 +272,38 @@ class FileSelectionWindow(tk.Frame):
                     commentD = keyDCommentEntry.get("1.0", 'end-1c')
 
                     userID = InspectorFunctionality.loginUser.getUsername()
-                    sql1 = "INSERT INTO keysComments (user_id, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                    val1 = (
-                    userID, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total)
-                    # Executes the insertion ans passes values username and password into the insertion
-                    cur.execute(sql1, val1)
+                    cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s",
+                                (userID, assignmentModuleCode))
+                    keystrokeVals = cur.fetchall()
                     conn.commit()
 
-                    a = int(total)
-                    keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
-                    keysSaved_lbl.place(x=320, y=525)
+                    if not keystrokeVals:
+
+                        sql1 = "INSERT INTO keysComments (user_id, moduleCode, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        val1 = (
+                            userID, assignmentModuleCode, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD,
+                            total)
+                        # Executes the insertion ans passes values username and password into the insertion
+                        cur.execute(sql1, val1)
+                        conn.commit()
+
+                        a = int(total)
+                        keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
+                        keysSaved_lbl.place(x=320, y=525)
+
+                    else:
+                        sql2 = "UPDATE keysComments set valueKeyA = %s, commentA = %s, valueKeyB = %s, commentB = %s, valueKeyC = %s, commentC = %s, valueKeyD = %s, commentD = %s, total = %s where user_id= %s and moduleCode = %s"
+                        val2 = (
+                          valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC,
+                            valueKeyD, commentD,
+                            total, userID, assignmentModuleCode)
+                        # Executes the insertion ans passes values username and password into the insertion
+                        cur.execute(sql2, val2)
+                        conn.commit()
+
+                        a = int(total)
+                        keysSaved_lbl = tk.Label(self, text="Values for Keys updated", font=("Arial", 8))
+                        keysSaved_lbl.place(x=320, y=525)
 
                     # Collapse key values entry's and labels when button is selected
                     keyAEntry.destroy()
@@ -457,8 +480,9 @@ class FileSelectionWindow(tk.Frame):
             def startGrading(event):
                 the_queue.put("Grading has started - Total marks: " + str(total))
                 userID = InspectorFunctionality.loginUser.getUsername()
-                cur.execute("SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s",
-                            (userID, assignmentModuleCode))
+                cur.execute(
+                    "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s",
+                    (userID, assignmentModuleCode))
                 fetchedComments = cur.fetchone()
                 conn.commit()
 
