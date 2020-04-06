@@ -78,16 +78,16 @@ def analyticsScreen():
         cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s",
                     (userID, moduleCodeSelection))
 
-        rows = cur.fetchall()
+        assignmentData = cur.fetchall()
         conn.commit()
 
-        for row in rows:
+        for row in assignmentData:
             listBox.insert("", tk.END, values=(row[2], row[3], row[4], row[5]))
 
         assignmentID = []
         grade = []
 
-        for row1 in rows:
+        for row1 in assignmentData:
             assignmentID.append(row1[0])
             grade.append(row1[5])
 
@@ -98,7 +98,7 @@ def analyticsScreen():
             subplot1.bar(xAxis, yAxis, color='lightsteelblue')
             bar1 = FigureCanvasTkAgg(figure1, window)
             bar1.get_tk_widget().place(x=150, y=390)
-            subplot1.set_title('Grade Distribution')
+            subplot1.set_title('Grade Distribution for ' + str(moduleCodeSelection))
 
     def back():
         window.destroy()

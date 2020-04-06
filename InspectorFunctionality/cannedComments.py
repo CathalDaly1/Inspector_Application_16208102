@@ -59,18 +59,18 @@ def cannedCommentScreen():
         conn.commit()
 
         if not cannedComments:
-            sql1 = "INSERT INTO cannedComments (user_id, moduleCode, comment1, comment2, comment3, comment4, comment5) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            insertComments = "INSERT INTO cannedComments (user_id, moduleCode, comment1, comment2, comment3, comment4, comment5) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             val1 = (userID, moduleCode, comment1, comment2, comment3, comment4, comment5)
             # Executes the insertion ans passes values username and password into the insertion
-            cur.execute(sql1, val1)
+            cur.execute(insertComments, val1)
             conn.commit()
             newCommentsSaved_lbl = tk.Label(window, text="Canned Comments have been saved", font=("Calibri", 10))
             newCommentsSaved_lbl.place(x=250, y=315)
 
         else:
-            sql2 = "Update cannedComments set comment1 = %s, comment2 = %s , comment3 = %s , comment4 = %s , comment5 = %s where user_id =%s and moduleCode=%s"
+            updateComments = "Update cannedComments set comment1 = %s, comment2 = %s , comment3 = %s , comment4 = %s , comment5 = %s where user_id =%s and moduleCode=%s"
             val2 = (comment1, comment2, comment3, comment4, comment5, userID, moduleCode)
-            cur.execute(sql2, val2)
+            cur.execute(updateComments, val2)
             conn.commit()
             commentsUpdated_lbl = tk.Label(window, text="Canned Comments have been updated", font=("Calibri", 10))
             commentsUpdated_lbl.place(x=250, y=315)

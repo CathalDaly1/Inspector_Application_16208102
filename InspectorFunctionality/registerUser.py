@@ -44,10 +44,10 @@ def registerUser():
                 # Hashing the users password and inserting into the database
                 t_hashed = hashlib.sha256(password_info.encode())
                 t_password = t_hashed.hexdigest()
-                sql = "INSERT INTO Users (username, password) VALUES (%s, %s)"
+                insertUser = "INSERT INTO Users (username, password) VALUES (%s, %s)"
                 val = (username_info, t_password)
                 # Executes the insertion ans passes values username and password into the insertion
-                cur.execute(sql, val)
+                cur.execute(insertUser, val)
                 # Closes the connection to the database
                 conn.commit()
 

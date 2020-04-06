@@ -22,14 +22,14 @@ def forgotPasswordScreen():
         newPassword = newPassword_entry.get()
         confirmNewPassword = confirm_newPassword_entry.get()
 
-        cur.execute("SELECT username  FROM Users WHERE username =%s",
+        cur.execute("SELECT username FROM Users WHERE username =%s",
                     (username1,))
-        rows = cur.fetchall()
+        usernameCred = cur.fetchall()
         conn.commit()
 
         errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Arial", 8), fg="red")
-        if rows:
-            for row in rows:
+        if usernameCred:
+            for row in usernameCred:
                 if username1 == row[0] and newPassword == confirmNewPassword:
                     t_hashed = hashlib.sha256(confirmNewPassword.encode())
                     t_password = t_hashed.hexdigest()

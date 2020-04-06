@@ -92,8 +92,8 @@ def getUsername():
                 (username1,))
     uid = cur.fetchone()
     conn.commit()
-    uid2 = int(uid[0])
-    return uid2
+    userUID = int(uid[0])
+    return userUID
 
 
 def Homescreen():

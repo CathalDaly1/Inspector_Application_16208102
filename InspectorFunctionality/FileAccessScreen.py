@@ -259,29 +259,29 @@ class FileSelectionWindow(tk.Frame):
             totalEntry.place(x=170, y=733)
 
             def saveKeysButton():
-                global valueKeyA, assignmentModuleCode, valueKeyB, valueKeyC, valueKeyD, total, a, commentA, commentB, commentC, commentD, final
                 try:
-                    valueKeyA = int(keyAEntry.get("1.0", tk.END))
-                    valueKeyB = int(keyBEntry.get("1.0", tk.END))
-                    valueKeyC = int(keyCEntry.get("1.0", tk.END))
-                    valueKeyD = int(keyDEntry.get("1.0", tk.END))
+                    valueKeyA1 = int(keyAEntry.get("1.0", tk.END))
+                    valueKeyB1 = int(keyBEntry.get("1.0", tk.END))
+                    valueKeyC1 = int(keyCEntry.get("1.0", tk.END))
+                    valueKeyD1 = int(keyDEntry.get("1.0", tk.END))
                     total = int(totalEntry.get("1.0", tk.END))
-                    commentA = keyACommentEntry.get("1.0", 'end-1c')
-                    commentB = keyBCommentEntry.get("1.0", 'end-1c')
-                    commentC = keyCCommentEntry.get("1.0", 'end-1c')
-                    commentD = keyDCommentEntry.get("1.0", 'end-1c')
+                    commentA1 = keyACommentEntry.get("1.0", 'end-1c')
+                    commentB1 = keyBCommentEntry.get("1.0", 'end-1c')
+                    commentC1 = keyCCommentEntry.get("1.0", 'end-1c')
+                    commentD1 = keyDCommentEntry.get("1.0", 'end-1c')
 
                     userID = InspectorFunctionality.loginUser.getUsername()
                     cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s",
                                 (userID, assignmentModuleCode))
-                    keystrokeVals = cur.fetchall()
+                    keystrokeValues = cur.fetchall()
                     conn.commit()
 
-                    if not keystrokeVals:
+                    if not keystrokeValues:
 
                         sql1 = "INSERT INTO keysComments (user_id, moduleCode, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         val1 = (
-                            userID, assignmentModuleCode, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD,
+                            userID, assignmentModuleCode, valueKeyA1, commentA1, valueKeyB1, commentB1, valueKeyC1, commentC1,
+                            valueKeyD1, commentD1,
                             total)
                         # Executes the insertion ans passes values username and password into the insertion
                         cur.execute(sql1, val1)
@@ -294,8 +294,8 @@ class FileSelectionWindow(tk.Frame):
                     else:
                         sql2 = "UPDATE keysComments set valueKeyA = %s, commentA = %s, valueKeyB = %s, commentB = %s, valueKeyC = %s, commentC = %s, valueKeyD = %s, commentD = %s, total = %s where user_id= %s and moduleCode = %s"
                         val2 = (
-                          valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC,
-                            valueKeyD, commentD,
+                            valueKeyA1, commentA1, valueKeyB1, commentB1, valueKeyC1, commentC1,
+                            valueKeyD1, commentD1,
                             total, userID, assignmentModuleCode)
                         # Executes the insertion ans passes values username and password into the insertion
                         cur.execute(sql2, val2)
@@ -478,41 +478,59 @@ class FileSelectionWindow(tk.Frame):
             window.config(menu=menubar)
 
             def startGrading(event):
-                the_queue.put("Grading has started - Total marks: " + str(total))
                 userID = InspectorFunctionality.loginUser.getUsername()
                 cur.execute(
                     "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s",
                     (userID, assignmentModuleCode))
                 fetchedComments = cur.fetchone()
+
+                cur.execute(
+                    "SELECT valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total FROM keysComments WHERE user_id =%s and moduleCode = %s",
+                    (userID, assignmentModuleCode))
+                fetchedKeyValues = cur.fetchone()
                 conn.commit()
 
+                global total1
+                total1 = fetchedKeyValues[8]
+                valueKeyA = fetchedKeyValues[0]
+                commentA = fetchedKeyValues[1]
+                valueKeyB = fetchedKeyValues[5]
+                commentB = fetchedKeyValues[3]
+                valueKeyC = fetchedKeyValues[4]
+                commentC = fetchedKeyValues[5]
+                valueKeyD = fetchedKeyValues[6]
+                commentD = fetchedKeyValues[7]
+                a = total1
+
+                the_queue.put("Grading has started - Total marks: " + str(total1))
+
                 def keyA(event):
-                    global total
-                    total += valueKeyA
-                    the_queue.put("Key A: " + str(total) + " marks - " + commentA)
+                    global total1
+                    total1 += valueKeyA
+                    the_queue.put("Key A: " + str(total1) + " marks - " + commentA)
 
                 def keyB(event):
-                    global total
-                    total += valueKeyB
-                    the_queue.put("Key B: " + str(total) + " marks - " + commentB)
+                    global total1
+                    total1 += valueKeyB
+                    the_queue.put("Key B: " + str(total1) + " marks - " + commentB)
 
                 def keyC(event):
-                    global total
-                    total += valueKeyB
-                    the_queue.put("Key C: " + str(total) + " marks - " + commentC)
+                    global total1
+                    total1 += valueKeyC
+                    the_queue.put("Key C: " + str(total1) + " marks - " + commentC)
 
                 def keyD(event):
-                    global total
-                    total += valueKeyB
-                    the_queue.put("Key C: " + str(total) + " marks - " + commentD)
+                    global total1
+                    total1 += valueKeyD
+                    the_queue.put("Key C: " + str(total1) + " marks - " + commentD)
 
                 def keyE(event):
-                    global total
+                    global total1
                     global final
-                    the_queue.put("Final Grade: " + str(total) + " marks")
+                    the_queue.put("Final Grade: " + str(total1) + " marks")
                     # sets the total to the initial value again
-                    final = total
-                    total = a
+                    final = total1
+                    total1 = a
                     the_queue.empty()
 
                 def cannedComment1(event):
@@ -597,6 +615,18 @@ class FileSelectionWindow(tk.Frame):
 
             subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
             subTitle_lbl.place(x=400, y=70, anchor="center")
+
+            userID = InspectorFunctionality.loginUser.getUsername()
+            cur.execute(
+                "SELECT valueKeyA, valueKeyB, valueKeyC, valueKeyD, total FROM keysComments WHERE user_id =%s and moduleCode = %s",
+                (userID, assignmentModuleCode))
+            fetchedKeyValuesDisplay = cur.fetchone()
+            conn.commit()
+
+            valueKeyA = fetchedKeyValuesDisplay[0]
+            valueKeyB = fetchedKeyValuesDisplay[1]
+            valueKeyC = fetchedKeyValuesDisplay[2]
+            valueKeyD = fetchedKeyValuesDisplay[3]
 
             keystrokes_lbl = tk.Label(window, width=30, height=22, relief="solid", bd=1, padx=10, bg="white")
             keystrokes_lbl.pack_propagate(0)
