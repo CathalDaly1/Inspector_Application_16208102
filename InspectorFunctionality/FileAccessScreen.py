@@ -56,11 +56,12 @@ class FileSelectionWindow(tk.Frame):
         cur = conn.cursor()
 
         def saveModuleCode():
-            global assignmentModuleCode
+            global assignmentModuleCode, assignmentNo
             assignmentModuleCode = enterModuleCode.get()
-            moduleCodeSaved_lbl = tk.Label(self, text="Module code saved\t\t")
+            assignmentNo = enterAssignmentNo.get()
+            moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. saved\t\t")
             moduleCodeSaved_lbl.place(x=527, y=85)
-            return assignmentModuleCode
+            return assignmentModuleCode, assignmentNo
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -79,13 +80,14 @@ class FileSelectionWindow(tk.Frame):
 
         # Gets the file name of the selection of the listbox - achieved by 'text'
         def fileAccess():
-            global assignmentModuleCode
+            global assignmentModuleCode, assignmentNo
             assignmentModuleCode = enterModuleCode.get()
+            assignmentNo = enterAssignmentNo.get()
             try:
-                if assignmentModuleCode != "":
+                if assignmentModuleCode and assignmentNo != "":
                     saveModuleCode()
                 else:
-                    moduleCodeError_lbl = tk.Label(self, text="Please enter module code", fg="red")
+                    moduleCodeError_lbl = tk.Label(self, text="Please enter Module Code and Assignment No.", fg="red")
                     moduleCodeError_lbl.place(x=527, y=85)
 
                 item = listBox.selection()[0]
@@ -112,7 +114,7 @@ class FileSelectionWindow(tk.Frame):
                         pass
                     else:
                         selection = listBox.item(i, "values")[0]
-                        print(selection + "++")
+                        print(selection)
             except IndexError:
                 pass
 
@@ -270,21 +272,22 @@ class FileSelectionWindow(tk.Frame):
                     commentC1 = keyCCommentEntry.get("1.0", 'end-1c')
                     commentD1 = keyDCommentEntry.get("1.0", 'end-1c')
 
-                    userID = InspectorFunctionality.loginUser.getUsername()
-                    cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s",
-                                (userID, assignmentModuleCode))
+                    userID = InspectorFunctionality.loginUser.getUserID()
+                    cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s and assignmentNo = %s",
+                                (userID, assignmentModuleCode, assignmentNo))
                     keystrokeValues = cur.fetchall()
                     conn.commit()
 
                     if not keystrokeValues:
 
-                        sql1 = "INSERT INTO keysComments (user_id, moduleCode, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                        val1 = (
-                            userID, assignmentModuleCode, valueKeyA1, commentA1, valueKeyB1, commentB1, valueKeyC1, commentC1,
+                        insertKeysCommentsSQL = "INSERT INTO keysComments (user_id, moduleCode, assignmentNo, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        keysCommentsValues = (
+                            userID, assignmentModuleCode, assignmentNo, valueKeyA1, commentA1, valueKeyB1, commentB1, valueKeyC1,
+                            commentC1,
                             valueKeyD1, commentD1,
                             total)
                         # Executes the insertion ans passes values username and password into the insertion
-                        cur.execute(sql1, val1)
+                        cur.execute(insertKeysCommentsSQL, keysCommentsValues)
                         conn.commit()
 
                         a = int(total)
@@ -292,13 +295,13 @@ class FileSelectionWindow(tk.Frame):
                         keysSaved_lbl.place(x=320, y=525)
 
                     else:
-                        sql2 = "UPDATE keysComments set valueKeyA = %s, commentA = %s, valueKeyB = %s, commentB = %s, valueKeyC = %s, commentC = %s, valueKeyD = %s, commentD = %s, total = %s where user_id= %s and moduleCode = %s"
-                        val2 = (
+                        updateKeysCommentsSQL = "UPDATE keysComments set valueKeyA = %s, commentA = %s, valueKeyB = %s, commentB = %s, valueKeyC = %s, commentC = %s, valueKeyD = %s, commentD = %s, total = %s where user_id= %s and moduleCode = %s and assignmentNo = %s"
+                        keysCommentsValues = (
                             valueKeyA1, commentA1, valueKeyB1, commentB1, valueKeyC1, commentC1,
                             valueKeyD1, commentD1,
-                            total, userID, assignmentModuleCode)
+                            total, userID, assignmentModuleCode, assignmentNo)
                         # Executes the insertion ans passes values username and password into the insertion
-                        cur.execute(sql2, val2)
+                        cur.execute(updateKeysCommentsSQL, keysCommentsValues)
                         conn.commit()
 
                         a = int(total)
@@ -338,23 +341,19 @@ class FileSelectionWindow(tk.Frame):
 
         changeKeyValues()
 
-        def back():
-            # ToDo Have to fix this issue with closing the window using withdraw
-            InspectorFunctionality.loginUser.Homescreen()
-
         def changeValueOfAllAssignments():
             change = str(input("Do you wish to add/subtract marks? (A(dd) or S(ubtract))"))
 
             if change.lower() == "a":
                 marks = int(input("Enter number of marks you wish to add or subtract"))
-                cur.execute("Update assignments set final_grade = final_grade + %s where modulecode =%s",
-                            (marks, assignmentModuleCode,))
+                cur.execute("Update assignments set final_grade = final_grade + %s where modulecode =%s and assignmentNo = %s",
+                            (marks, assignmentModuleCode, assignmentNo, ))
                 conn.commit()
 
             elif change.lower() == "s":
                 marks = int(input("Enter number of marks you wish to add or subtract"))
-                cur.execute("Update assignments set final_grade = final_grade - %s where modulecode =%s",
-                            (marks, assignmentModuleCode,))
+                cur.execute("Update assignments set final_grade = final_grade - %s where modulecode =%s and assignmentNo = %s",
+                            (marks, assignmentModuleCode, assignmentNo, ))
                 conn.commit()
 
             else:
@@ -400,9 +399,16 @@ class FileSelectionWindow(tk.Frame):
         moduleCode = tk.Label(self, fg="black", text="Enter Assignments Module Code: ", font=("Calibri", 12))
         moduleCode.place(x=75, y=85)
 
-        enterModuleCode: tk.Entry = tk.Entry(self, width="35")
-        enterModuleCode.place(x=300, y=85)
+        enterModuleCode: tk.Entry = tk.Entry(self, width="12")
+        enterModuleCode.place(x=300, y=87)
         enterModuleCode.insert(0, '')
+
+        assignmentNumber = tk.Label(self, fg="black", text="Assignment No.: ", font=("Calibri", 12))
+        assignmentNumber.place(x=370, y=85)
+
+        enterAssignmentNo: tk.Entry = tk.Entry(self, width="5")
+        enterAssignmentNo.place(x=480, y=87)
+        enterAssignmentNo.insert(0, '')
 
         lbl_sub_title = tk.Label(self, text="List of Student Files", font=("Arial", 15))
         lbl_sub_title.place(x=380, y=180, anchor="center")
@@ -422,13 +428,10 @@ class FileSelectionWindow(tk.Frame):
                                               command=changeValueOfAllAssignments, width=20)
         selectStudentAssignButton.place(x=550, y=500)
 
-        backButton = tk.Button(self, text="Back", width=15, command=back)
-        backButton.place(x=75, y=470)
-
         def selectAssignment():
             window = tk.Tk()
             window.title("Inspector - Grading Application")
-            window.geometry("1070x985+50+50")
+            window.geometry("1200x985+50+50")
             window.resizable(False, False)
 
             menubar = tk.Menu(window)
@@ -452,23 +455,12 @@ class FileSelectionWindow(tk.Frame):
                 file = filePath.get().replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
                 # file = re.sub('\t', '', file)
 
-            def viewKeystrokes():
-                print("View Keystrokes pressed")
-
-            # def viewCannedComments():
-            #     try:
-            #         commentsCombined = "Comment 1: " + comment1 + "Comment 2: " + comment2 + "Comment 3: " + comment3 + "Comment 4: " + comment4 + "Comment 5: " + comment5
-            #         messagebox.showinfo("Canned Comments", commentsCombined)
-            #
-            #     except NameError:
-            #         messagebox.showinfo("Canned Comments", "You have not initialized all comments")
-
             # Menubar in the top left of the screen
             file_menu = tk.Menu(menubar, tearoff=0)
-            file_menu.add_command(label="View Keystrokes", command=viewKeystrokes)
+            file_menu.add_command(label="View Keystrokes", command="")
             # file_menu.add_command(label="View Canned Comments", command=viewCannedComments)
             file_menu.add_separator()
-            file_menu.add_command(label="Close Window", command=back)
+            file_menu.add_command(label="Close Window", command="")
             menubar.add_cascade(label="File", menu=file_menu)
 
             helpMenu = tk.Menu(menubar, tearoff=0)
@@ -478,15 +470,15 @@ class FileSelectionWindow(tk.Frame):
             window.config(menu=menubar)
 
             def startGrading(event):
-                userID = InspectorFunctionality.loginUser.getUsername()
+                userID = InspectorFunctionality.loginUser.getUserID()
                 cur.execute(
-                    "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s",
-                    (userID, assignmentModuleCode))
+                    "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
+                    (userID, assignmentModuleCode, assignmentNo))
                 fetchedComments = cur.fetchone()
 
                 cur.execute(
-                    "SELECT valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total FROM keysComments WHERE user_id =%s and moduleCode = %s",
-                    (userID, assignmentModuleCode))
+                    "SELECT valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total FROM keysComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
+                    (userID, assignmentModuleCode, assignmentNo))
                 fetchedKeyValues = cur.fetchone()
                 conn.commit()
 
@@ -494,7 +486,7 @@ class FileSelectionWindow(tk.Frame):
                 total1 = fetchedKeyValues[8]
                 valueKeyA = fetchedKeyValues[0]
                 commentA = fetchedKeyValues[1]
-                valueKeyB = fetchedKeyValues[5]
+                valueKeyB = fetchedKeyValues[2]
                 commentB = fetchedKeyValues[3]
                 valueKeyC = fetchedKeyValues[4]
                 commentC = fetchedKeyValues[5]
@@ -576,7 +568,7 @@ class FileSelectionWindow(tk.Frame):
 
                 keystrokeGrading.bind('a', keyA)
                 keystrokeGrading.bind('b', keyB)
-                keystrokeGrading.bind('b', keyC)
+                keystrokeGrading.bind('c', keyC)
                 keystrokeGrading.bind('d', keyD)
                 keystrokeGrading.bind('e', keyE)
                 keystrokeGrading.bind('1', cannedComment1)
@@ -616,50 +608,68 @@ class FileSelectionWindow(tk.Frame):
             subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
             subTitle_lbl.place(x=400, y=70, anchor="center")
 
-            userID = InspectorFunctionality.loginUser.getUsername()
+            userID = InspectorFunctionality.loginUser.getUserID()
             cur.execute(
-                "SELECT valueKeyA, valueKeyB, valueKeyC, valueKeyD, total FROM keysComments WHERE user_id =%s and moduleCode = %s",
-                (userID, assignmentModuleCode))
+                "SELECT valueKeyA, commentA, valueKeyB, commentB,  valueKeyC, commentC, valueKeyD, commentD, total FROM keysComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
+                (userID, assignmentModuleCode, assignmentNo))
             fetchedKeyValuesDisplay = cur.fetchone()
             conn.commit()
 
             valueKeyA = fetchedKeyValuesDisplay[0]
-            valueKeyB = fetchedKeyValuesDisplay[1]
-            valueKeyC = fetchedKeyValuesDisplay[2]
-            valueKeyD = fetchedKeyValuesDisplay[3]
+            commentA = fetchedKeyValuesDisplay[1]
+            valueKeyB = fetchedKeyValuesDisplay[2]
+            commentB = fetchedKeyValuesDisplay[3]
+            valueKeyC = fetchedKeyValuesDisplay[4]
+            commentC = fetchedKeyValuesDisplay[5]
+            valueKeyD = fetchedKeyValuesDisplay[6]
+            commentD = fetchedKeyValuesDisplay[7]
 
-            keystrokes_lbl = tk.Label(window, width=30, height=22, relief="solid", bd=1, padx=10, bg="white")
+            cur.execute(
+                "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
+                (userID, assignmentModuleCode,  assignmentNo))
+            fetchedKeyCannedCommentsDisplay = cur.fetchone()
+            conn.commit()
+
+            comment1 = fetchedKeyCannedCommentsDisplay[0]
+            comment2 = fetchedKeyCannedCommentsDisplay[1]
+            comment3 = fetchedKeyCannedCommentsDisplay[2]
+            comment4 = fetchedKeyCannedCommentsDisplay[3]
+            comment5 = fetchedKeyCannedCommentsDisplay[4]
+
+            keystrokes_lbl = tk.Label(window, width=50, height=22, relief="solid", bd=1, padx=10, bg="white")
             keystrokes_lbl.pack_propagate(0)
             keystrokes_lbl.place(x=790, y=95)
             tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
-            tk.Label(keystrokes_lbl, text="   Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + "\n"
-                                                                                                           "Key B: +" + str(
-                valueKeyB) + "\n"
-                             "Key C: +" + str(
-                valueKeyC) + "\n"
-                             "Key D: +" + str(
-                valueKeyD) + "\n"
-                             "Key E: Exit grading"
-                                          + "\n"
-                                            "Key 1: Comment 1"
-                                          + "\n"
-                                            "Key 2: Comment 2"
-                                          + "\n"
-                                            "Key 3: Comment 3"
-                                          + "\n"
-                                            "Key 4: Comment 4"
-                                          + "\n"
-                                            "Key 5: Comment 5",
+            tk.Label(keystrokes_lbl, bg="white", justify=tk.LEFT,
+                     text="Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + " - Comment A: " + str(
+                         commentA) + "\n"
+                                     "Key B: +" + str(
+                         valueKeyB) + " - Comment B: " + str(commentB) + "\n"
+                                                                         "Key C: +" + str(
+                         valueKeyC) + " - Comment C: " + str(commentC) + "\n"
+                                                                         "Key D: +" + str(
+                         valueKeyD) + " - Comment D: " + str(commentD) + "\n"
+                                                                         "Key E: Exit grading"
+                          + "\n"
+                            "Canned Comment 1: " + str(comment1)
+                          + "\n"
+                            "Canned Comment 2: " + str(comment2)
+                          + "\n"
+                            "Canned Comment 3: " + str(comment3)
+                          + "\n"
+                            "Canned Comment 4: " + str(comment4)
+                          + "\n"
+                            "Canned Comment 5: " + str(comment5), wraplengt=345,
                      font=("Arial", 12)).pack()
 
-            studentFinalGrade = tk.Label(window, font=("Arial", 12))
+            studentFinalGrade = tk.Label(window, wraplengt=350, font=("Arial", 12))
             studentFinalGrade.place(x=790, y=430)
 
             keystrokeGrading_lbl = tk.Label(window, text="Enter keystroke selections below", font=("Arial", 12))
-            keystrokeGrading_lbl.place(x=790, y=455)
+            keystrokeGrading_lbl.place(x=790, y=475)
 
             keystrokeGrading: tk.Text = tk.Text(window, height="1", width="15")
-            keystrokeGrading.place(x=790, y=475)
+            keystrokeGrading.place(x=790, y=495)
 
             GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
             GradeTextBox.place(x=45, y=730)
@@ -697,7 +707,7 @@ class FileSelectionWindow(tk.Frame):
                         self.create_text(2, y, anchor="nw", text=linenum)
                         i = self.textwidget.index("%s+1line" % i)
 
-            class CustomText(tk.Text):
+            class generatingLineNumbersLive(tk.Text):
                 def __init__(self, *args, **kwargs):
                     tk.Text.__init__(self, *args, **kwargs)
 
@@ -721,15 +731,15 @@ class FileSelectionWindow(tk.Frame):
                     # return what the actual widget returned
                     return result
 
-            class Example(tk.Frame):
+            class lineNumbers(tk.Frame):
                 def __init__(self, *args, **kwargs):
                     tk.Frame.__init__(self, *args, **kwargs)
-                    self.text = CustomText(self, width=84, wrap=tk.NONE, height=35)
+                    self.text = generatingLineNumbersLive(self, width=84, wrap=tk.NONE, height=35)
                     self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
-                    self.linenumbers = TextLineNumbers(self, width=30, bg="yellow")
-                    self.linenumbers.attach(self.text)
+                    self.codeLineNumbers = TextLineNumbers(self, width=30, bg="yellow")
+                    self.codeLineNumbers.attach(self.text)
 
-                    self.linenumbers.pack(side="left", fill="y")
+                    self.codeLineNumbers.pack(side="left", fill="y")
                     self.text.pack(side="right", fill="both", expand=True)
 
                     self.text.bind("<<Change>>", self._on_change)
@@ -760,16 +770,16 @@ class FileSelectionWindow(tk.Frame):
                     backButton2.place(x=100, y=685)
 
                 def _on_change(self, event):
-                    self.linenumbers.redraw()
+                    self.codeLineNumbers.redraw()
 
                 def submitAssignment(self):
                     window.withdraw()
-                    userID = InspectorFunctionality.loginUser.getUsername()
+                    userID = InspectorFunctionality.loginUser.getUserID()
                     time_graded = datetime.datetime.now()
-                    sql = "INSERT INTO assignments (user_id, modulecode, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                    val = (userID, assignmentModuleCode, selection, item_text[0], final, 'Y', time_graded)
+                    insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                    assignmentValues = (userID, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y', time_graded)
                     # Executes the insertion ans passes values username and password into the insertion
-                    cur.execute(sql, val)
+                    cur.execute(insertAssignments, assignmentValues)
                     conn.commit()
 
                     refreshListbox()
@@ -821,7 +831,7 @@ class FileSelectionWindow(tk.Frame):
                     listBox.delete(*listBox.get_children())
                     getFileSelection()
 
-            Example(window).place(x=60, y=95)
+            lineNumbers(window).place(x=60, y=95)
 
 
 if __name__ == "__main__":

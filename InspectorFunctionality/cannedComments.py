@@ -19,6 +19,11 @@ def cannedCommentScreen():
     moduleCodeEntry: tk.Text = tk.Text(window, height="1", width="10")
     moduleCodeEntry.place(x=150, y=50)
 
+    assignmentNo_lbl = tk.Label(window, fg="black", text="Assignment No.: ", font=("Calibri", 12))
+    assignmentNo_lbl.place(x=230, y=50)
+    assignmentNoEntry: tk.Text = tk.Text(window, height="1", width="10")
+    assignmentNoEntry.place(x=350, y=50)
+
     comments_lbl = tk.Label(window, fg="black", text="Enter canned comments below",
                             font=("Calibri Bold", 14))
     comments_lbl.place(x=200, y=20)
@@ -45,6 +50,7 @@ def cannedCommentScreen():
 
     def saveCommentsButton():
         moduleCode = moduleCodeEntry.get("1.0", 'end-1c')
+        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c')
         comment1 = commentsEntry1.get("1.0", 'end-1c')
         comment2 = commentsEntry2.get("1.0", 'end-1c')
         comment3 = commentsEntry3.get("1.0", 'end-1c')
@@ -52,15 +58,15 @@ def cannedCommentScreen():
         comment5 = commentsEntry5.get("1.0", 'end-1c')
         # When save button is pressed, save the comments and destroy the entry's and labels
 
-        userID = InspectorFunctionality.loginUser.getUsername()
+        userID = InspectorFunctionality.loginUser.getUserID()
         cur.execute("SELECT * FROM cannedComments WHERE user_id=%s AND moduleCode = %s",
                     (userID, moduleCode))
         cannedComments = cur.fetchall()
         conn.commit()
 
         if not cannedComments:
-            insertComments = "INSERT INTO cannedComments (user_id, moduleCode, comment1, comment2, comment3, comment4, comment5) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            val1 = (userID, moduleCode, comment1, comment2, comment3, comment4, comment5)
+            insertComments = "INSERT INTO cannedComments (user_id, moduleCode, assignmentNo, comment1, comment2, comment3, comment4, comment5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            val1 = (userID, moduleCode, assignmentNo, comment1, comment2, comment3, comment4, comment5)
             # Executes the insertion ans passes values username and password into the insertion
             cur.execute(insertComments, val1)
             conn.commit()
@@ -68,8 +74,8 @@ def cannedCommentScreen():
             newCommentsSaved_lbl.place(x=250, y=315)
 
         else:
-            updateComments = "Update cannedComments set comment1 = %s, comment2 = %s , comment3 = %s , comment4 = %s , comment5 = %s where user_id =%s and moduleCode=%s"
-            val2 = (comment1, comment2, comment3, comment4, comment5, userID, moduleCode)
+            updateComments = "Update cannedComments set comment1 = %s, comment2 = %s , comment3 = %s , comment4 = %s , comment5 = %s where user_id =%s and moduleCode=%s and assignmentNo = %s"
+            val2 = (comment1, comment2, comment3, comment4, comment5, userID, moduleCode, assignmentNo)
             cur.execute(updateComments, val2)
             conn.commit()
             commentsUpdated_lbl = tk.Label(window, text="Canned Comments have been updated", font=("Calibri", 10))
