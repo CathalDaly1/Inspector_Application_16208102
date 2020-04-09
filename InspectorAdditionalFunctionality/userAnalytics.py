@@ -1,6 +1,6 @@
 import tkinter as tk
-import InspectorFunctionality.loginUser
-import InspectorFunctionality.connectToDB
+import UserCredentials.loginUser
+import DBConnection.connectToDB
 
 from tkinter import ttk
 from matplotlib.figure import Figure
@@ -11,7 +11,7 @@ style.use('fivethirtyeight')
 
 # ToDo Add new column in DB for module code and also assignment number or title
 
-conn = InspectorFunctionality.connectToDB.connectToDB()
+conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
 
@@ -21,7 +21,7 @@ def analyticsScreen():
     window.geometry("850x800+100+100")
     window.resizable(False, False)
 
-    userID = InspectorFunctionality.loginUser.getUserID()
+    userID = UserCredentials.loginUser.getUserID()
     cur.execute("SELECT count(*) FROM assignments WHERE user_id =%s",
                 (userID,))
     number = cur.fetchone()

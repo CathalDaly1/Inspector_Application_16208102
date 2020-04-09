@@ -8,9 +8,9 @@ from tkinter import ttk, messagebox
 import psycopg2
 from fpdf import FPDF
 
-import InspectorFunctionality.connectToDB
-import InspectorFunctionality.loginUser
-import InspectorFunctionality.cannedComments
+import DBConnection.connectToDB
+import UserCredentials.loginUser
+import InspectorGradingFunctionality.cannedComments
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -52,7 +52,7 @@ class FileSelectionWindow(tk.Frame):
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
 
-        conn = InspectorFunctionality.connectToDB.connectToDB()
+        conn = DBConnection.connectToDB.connectToDB()
         cur = conn.cursor()
 
         def saveModuleCode():
@@ -272,7 +272,7 @@ class FileSelectionWindow(tk.Frame):
                     commentC1 = keyCCommentEntry.get("1.0", 'end-1c')
                     commentD1 = keyDCommentEntry.get("1.0", 'end-1c')
 
-                    userID = InspectorFunctionality.loginUser.getUserID()
+                    userID = UserCredentials.loginUser.getUserID()
                     cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s and assignmentNo = %s",
                                 (userID, assignmentModuleCode, assignmentNo))
                     keystrokeValues = cur.fetchall()
@@ -418,7 +418,7 @@ class FileSelectionWindow(tk.Frame):
 
         # Buttons at the bottom of the student file selection screen
         cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15,
-                                         command=InspectorFunctionality.cannedComments.cannedCommentScreen)
+                                         command=InspectorGradingFunctionality.cannedComments.cannedCommentScreen)
         cannedCommentsButton.place(x=320, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
@@ -470,7 +470,7 @@ class FileSelectionWindow(tk.Frame):
             window.config(menu=menubar)
 
             def startGrading(event):
-                userID = InspectorFunctionality.loginUser.getUserID()
+                userID = UserCredentials.loginUser.getUserID()
                 cur.execute(
                     "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
                     (userID, assignmentModuleCode, assignmentNo))
@@ -608,7 +608,7 @@ class FileSelectionWindow(tk.Frame):
             subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
             subTitle_lbl.place(x=400, y=70, anchor="center")
 
-            userID = InspectorFunctionality.loginUser.getUserID()
+            userID = UserCredentials.loginUser.getUserID()
             cur.execute(
                 "SELECT valueKeyA, commentA, valueKeyB, commentB,  valueKeyC, commentC, valueKeyD, commentD, total FROM keysComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
                 (userID, assignmentModuleCode, assignmentNo))
@@ -774,7 +774,7 @@ class FileSelectionWindow(tk.Frame):
 
                 def submitAssignment(self):
                     window.withdraw()
-                    userID = InspectorFunctionality.loginUser.getUserID()
+                    userID = UserCredentials.loginUser.getUserID()
                     time_graded = datetime.datetime.now()
                     insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                     assignmentValues = (userID, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y', time_graded)

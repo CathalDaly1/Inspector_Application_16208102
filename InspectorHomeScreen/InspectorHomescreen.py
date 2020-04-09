@@ -1,9 +1,9 @@
 import tkinter as tk
 
-import InspectorFunctionality.FileAccessScreen
-import InspectorFunctionality.loginUser
-import InspectorFunctionality.userAnalytics
-import InspectorFunctionality.emailSystem
+import InspectorGradingFunctionality.FileAccessScreen
+import UserCredentials.loginUser
+import InspectorAdditionalFunctionality.userAnalytics
+import InspectorAdditionalFunctionality.emailSystem
 
 
 def Homescreen():
@@ -12,16 +12,16 @@ def Homescreen():
     window.geometry("800x800+100+100")
 
     def proceedButton():
-        InspectorFunctionality.FileAccessScreen.FileDisplayWindow()
+        InspectorGradingFunctionality.FileAccessScreen.FileDisplayWindow()
 
-    username1 = InspectorFunctionality.loginUser.getUsername()
+    username1 = UserCredentials.loginUser.getUsername()
     lbl_title = tk.Label(window, text="Inspector - Grading Application", font=("Arial Bold", 20))
     lbl_title.place(x=400, y=70, anchor="center")
 
     username_lbl = tk.Label(window, fg="black", text="Welcome: " + str(username1), font=("Calibri", 16))
     username_lbl.place(x=5, y=5)
 
-    time_logged_in = InspectorFunctionality.loginUser.getTimeLoggedIn()
+    time_logged_in = UserCredentials.loginUser.getTimeLoggedIn()
     loggedIn_lbl = tk.Label(window, fg="black", text="Logged in: " + str(time_logged_in), font=("Calibri", 12))
     loggedIn_lbl.place(x=535, y=5)
 
@@ -69,11 +69,11 @@ def Homescreen():
     quit_button.place(x=30, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",
-                               command=InspectorFunctionality.userAnalytics.analyticsScreen, height=2, width=12)
+                               command=InspectorAdditionalFunctionality.userAnalytics.analyticsScreen, height=2, width=12)
     view_analytics.place(x=250, y=730)
 
     send_emails = tk.Button(window, text="Email System", fg="black",
-                            command=InspectorFunctionality.emailSystem.emailSystem, height=2, width=12)
+                            command=InspectorAdditionalFunctionality.emailSystem.emailSystem, height=2, width=12)
     send_emails.place(x=450, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black", command=proceedButton, height=2, width=12)

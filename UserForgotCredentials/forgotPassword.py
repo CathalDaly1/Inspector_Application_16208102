@@ -1,9 +1,9 @@
 import hashlib
 import tkinter as tk
 from tkinter import *
-import InspectorFunctionality.connectToDB
+import DBConnection.connectToDB
 
-conn = InspectorFunctionality.connectToDB.connectToDB()
+conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
 

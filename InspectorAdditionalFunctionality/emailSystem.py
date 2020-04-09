@@ -1,12 +1,10 @@
 import tkinter as tk
-import smtplib
-import webbrowser
 from tkinter import ttk
 
-import InspectorFunctionality.loginUser
-import InspectorFunctionality.connectToDB
+import UserCredentials.loginUser
+import DBConnection.connectToDB
 
-conn = InspectorFunctionality.connectToDB.connectToDB()
+conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
 
@@ -16,7 +14,7 @@ def emailSystem():
     window.geometry("850x800+100+100")
     window.resizable(False, False)
 
-    userID = InspectorFunctionality.loginUser.getUserID()
+    userID = UserCredentials.loginUser.getUserID()
 
     lbl_title = tk.Label(window, text="Inspector - Email System", font=("Arial Bold", 18))
     lbl_title.place(x=400, y=50, anchor="center")

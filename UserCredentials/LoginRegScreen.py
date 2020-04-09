@@ -1,14 +1,15 @@
 from tkinter import *
 import tkinter as tk
-import InspectorFunctionality.loginUser
-import InspectorFunctionality.registerUser
+import UserCredentials.loginUser
+import UserCredentials.registerUser
 
 
 class UserMainScreen(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        tk.Tk.iconbitmap(self, default='Inspector.ico')
+        tk.Tk.iconbitmap(self,
+                         default='C:/Users/catha/PycharmProjects/Inspector_Application/InspectorFavicon/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -30,12 +31,12 @@ class UserMainScreen(tk.Tk):
 
 # Calls login method from the LoginUser class
 def login():
-    InspectorFunctionality.loginUser.LoginUser()
+    UserCredentials.loginUser.LoginUser()
 
 
 # Calls login method from the RegisterUser class
 def register():
-    InspectorFunctionality.registerUser.registerUser()
+    UserCredentials.registerUser.registerUser()
 
 
 # Class to create a user, setup here is the GUI

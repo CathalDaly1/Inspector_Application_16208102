@@ -3,14 +3,12 @@ import hashlib
 import tkinter as tk
 from tkinter import *
 
-import InspectorFunctionality.FileAccessScreen
-import InspectorFunctionality.LoginRegScreen
-import InspectorFunctionality.connectToDB
-import InspectorFunctionality.forgotPassword
-import InspectorFunctionality.forgotUsername
-import InspectorFunctionality.InspectorHomescreen
+import DBConnection.connectToDB
+import UserForgotCredentials.forgotPassword
+import UserForgotCredentials.forgotUsername
+import InspectorHomeScreen.InspectorHomescreen
 
-conn = InspectorFunctionality.connectToDB.connectToDB()
+conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
 
@@ -51,7 +49,7 @@ def LoginUser():
         if rows:
             for row in rows:
                 if username1 == row[0] and t_password == row[1]:
-                    InspectorFunctionality.InspectorHomescreen.Homescreen()
+                    InspectorHomeScreen.InspectorHomescreen.Homescreen()
                     window.destroy()
         else:
             # Clears the text in the entry box
@@ -60,10 +58,10 @@ def LoginUser():
             errorLbl.place(x=60, y=180)
 
     def callbackPassword(event):
-        InspectorFunctionality.forgotPassword.forgotPasswordScreen()
+        UserForgotCredentials.forgotPassword.forgotPasswordScreen()
 
     def callbackUsername(event):
-        InspectorFunctionality.forgotUsername.forgotUsernameScreen()
+        UserForgotCredentials.forgotUsername.forgotUsernameScreen()
 
     Label(window, text="Please enter your credentials below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()

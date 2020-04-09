@@ -2,9 +2,8 @@ import hashlib
 import tkinter as tk
 from tkinter import *
 
-import InspectorFunctionality.FileAccessScreen
-import InspectorFunctionality.connectToDB
-import InspectorFunctionality.loginUser
+import DBConnection.connectToDB
+import UserCredentials.loginUser
 
 
 # Created the GUI Screen and also stores each method used in this window
@@ -24,7 +23,7 @@ def registerUser():
     # Register user connects the the PostgreSQL database, checks connection
     def register():
 
-        conn = InspectorFunctionality.connectToDB.connectToDB()
+        conn = DBConnection.connectToDB.connectToDB()
         cur = conn.cursor()
 
         # Once connected gets the username and password in the entry boxes in GUI
@@ -52,7 +51,7 @@ def registerUser():
                 conn.commit()
 
                 window.withdraw()
-                InspectorFunctionality.loginUser.LoginUser()
+                UserCredentials.loginUser.LoginUser()
         else:
             # If password and confirm password are not the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")

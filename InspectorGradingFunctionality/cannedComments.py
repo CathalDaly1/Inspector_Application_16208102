@@ -1,8 +1,7 @@
 import tkinter as tk
 
-import InspectorFunctionality.loginUser
-import InspectorFunctionality.connectToDB
-import InspectorFunctionality.FileAccessScreen
+import UserCredentials.loginUser
+import DBConnection.connectToDB
 
 
 def cannedCommentScreen():
@@ -11,7 +10,7 @@ def cannedCommentScreen():
     window.geometry("600x380+250+200")
     window.resizable(False, False)
 
-    conn = InspectorFunctionality.connectToDB.connectToDB()
+    conn = DBConnection.connectToDB.connectToDB()
     cur = conn.cursor()
 
     moduleCode_lbl = tk.Label(window, fg="black", text="Module Code: ", font=("Calibri", 12))
@@ -58,7 +57,7 @@ def cannedCommentScreen():
         comment5 = commentsEntry5.get("1.0", 'end-1c')
         # When save button is pressed, save the comments and destroy the entry's and labels
 
-        userID = InspectorFunctionality.loginUser.getUserID()
+        userID = UserCredentials.loginUser.getUserID()
         cur.execute("SELECT * FROM cannedComments WHERE user_id=%s AND moduleCode = %s",
                     (userID, moduleCode))
         cannedComments = cur.fetchall()
