@@ -29,12 +29,13 @@ def registerUser():
 
         # Once connected gets the username and password in the entry boxes in GUI
         username_info = username_entry.get()
+        email_info = email_entry.get()
         password_info = password_entry.get()
         confirm_password_info = confirm_password_entry.get()
 
         # Error handling: checks if the fields have been filled out
         # Inserts username and password into the database - also uid is inserted
-        if username_info and password_info != "":
+        if username_info and email_info and password_info != "":
             # Error handling checks if password and confirm password are identical
             if password_info != confirm_password_info:
                 errorLbl = tk.Label(window, text="Passwords do not match", font=("Arial", 8), fg="red")
@@ -44,8 +45,8 @@ def registerUser():
                 # Hashing the users password and inserting into the database
                 t_hashed = hashlib.sha256(password_info.encode())
                 t_password = t_hashed.hexdigest()
-                insertUser = "INSERT INTO Users (username, password) VALUES (%s, %s)"
-                val = (username_info, t_password)
+                insertUser = "INSERT INTO Users (username, email, password) VALUES (%s, %s, %s)"
+                val = (username_info, email_info, t_password)
                 # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(insertUser, val)
                 # Closes the connection to the database

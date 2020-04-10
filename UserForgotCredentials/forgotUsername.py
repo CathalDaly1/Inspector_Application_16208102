@@ -14,37 +14,40 @@ def forgotUsernameScreen():
     window.resizable(False, False)
 
     username_verify = StringVar()
+    email_verify = StringVar()
     password_verify = StringVar()
     confirmPassword_verify = StringVar()
 
     def verify_password():
         newUsername = username_entry.get()
+        email = email_entry.get()
         password = password_entry.get()
         confirmPassword = confirm_Password_entry.get()
 
         t_hashed = hashlib.sha256(password.encode())
         t_password = t_hashed.hexdigest()
-        cur.execute("SELECT password  FROM Users WHERE password =%s",
-                    (t_password,))
+        cur.execute("SELECT password, email  FROM Users WHERE password =%s and email = %s",
+                    (t_password, email))
         rows = cur.fetchall()
         conn.commit()
 
         errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Arial", 8), fg="red")
         if rows:
             for row in rows:
-                if password == confirmPassword and t_password == row[0]:
+                if password == confirmPassword and t_password == row[0] and email == row[1]:
                     t_hashed = hashlib.sha256(confirmPassword.encode())
                     t_password = t_hashed.hexdigest()
-                    cur.execute("Update Users set username = %s where password = %s",
-                                (newUsername, t_password,))
+                    cur.execute("Update Users set username = %s where password = %s and email=%s",
+                                (newUsername, t_password, email))
                     conn.commit()
                     window.destroy()
         else:
             # Clears the text in the entry box
             username_entry.delete('0', 'end')
+            email_entry.delete('0', 'end')
             password_entry.delete('0', 'end')
             confirm_Password_entry.delete('0', 'end')
-            errorLbl.place(x=190, y=220)
+            errorLbl.place(x=190, y=270)
 
     def back():
         window.destroy()
@@ -56,6 +59,9 @@ def forgotUsernameScreen():
     Label(window, text="New Username", font=("Calibri", 14)).pack()
     username_entry = Entry(window, textvariable=username_verify)
     username_entry.pack()
+    Label(window, text="Email", font=("Calibri", 14)).pack()
+    email_entry = Entry(window, textvariable=email_verify)
+    email_entry.pack()
     Label(window, text="Password", font=("Calibri", 14)).pack()
     password_entry = Entry(window, show="*", textvariable=password_verify)
     password_entry.pack()
@@ -63,5 +69,5 @@ def forgotUsernameScreen():
     confirm_Password_entry = Entry(window, show="*", textvariable=confirmPassword_verify)
     confirm_Password_entry.pack()
     Label(window, text="").pack()
-    Button(window, text="Confirm", width=10, height=1, command=verify_password).place(x=280, y=240)
-    Button(window, text="Back", width=10, height=1, command=back).place(x=150, y=240)
+    Button(window, text="Confirm", width=10, height=1, command=verify_password).place(x=280, y=290)
+    Button(window, text="Back", width=10, height=1, command=back).place(x=150, y=290)
