@@ -21,7 +21,7 @@ class FileDisplayWindow(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        tk.Tk.iconbitmap(self, default='Inspector.ico')
+        tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/InspectorFavicon/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)

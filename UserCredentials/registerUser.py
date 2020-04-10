@@ -11,13 +11,14 @@ import UserCredentials.loginUser
 def registerUser():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("300x250+400+300")
+    window.geometry("500x350+400+300")
     window.resizable(False, False)
     global username
     global password
     global confirmPassword
     username = StringVar()
     password = StringVar()
+    email = StringVar()
     confirmPassword = StringVar()
 
     # Register user connects the the PostgreSQL database, checks connection
@@ -55,23 +56,25 @@ def registerUser():
         else:
             # If password and confirm password are not the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields", font=("Arial", 8), fg="red")
-            errorLbl2.place(x=100, y=183)
+            errorLbl2.place(x=200, y=247)
 
     def back():
         window.withdraw()
 
     # Creates the GUI elements for buttons and labels
-    Label(window, text="Please enter your credentials below", font=("Calibri Bold", 14)).pack()
     Label(window, text="").pack()
-    Label(window, text="Username",  font=("Calibri", 12)).pack()
+    Label(window, text="Please enter your credentials below", font=("Bold", 18)).pack()
+    Label(window, text="Username", font=("Calibri", 14)).pack()
     username_entry = Entry(window, textvariable=username)
     username_entry.pack()
-    Label(window, text="Password",  font=("Calibri", 12)).pack()
+    Label(window, text="Email", font=("Calibri", 14)).pack()
+    email_entry = Entry(window, textvariable=email)
+    email_entry.pack()
+    Label(window, text="Password", font=("Calibri", 14)).pack()
     password_entry = Entry(window, show="*", textvariable=password)
     password_entry.pack()
-    Label(window, text="Confirm Password", font=("Calibri", 12)).pack()
+    Label(window, text="Confirm Password", font=("Calibri", 14)).pack()
     confirm_password_entry = Entry(window, show="*", textvariable=confirmPassword)
     confirm_password_entry.pack()
-    Label(window, text="").pack()
-    Button(window, text="Register", width=10, height=1, command=register).pack()
-    Button(window, text="Back", width=10, height=1, command=back).pack()
+    Button(window, text="Register", width=10, height=1, command=register, borderwidth=3).place(x=280, y=270)
+    Button(window, text="Back", width=10, height=1, command=back, borderwidth=3).place(x=150, y=270)

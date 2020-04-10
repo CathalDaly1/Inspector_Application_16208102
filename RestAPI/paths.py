@@ -3,6 +3,13 @@ from dbFunctions import *
 import json
 
 
+class UserInfo(Resource):
+
+    def get(self):
+        parser = reqparse.RequestParser()
+        jsonData = executeQuery('''Select * from users''')
+        return jsonData, 200
+
 class UserNamePath(Resource):
 
     def get(self, name):
@@ -24,13 +31,4 @@ class UserNamePath(Resource):
 
         return 200
 
-class Register(Resource):
-    def get(self):
-        return {"message": "Hello world"}
 
-    def post(self):
-        return {"message": "Hello world"}
-
-class sign_in(Resource):
-    def get(self):
-        return 200

@@ -18,15 +18,6 @@ def connectToDB():
 
 conn = connectToDB()
 cur = conn.cursor()
-# try:
-#     cur.execute("select username from users")
-# except:
-#     print("Error executing select")
-
-# results = cur.fetchall()
-# conn.commit()
-# for r in results:
-#     print(f"username {r[0]}")
 
 # close the cursor
 cur.close()
