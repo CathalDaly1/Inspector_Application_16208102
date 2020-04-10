@@ -21,7 +21,8 @@ class FileDisplayWindow(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/InspectorFavicon/Inspector.ico')
+        tk.Tk.iconbitmap(self,
+                         default='C:/Users/catha/PycharmProjects/Inspector_Application/InspectorFavicon/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -127,8 +128,25 @@ class FileSelectionWindow(tk.Frame):
                 # In order open the file; the full filepath and the name of the file must be selected
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
-                selectAssignment()
-                filepathErrorLbl.destroy()
+                userID = UserCredentials.loginUser.getUserID()
+                cur.execute(
+                    "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s",
+                    (userID, selection, item_text[0]))
+                vals = cur.fetchone()
+                conn.commit()
+
+                if vals is not None:
+                    if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(item_text[0]):
+                        result = messagebox.askquestion("Inspector Grading",
+                                                        "Do you want to regrade this assignment?")
+                        if result == 'yes':
+                            selectAssignment()
+                            filepathErrorLbl.destroy()
+                        else:
+                            print("Close message box")
+                else:
+                    selectAssignment()
+                    filepathErrorLbl.destroy()
 
             else:
                 filepathErrorLbl.place(x=320, y=180)
@@ -282,7 +300,8 @@ class FileSelectionWindow(tk.Frame):
 
                         insertKeysCommentsSQL = "INSERT INTO keysComments (user_id, moduleCode, assignmentNo, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         keysCommentsValues = (
-                            userID, assignmentModuleCode, assignmentNo, valueKeyA1, commentA1, valueKeyB1, commentB1, valueKeyC1,
+                            userID, assignmentModuleCode, assignmentNo, valueKeyA1, commentA1, valueKeyB1, commentB1,
+                            valueKeyC1,
                             commentC1,
                             valueKeyD1, commentD1,
                             total)
@@ -346,14 +365,16 @@ class FileSelectionWindow(tk.Frame):
 
             if change.lower() == "a":
                 marks = int(input("Enter number of marks you wish to add or subtract"))
-                cur.execute("Update assignments set final_grade = final_grade + %s where modulecode =%s and assignmentNo = %s",
-                            (marks, assignmentModuleCode, assignmentNo, ))
+                cur.execute(
+                    "Update assignments set final_grade = final_grade + %s where modulecode =%s and assignmentNo = %s",
+                    (marks, assignmentModuleCode, assignmentNo,))
                 conn.commit()
 
             elif change.lower() == "s":
                 marks = int(input("Enter number of marks you wish to add or subtract"))
-                cur.execute("Update assignments set final_grade = final_grade - %s where modulecode =%s and assignmentNo = %s",
-                            (marks, assignmentModuleCode, assignmentNo, ))
+                cur.execute(
+                    "Update assignments set final_grade = final_grade - %s where modulecode =%s and assignmentNo = %s",
+                    (marks, assignmentModuleCode, assignmentNo,))
                 conn.commit()
 
             else:
@@ -425,8 +446,8 @@ class FileSelectionWindow(tk.Frame):
         selectStudentAssignButton.place(x=550, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Change assignments marks", fg="black",
-                                              command=changeValueOfAllAssignments, width=20)
-        selectStudentAssignButton.place(x=550, y=500)
+                                              command=changeValueOfAllAssignments, width=22)
+        selectStudentAssignButton.place(x=75, y=470)
 
         def selectAssignment():
             window = tk.Tk()
@@ -626,7 +647,7 @@ class FileSelectionWindow(tk.Frame):
 
             cur.execute(
                 "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
-                (userID, assignmentModuleCode,  assignmentNo))
+                (userID, assignmentModuleCode, assignmentNo))
             fetchedKeyCannedCommentsDisplay = cur.fetchone()
             conn.commit()
 
@@ -774,30 +795,48 @@ class FileSelectionWindow(tk.Frame):
 
                 def submitAssignment(self):
                     window.withdraw()
-                    userID = UserCredentials.loginUser.getUserID()
-                    time_graded = datetime.datetime.now()
-                    insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                    assignmentValues = (userID, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y', time_graded)
-                    # Executes the insertion ans passes values username and password into the insertion
-                    cur.execute(insertAssignments, assignmentValues)
+                    userIDNo = UserCredentials.loginUser.getUserID()
+
+                    cur.execute(
+                        "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s",
+                        (userID, selection, item_text[0]))
+                    vals = cur.fetchone()
+                    print(vals)
                     conn.commit()
 
-                    refreshListbox()
-                    # Opens file ans copies what is in tge text box and places back in file and saves
-                    s = self.text.get("1.0", tk.END)
-                    f = open(file, "w", encoding='utf-8')
-                    f.write(s)
-                    f.close()
+                    if vals is not None:
+                        if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(item_text[0]):
+                            cur.execute(
+                                "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
+                                (final, userID, assignmentModuleCode, selection, item_text[0],))
+                            conn.commit()
+                            refreshListbox()
+                    else:
+                        time_graded = datetime.datetime.now()
+                        insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                        assignmentValues = (
+                            userIDNo, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y',
+                            time_graded)
+                        # Executes the insertion ans passes values username and password into the insertion
+                        cur.execute(insertAssignments, assignmentValues)
+                        conn.commit()
 
-                    # Create a file for each student with their graded files
-                    pdf = FPDF()
-                    pdf.add_page()
-                    pdf.set_font("Arial", size=12)
-                    pdf.multi_cell(0, 5, s)
+                        refreshListbox()
+                        # Opens file ans copies what is in tge text box and places back in file and saves
+                        s = self.text.get("1.0", tk.END)
+                        f = open(file, "w", encoding='utf-8')
+                        f.write(s)
+                        f.close()
 
-                    # Removed the \t from the filepath in order to save as pdf in 'Graded' file
-                    savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
-                    pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
+                        # Create a file for each student with their graded files
+                        pdf = FPDF()
+                        pdf.add_page()
+                        pdf.set_font("Arial", size=12)
+                        pdf.multi_cell(0, 5, s)
+
+                        # Removed the \t from the filepath in order to save as pdf in 'Graded' file
+                        savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
+                        pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
 
                 # Highlights code and text when text is selected and highlight button is pressed
                 def highlightCode(self):
