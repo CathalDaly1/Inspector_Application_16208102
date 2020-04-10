@@ -55,11 +55,11 @@ class create_account(tk.Frame):
 
         # create Login Button
         Label(self, text="").pack()
-        loginButton = Button(self, text="Login", command=login, width=10, height=1, font=6, borderwidth=3)
+        loginButton = Button(self, text="Login", command=login, width=10, height=1, font="Bold", borderwidth=3)
         loginButton.pack()
         Label(self, text="").pack()
         # create a register button
-        registerButton = Button(self, text="Register", command=register, width=10, height=1, font=6, borderwidth=3)
+        registerButton = Button(self, text="Register", command=register, width=10, height=1, font="Bold", borderwidth=3)
         registerButton.pack()
 
 

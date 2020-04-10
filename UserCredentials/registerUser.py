@@ -5,17 +5,16 @@ from tkinter import *
 import DBConnection.connectToDB
 import UserCredentials.loginUser
 
+conn = DBConnection.connectToDB.connectToDB()
+cur = conn.cursor()
 
-# Created the GUI Screen and also stores each method used in this window
-# Global variables are used in order to reach all methods in this class
+
 def registerUser():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("500x350+400+300")
     window.resizable(False, False)
-    global username
-    global password
-    global confirmPassword
+
     username = StringVar()
     password = StringVar()
     email = StringVar()
@@ -23,10 +22,6 @@ def registerUser():
 
     # Register user connects the the PostgreSQL database, checks connection
     def register():
-
-        conn = DBConnection.connectToDB.connectToDB()
-        cur = conn.cursor()
-
         # Once connected gets the username and password in the entry boxes in GUI
         username_info = username_entry.get()
         email_info = email_entry.get()
@@ -46,9 +41,9 @@ def registerUser():
                 t_hashed = hashlib.sha256(password_info.encode())
                 t_password = t_hashed.hexdigest()
                 insertUser = "INSERT INTO Users (username, email, password) VALUES (%s, %s, %s)"
-                val = (username_info, email_info, t_password)
+                usersValues = (username_info, email_info, t_password)
                 # Executes the insertion ans passes values username and password into the insertion
-                cur.execute(insertUser, val)
+                cur.execute(insertUser, usersValues)
                 # Closes the connection to the database
                 conn.commit()
 

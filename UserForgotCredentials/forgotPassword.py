@@ -19,24 +19,24 @@ def forgotPasswordScreen():
     confirmNewPassword_verify = StringVar()
 
     def verify_username():
-        username1 = username_entry.get()
+        username = username_entry.get()
         email = email_entry.get()
         newPassword = newPassword_entry.get()
         confirmNewPassword = confirm_newPassword_entry.get()
 
         cur.execute("SELECT username, email FROM Users WHERE username =%s and email=%s",
-                    (username1, email))
-        usernameCred = cur.fetchall()
+                    (username, email))
+        usernameCredentials = cur.fetchall()
         conn.commit()
 
         errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Arial", 8), fg="red")
-        if usernameCred:
-            for row in usernameCred:
-                if username1 == row[0] and newPassword == confirmNewPassword:
+        if usernameCredentials:
+            for row in usernameCredentials:
+                if username == row[0] and newPassword == confirmNewPassword:
                     t_hashed = hashlib.sha256(confirmNewPassword.encode())
                     t_password = t_hashed.hexdigest()
                     cur.execute("Update Users set password = %s where username = %s and email=%s",
-                                (t_password, username1, email))
+                                (t_password, username, email))
                     conn.commit()
                     window.destroy()
         else:
