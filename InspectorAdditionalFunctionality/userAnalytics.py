@@ -8,6 +8,7 @@ from tkinter import ttk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib import style
+import xlwt
 
 style.use('fivethirtyeight')
 
@@ -70,6 +71,7 @@ def analyticsScreen():
 
     def displayModuleAssignments():
         refreshTable()
+        exportData_Button.config(state="active")
         cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s",
                     (userID, moduleCodeSelection))
 
@@ -123,12 +125,28 @@ def analyticsScreen():
 
     def exportData():
         print("Export button pressed - implement")
+        cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s",
+                    (userID, moduleCodeSelection))
+
+        assignmentData = cur.fetchall()
+        conn.commit()
+
+        with open(r'AssignmentData.csv', 'w', encoding='utf-8') as f:
+            writer = csv.writer(f, delimiter=',')
+            writer.writerow(('aID', 'User ID', 'Module Code', 'Assignment Number', 'Student ID Number', 'Filename', 'Final Grade', 'Graded Status', 'Time Graded'))
+            for row in assignmentData:
+                writer.writerow(row)
+        conn.commit()
+
+        exportDataConfirmed_lbl = tk.Label(window, text="Data Exported to AssignmentData.csv", font=("Calibri", 12))
+        exportDataConfirmed_lbl.place(x=550, y=125)
 
     exportData_lbl = tk.Label(window, text="Export Data - CSV ", font=("Calibri", 14))
-    exportData_lbl.place(x=550, y=125)
+    exportData_lbl.place(x=550, y=95)
 
     exportData_Button = tk.Button(window, text="Export", fg="black", command=exportData, width=15)
-    exportData_Button.place(x=700, y=125)
+    exportData_Button.place(x=700, y=95)
+    exportData_Button.config(state="disabled")
 
     saveModuleSelection = tk.Button(window, text="Display Assignments", fg="black", command=displayAssignment, width=15)
     saveModuleSelection.place(x=400, y=100)
