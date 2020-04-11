@@ -58,8 +58,8 @@ class FileSelectionWindow(tk.Frame):
 
         def saveModuleCode():
             global assignmentModuleCode, assignmentNo
-            assignmentModuleCode = enterModuleCode.get()
-            assignmentNo = enterAssignmentNo.get()
+            assignmentModuleCode = enterModuleCode.get().upper()
+            assignmentNo = enterAssignmentNo.get().upper()
             moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. saved\t\t")
             moduleCodeSaved_lbl.place(x=527, y=85)
             return assignmentModuleCode, assignmentNo
@@ -69,8 +69,8 @@ class FileSelectionWindow(tk.Frame):
             # This clears the table when clear button is clicked
             listBox.delete(*listBox.get_children())
             filePath.delete('0', 'end')
-            # Clear module code entry box
             enterModuleCode.delete('0', 'end')
+            enterAssignmentNo.delete('0', 'end')
 
         def refreshListbox():
             listBox.delete(*listBox.get_children())
@@ -151,9 +151,9 @@ class FileSelectionWindow(tk.Frame):
             else:
                 filepathErrorLbl.place(x=320, y=180)
 
-        # Check of filepath has been entered and if it exists or not
-        # If the directory exists then folders and files are displayed in the listbox
-        # Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'
+        '''Check of filepath has been entered and if it exists or not
+        if the directory exists then folders and files are displayed in the listbox
+        Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'''
         def getFileSelection():
             saveModuleCode()
             assignmentFilePath = filePath.get()
@@ -186,8 +186,9 @@ class FileSelectionWindow(tk.Frame):
                 directoryErrorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
                 directoryErrorLbl.place(x=320, y=145)
 
-        # Checks if file is in the directory, adds other columns if it is a file
-        # ToDo maybe only add for folder as folder may contain many files which will be treated as one grade  Graded=N, Grade=0
+        '''Checks if file is in the directory, adds other columns if it is a file
+        display data from the database into the to treeview
+        '''
         def process_directory(parentNode, assignmentFilePath):
 
             cur1 = conn.cursor()
@@ -360,6 +361,8 @@ class FileSelectionWindow(tk.Frame):
 
         changeKeyValues()
 
+
+        # ToDo implement this functionality with tkinter
         def changeValueOfAllAssignments():
             change = str(input("Do you wish to add/subtract marks? (A(dd) or S(ubtract))"))
 
@@ -716,7 +719,7 @@ class FileSelectionWindow(tk.Frame):
                     self.textwidget = text_widget
 
                 def redraw(self, *args):
-                    '''redraw line numbers'''
+                    '''redraw line numbers '''
                     self.delete("all")
 
                     i = self.textwidget.index("@0,0")

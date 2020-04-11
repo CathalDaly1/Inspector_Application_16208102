@@ -1,6 +1,8 @@
+import csv
 import tkinter as tk
 import UserCredentials.loginUser
 import DBConnection.connectToDB
+import InspectorAdditionalFunctionality.ExportData
 
 from tkinter import ttk
 from matplotlib.figure import Figure
@@ -118,6 +120,15 @@ def analyticsScreen():
 
     def back():
         window.destroy()
+
+    def exportData():
+        print("Export button pressed - implement")
+
+    exportData_lbl = tk.Label(window, text="Export Data - CSV ", font=("Calibri", 14))
+    exportData_lbl.place(x=550, y=125)
+
+    exportData_Button = tk.Button(window, text="Export", fg="black", command=exportData, width=15)
+    exportData_Button.place(x=700, y=125)
 
     saveModuleSelection = tk.Button(window, text="Display Assignments", fg="black", command=displayAssignment, width=15)
     saveModuleSelection.place(x=400, y=100)
