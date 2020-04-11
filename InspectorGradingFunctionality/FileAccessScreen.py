@@ -109,15 +109,13 @@ class FileSelectionWindow(tk.Frame):
                     global selection
                     selection = listBox.item(i, "values")[0]
                     treeviewFileExtension = re.search(r'\.\w+$', selection)
-                    print(selection)
                     # ToDo fix this = fileSelection_errorlbl.destroy()
                     if treeviewFileExtension is not None:
                         pass
                     else:
                         selection = listBox.item(i, "values")[0]
-                        print(selection)
-            except IndexError:
-                pass
+            except IndexError as error:
+                print("Cannot select " + str(error))
 
         def listboxSelection():
             # Check if the filepath has been entered
@@ -136,7 +134,8 @@ class FileSelectionWindow(tk.Frame):
                 conn.commit()
 
                 if vals is not None:
-                    if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(item_text[0]):
+                    if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
+                            item_text[0]):
                         result = messagebox.askquestion("Inspector Grading",
                                                         "Do you want to regrade this assignment?")
                         if result == 'yes':
@@ -154,6 +153,7 @@ class FileSelectionWindow(tk.Frame):
         '''Check of filepath has been entered and if it exists or not
         if the directory exists then folders and files are displayed in the listbox
         Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'''
+
         def getFileSelection():
             saveModuleCode()
             assignmentFilePath = filePath.get()
@@ -189,11 +189,12 @@ class FileSelectionWindow(tk.Frame):
         '''Checks if file is in the directory, adds other columns if it is a file
         display data from the database into the to treeview
         '''
+
         def process_directory(parentNode, assignmentFilePath):
 
             cur1 = conn.cursor()
             global fileExtension
-
+            userID = UserCredentials.loginUser.getUserID()
             for studentFiles in os.listdir(assignmentFilePath):
                 fileExtension = re.search(r'\.\w+$', studentFiles)
                 # Check if file ends with an extension, otherwise it is a folder
@@ -213,13 +214,13 @@ class FileSelectionWindow(tk.Frame):
                     else:
                         try:
                             cur1.execute(
-                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL",
-                                (studentFiles,))
+                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s",
+                                (studentFiles, userID))
                             studentGrade = cur1.fetchall()
                             conn.commit()
                             cur1.execute(
-                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL",
-                                (studentFiles,))
+                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s",
+                                (studentFiles, userID))
                             graded = cur1.fetchone()
                             conn.commit()
                             oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
@@ -360,7 +361,6 @@ class FileSelectionWindow(tk.Frame):
             saveButton.place(x=300, y=755)
 
         changeKeyValues()
-
 
         # ToDo implement this functionality with tkinter
         def changeValueOfAllAssignments():
@@ -675,13 +675,13 @@ class FileSelectionWindow(tk.Frame):
             tk.Label(keystrokes_lbl, bg="white", justify=tk.LEFT,
                      text="Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyADisplay) + " - Comment A: " + str(
                          commentADisplay) + "\n"
-                                     "Key B: +" + str(
+                                            "Key B: +" + str(
                          valueKeyBDisplay) + " - Comment B: " + str(commentBDisplay) + "\n"
-                                                                         "Key C: +" + str(
+                                                                                       "Key C: +" + str(
                          valueKeyCDisplay) + " - Comment C: " + str(commentCDisplay) + "\n"
-                                                                         "Key D: +" + str(
+                                                                                       "Key D: +" + str(
                          valueKeyDDisplay) + " - Comment D: " + str(commentDDisplay) + "\n"
-                                                                         "Key E: Exit grading"
+                                                                                       "Key E: Exit grading"
                           + "\n"
                             "Canned Comment 1: " + str(comment1Display)
                           + "\n"
@@ -816,7 +816,8 @@ class FileSelectionWindow(tk.Frame):
                     conn.commit()
 
                     if vals is not None:
-                        if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(item_text[0]):
+                        if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
+                                item_text[0]):
                             cur.execute(
                                 "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
                                 (final, userID, assignmentModuleCode, selection, item_text[0],))
