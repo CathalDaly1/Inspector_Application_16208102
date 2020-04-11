@@ -639,51 +639,59 @@ class FileSelectionWindow(tk.Frame):
             fetchedKeyValuesDisplay = cur.fetchone()
             conn.commit()
 
-            valueKeyA = fetchedKeyValuesDisplay[0]
-            commentA = fetchedKeyValuesDisplay[1]
-            valueKeyB = fetchedKeyValuesDisplay[2]
-            commentB = fetchedKeyValuesDisplay[3]
-            valueKeyC = fetchedKeyValuesDisplay[4]
-            commentC = fetchedKeyValuesDisplay[5]
-            valueKeyD = fetchedKeyValuesDisplay[6]
-            commentD = fetchedKeyValuesDisplay[7]
+            valueKeyADisplay = fetchedKeyValuesDisplay[0]
+            commentADisplay = fetchedKeyValuesDisplay[1]
+            valueKeyBDisplay = fetchedKeyValuesDisplay[2]
+            commentBDisplay = fetchedKeyValuesDisplay[3]
+            valueKeyCDisplay = fetchedKeyValuesDisplay[4]
+            commentCDisplay = fetchedKeyValuesDisplay[5]
+            valueKeyDDisplay = fetchedKeyValuesDisplay[6]
+            commentDDisplay = fetchedKeyValuesDisplay[7]
 
             cur.execute(
                 "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
                 (userID, assignmentModuleCode, assignmentNo))
             fetchedKeyCannedCommentsDisplay = cur.fetchone()
+            print(fetchedKeyCannedCommentsDisplay)
             conn.commit()
 
-            comment1 = fetchedKeyCannedCommentsDisplay[0]
-            comment2 = fetchedKeyCannedCommentsDisplay[1]
-            comment3 = fetchedKeyCannedCommentsDisplay[2]
-            comment4 = fetchedKeyCannedCommentsDisplay[3]
-            comment5 = fetchedKeyCannedCommentsDisplay[4]
+            try:
+                comment1Display = fetchedKeyCannedCommentsDisplay[0]
+                comment2Display = fetchedKeyCannedCommentsDisplay[1]
+                comment3Display = fetchedKeyCannedCommentsDisplay[2]
+                comment4Display = fetchedKeyCannedCommentsDisplay[3]
+                comment5Display = fetchedKeyCannedCommentsDisplay[4]
+            except TypeError:
+                comment1Display = "None"
+                comment2Display = "None"
+                comment3Display = "None"
+                comment4Display = "None"
+                comment5Display = "None"
 
             keystrokes_lbl = tk.Label(window, width=50, height=22, relief="solid", bd=1, padx=10, bg="white")
             keystrokes_lbl.pack_propagate(0)
             keystrokes_lbl.place(x=790, y=95)
             tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
             tk.Label(keystrokes_lbl, bg="white", justify=tk.LEFT,
-                     text="Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyA) + " - Comment A: " + str(
-                         commentA) + "\n"
+                     text="Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyADisplay) + " - Comment A: " + str(
+                         commentADisplay) + "\n"
                                      "Key B: +" + str(
-                         valueKeyB) + " - Comment B: " + str(commentB) + "\n"
+                         valueKeyBDisplay) + " - Comment B: " + str(commentBDisplay) + "\n"
                                                                          "Key C: +" + str(
-                         valueKeyC) + " - Comment C: " + str(commentC) + "\n"
+                         valueKeyCDisplay) + " - Comment C: " + str(commentCDisplay) + "\n"
                                                                          "Key D: +" + str(
-                         valueKeyD) + " - Comment D: " + str(commentD) + "\n"
+                         valueKeyDDisplay) + " - Comment D: " + str(commentDDisplay) + "\n"
                                                                          "Key E: Exit grading"
                           + "\n"
-                            "Canned Comment 1: " + str(comment1)
+                            "Canned Comment 1: " + str(comment1Display)
                           + "\n"
-                            "Canned Comment 2: " + str(comment2)
+                            "Canned Comment 2: " + str(comment2Display)
                           + "\n"
-                            "Canned Comment 3: " + str(comment3)
+                            "Canned Comment 3: " + str(comment3Display)
                           + "\n"
-                            "Canned Comment 4: " + str(comment4)
+                            "Canned Comment 4: " + str(comment4Display)
                           + "\n"
-                            "Canned Comment 5: " + str(comment5), wraplengt=345,
+                            "Canned Comment 5: " + str(comment5Display), wraplengt=345,
                      font=("Arial", 12)).pack()
 
             studentFinalGrade = tk.Label(window, wraplengt=350, font=("Arial", 12))
