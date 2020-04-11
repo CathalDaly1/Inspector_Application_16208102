@@ -69,11 +69,31 @@ def analyticsScreen():
     def refreshTable():
         listBox.delete(*listBox.get_children())
 
+    def assignmentCombobox():
+        global moduleCodeSelection
+        global assignmentSelection
+        global assignmentCombo
+        moduleCodeSelection = moduleCombobox.get()
+        label_assignment = tk.Label(window, text="Choose Assignment No.: ", font=("Calibri", 14))
+        label_assignment.place(x=25, y=125)
+
+        # As there are duplicates of assignments with module codes have to use distinct
+        cur.execute("SELECT DISTINCT assignmentNo FROM assignments WHERE user_id =%s and moduleCode = %s",
+                    (userID, moduleCodeSelection))
+        assignmentSelection = cur.fetchall()
+        conn.commit()
+
+        assignmentCombo = ttk.Combobox(window, values=assignmentSelection)
+        assignmentCombo.place(x=230, y=130)
+
+        saveAssignmentSelection = tk.Button(window, text="Display Table", fg="black", command=showTable, width=15)
+        saveAssignmentSelection.place(x=400, y=127)
+
     def displayModuleAssignments():
         refreshTable()
         exportData_Button.config(state="active")
-        cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s",
-                    (userID, moduleCodeSelection))
+        cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno = %s",
+                    (userID, moduleCodeSelection, assignmentSelect))
 
         assignmentData = cur.fetchall()
         conn.commit()
@@ -97,27 +117,11 @@ def analyticsScreen():
             bar1.get_tk_widget().place(x=150, y=390)
             subplot1.set_title('Grade Distribution for ' + str(moduleCodeSelection))
 
-    def assignmentCombobox():
-        global moduleCodeSelection
-        moduleCodeSelection = moduleCombobox.get()
-        label_assignment = tk.Label(window, text="Choose Assignment No.: ", font=("Calibri", 14))
-        label_assignment.place(x=25, y=125)
-
-        # As there are duplicates of assignments with module codes have to use distinct
-        cur.execute("SELECT DISTINCT assignmentNo FROM assignments WHERE user_id =%s and moduleCode = %s",
-                    (userID, moduleCodeSelection))
-        assignmentSelection = cur.fetchall()
-        conn.commit()
-
-        assignmentCombo = ttk.Combobox(window, values=assignmentSelection)
-        assignmentCombo.place(x=230, y=130)
-
-        saveAssignmentSelection = tk.Button(window, text="Display Table", fg="black", command=showTable, width=15)
-        saveAssignmentSelection.place(x=400, y=127)
-
     def showTable():
         global moduleCodeSelection
+        global assignmentSelect
         moduleCodeSelection = moduleCombobox.get()
+        assignmentSelect = assignmentCombo.get()
         displayModuleAssignments()
 
     def back():
@@ -125,8 +129,8 @@ def analyticsScreen():
 
     def exportData():
         print("Export button pressed - implement")
-        cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s",
-                    (userID, moduleCodeSelection))
+        cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
+                    (userID, moduleCodeSelection, assignmentSelect))
 
         assignmentData = cur.fetchall()
         conn.commit()

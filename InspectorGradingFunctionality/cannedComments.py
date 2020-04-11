@@ -58,8 +58,8 @@ def cannedCommentScreen():
         # When save button is pressed, save the comments and destroy the entry's and labels
 
         userID = UserCredentials.loginUser.getUserID()
-        cur.execute("SELECT * FROM cannedComments WHERE user_id=%s AND moduleCode = %s",
-                    (userID, moduleCode))
+        cur.execute("SELECT * FROM cannedComments WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",
+                    (userID, moduleCode, assignmentNo))
         cannedComments = cur.fetchall()
         conn.commit()
 
