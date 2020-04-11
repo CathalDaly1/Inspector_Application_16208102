@@ -17,6 +17,11 @@ style.use('fivethirtyeight')
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
+'''Analytics screen allows the user to filter via module code and assignment number
+They can then view the assignments graded and the students details. A bar graph is 
+also displayed showing the distribution of grades for that assignment. The user can 
+also export the data in the table into a CSV file if they wish. '''
+
 
 def analyticsScreen():
     window = tk.Tk()
@@ -137,7 +142,8 @@ def analyticsScreen():
 
         with open(r'AssignmentData.csv', 'w', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter=',')
-            writer.writerow(('aID', 'User ID', 'Module Code', 'Assignment Number', 'Student ID Number', 'Filename', 'Final Grade', 'Graded Status', 'Time Graded'))
+            writer.writerow(('aID', 'User ID', 'Module Code', 'Assignment Number', 'Student ID Number', 'Filename',
+                             'Final Grade', 'Graded Status', 'Time Graded'))
             for row in assignmentData:
                 writer.writerow(row)
         conn.commit()
