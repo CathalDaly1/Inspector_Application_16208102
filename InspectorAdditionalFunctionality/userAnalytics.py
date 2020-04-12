@@ -106,16 +106,18 @@ def analyticsScreen():
         for row in assignmentData:
             listBox.insert("", tk.END, values=(row[2], row[4], row[5], row[6]))
 
-        assignmentID = []
+        numberOfGradedAssignments = []
         grade = []
 
         for row1 in assignmentData:
-            assignmentID.append(row1[0])
+
+            # x axis is the number of assignments graded in order to graph them
+            numberOfGradedAssignments.append(len(grade))
             grade.append(row1[6])
 
             figure1 = Figure(figsize=(6, 4), dpi=80)
             subplot1 = figure1.add_subplot(111)
-            xAxis = assignmentID
+            xAxis = numberOfGradedAssignments
             yAxis = grade
             subplot1.bar(xAxis, yAxis, color='lightsteelblue')
             bar1 = FigureCanvasTkAgg(figure1, window)

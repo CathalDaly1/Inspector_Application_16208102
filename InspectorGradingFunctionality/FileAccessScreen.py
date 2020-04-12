@@ -176,6 +176,19 @@ class FileSelectionWindow(tk.Frame):
                     process_directory(root_node, abspath)
                     displayAssignment.config(state="disabled")
 
+                    # ToDo Look into cleaning this up. Not fully working yet. Need text boxes to disappear when new module is searched and is already in the db
+                    userID = UserCredentials.loginUser.getUserID()
+                    cur.execute(
+                        "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
+                        (userID, assignmentModuleCode, assignmentNo))
+                    vals = cur.fetchone()
+                    if vals is None:
+                        changeKeyValues()
+                    else:
+                        changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
+                                                          command=changeKeyValues)
+                        changeKeyValuesButton.place(x=320, y=500)
+
                     # Double click on an element in the listbox will run the doubleClickListboxEvent() method
 
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
@@ -359,8 +372,6 @@ class FileSelectionWindow(tk.Frame):
 
             saveButton = tk.Button(self, text="Save", width=13, command=saveKeysButton)
             saveButton.place(x=300, y=755)
-
-        changeKeyValues()
 
         # ToDo implement this functionality with tkinter
         def changeValueOfAllAssignments():
