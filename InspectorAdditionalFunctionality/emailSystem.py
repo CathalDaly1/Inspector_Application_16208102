@@ -1,5 +1,11 @@
+import smtplib
 import tkinter as tk
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from tkinter import ttk
+import pandas as pd
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
@@ -81,11 +87,32 @@ def emailSystem():
         moduleCodeSelection = moduleCombobox.get()
         displayModuleAssignments()
 
+    def send_email():
+        try:
+            email_user = '16208102@studentmail.ul.ie'
+            email_send = 'cathald96@gmail.com'
+            server = smtplib.SMTP('smtp-mail.outlook.com')
+            server.starttls()
+            server.login(email_user, '')
+
+            message = 'This is an email'
+            server.sendmail(email_user, email_send, message)
+            server.quit()
+            print("email has been sent")
+
+        except Exception as error:
+            print(str(error))
+            print("Failed to send email")
+
     def back():
         """
         This docsting must be filled in
         """
         window.destroy()
+
+    sendEmailButton = tk.Button(window, text="Send email", fg="black", command=send_email,
+                                    width=15)
+    sendEmailButton.place(x=400, y=150)
 
     saveModuleSelection = tk.Button(window, text="Display Assignments", fg="black", command=displayAssignment, width=15)
     saveModuleSelection.place(x=400, y=100)

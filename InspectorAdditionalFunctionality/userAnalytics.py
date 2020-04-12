@@ -41,7 +41,7 @@ def analyticsScreen():
                                              font=("Calibri", 14))
     numberOfAssignmentsGraded_lbl.place(x=25, y=70)
 
-    cols = ('Module Code', 'Student ID', 'Filename', 'Student Grade')
+    cols = ('Student ID', 'Filename', 'Student Grade', 'Date/Time Graded')
     listBox = ttk.Treeview(window, selectmode="extended", columns=cols, show='headings')
 
     # Added scrollbar onto the listbox
@@ -115,7 +115,7 @@ def analyticsScreen():
         conn.commit()
 
         for row in assignmentData:
-            listBox.insert("", tk.END, values=(row[2], row[4], row[5], row[6]))
+            listBox.insert("", tk.END, values=(row[4], row[5], row[6], row[8]))
 
         numberOfGradedAssignments = []
         grade = []
