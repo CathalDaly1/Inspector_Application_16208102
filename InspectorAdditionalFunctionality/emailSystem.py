@@ -98,7 +98,7 @@ def emailSystem():
             message = 'This is an email'
             server.sendmail(email_user, email_send, message)
             server.quit()
-            print("email has been sent")
+            print("email has been sent to " + email_send)
 
         except Exception as error:
             print(str(error))
