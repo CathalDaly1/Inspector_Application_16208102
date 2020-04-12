@@ -1,10 +1,15 @@
 import tkinter as tk
 
-import UserCredentials.loginUser
 import DBConnection.connectToDB
+import UserCredentials.loginUser
 
 
 def cannedCommentScreen():
+    """
+    This method creates the tkinter window, labels and entry boxes in order for the user to enter
+    comments and save them.
+    :return:
+    """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("600x380+250+200")
@@ -48,6 +53,13 @@ def cannedCommentScreen():
     commentsEntry5.place(x=150, y=277)
 
     def saveCommentsButton():
+        """
+        This method is called when the save button is pressed. The contents of each entry box are saved
+        into the cannedComments table in the postgresql database table. If the module code entered has
+        comments already associated with it in the database the comments will be updated, otherwise
+        the comments will just be inserted into the database.
+        :return:
+        """
         moduleCode = moduleCodeEntry.get("1.0", 'end-1c')
         assignmentNo = assignmentNoEntry.get("1.0", 'end-1c')
         comment1 = commentsEntry1.get("1.0", 'end-1c')
@@ -83,6 +95,9 @@ def cannedCommentScreen():
         return [comment1, comment2, comment3, comment4, comment5]
 
     def closeWindow():
+        """
+        This method is called when the close button is pressed and it destroys the tkinter canned comments window.
+        """
         window.destroy()
 
     saveButton = tk.Button(window, text="Save", width=13, command=saveCommentsButton)

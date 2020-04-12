@@ -10,6 +10,9 @@ cur = conn.cursor()
 
 
 def registerUser():
+    """
+    This method creates the tkinter window along with the labels and buttons in the window.
+    """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("500x350+400+300")
@@ -20,8 +23,12 @@ def registerUser():
     email = StringVar()
     confirmPassword = StringVar()
 
-    # Register user connects the the PostgreSQL database, checks connection
     def register():
+        """
+        This method verifies that the username, password and confirmation password are identical.
+        The user is then registered. The credentials are entered in the database and the user
+        can then access the application using their credentials.
+        """
         # Once connected gets the username and password in the entry boxes in GUI
         username_info = username_entry.get()
         email_info = email_entry.get()
@@ -55,6 +62,9 @@ def registerUser():
             errorLbl2.place(x=200, y=247)
 
     def back():
+        """
+        This method is called when the 'back' button is pressed. The login window is destroyed.
+        """
         window.withdraw()
 
     # Creates the GUI elements for buttons and labels

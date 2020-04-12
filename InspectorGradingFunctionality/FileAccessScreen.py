@@ -9,8 +9,8 @@ import psycopg2
 from fpdf import FPDF
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
 import InspectorGradingFunctionality.cannedComments
+import UserCredentials.loginUser
 
 # initialize queue for thread
 the_queue = queue.Queue()

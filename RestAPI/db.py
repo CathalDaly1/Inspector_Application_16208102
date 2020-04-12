@@ -1,7 +1,7 @@
 import psycopg2
 import psycopg2.extras
 
-from flask import Flask, render_template, request
+from flask import Flask
 
 app = Flask(__name__)
 

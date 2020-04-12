@@ -1,6 +1,5 @@
-from flask_restful import Api, Resource, reqparse
 from dbFunctions import *
-import json
+from flask_restful import Resource, reqparse
 
 
 class UserInfo(Resource):
@@ -9,6 +8,7 @@ class UserInfo(Resource):
         parser = reqparse.RequestParser()
         jsonData = executeQuery('''Select * from users''')
         return jsonData, 200
+
 
 class UserNamePath(Resource):
 
@@ -30,5 +30,3 @@ class UserNamePath(Resource):
             args["password"]) + '''\')''')
 
         return 200
-
-

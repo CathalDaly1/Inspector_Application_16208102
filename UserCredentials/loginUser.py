@@ -2,12 +2,11 @@ import datetime
 import hashlib
 import tkinter as tk
 from tkinter import *
-from flask import Flask, request, jsonify
-import requests
+
 import DBConnection.connectToDB
+import InspectorHomeScreen.InspectorHomescreen
 import UserForgotCredentials.forgotPassword
 import UserForgotCredentials.forgotUsername
-import InspectorHomeScreen.InspectorHomescreen
 
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
@@ -16,12 +15,16 @@ parameters = {
     "username": "test"
 }
 
+
 # response = requests.get("http://localhost:5000/userInfo/")
 # print(response.status_code)
 # print(response.json())
 
 
 def LoginUser():
+    """
+    This method creates the tkinter window along with the labels and buttons in the window.
+    """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("500x350+400+300")
@@ -29,10 +32,15 @@ def LoginUser():
     password_verify = StringVar()
 
     def back():
+        """
+        This method is called when the 'back' button is pressed. The login window is destroyed.
+        """
         window.withdraw()
 
-    # Checks if the username and password are in the database
     def login_verify():
+        """
+        This method checks if the username and password entered are in the database.
+        """
         global username1
         global time_logged_in
 
@@ -69,9 +77,19 @@ def LoginUser():
             errorLbl.place(x=170, y=170)
 
     def callbackPassword(event):
+        """
+        This method is called when the 'forgot password' hyperlink is clicked. User is directed to the
+        forgot password screen.
+        :param event:
+        """
         UserForgotCredentials.forgotPassword.forgotPasswordScreen()
 
     def callbackUsername(event):
+        """
+        This method is called when the 'forgot username' hyperlink is clicked. User is directed to the
+        forgot username screen.
+        :param event:
+        """
         UserForgotCredentials.forgotUsername.forgotUsernameScreen()
 
     Label(window, text="").pack()
@@ -89,13 +107,17 @@ def LoginUser():
     lblPassword = tk.Label(window, text=r"Forgot Password?", fg="blue", cursor="hand2")
     lblPassword.place(x=200, y=210)
     lblPassword.bind("<Button-1>", callbackPassword)
-    loginButton = Button(window, text="Login", width=10, height=1, command=login_verify,  borderwidth=3)
+    loginButton = Button(window, text="Login", width=10, height=1, command=login_verify, borderwidth=3)
     loginButton.place(x=280, y=240)
-    backButton = Button(window, text="Back", width=10, height=1, command=back,  borderwidth=3)
+    backButton = Button(window, text="Back", width=10, height=1, command=back, borderwidth=3)
     backButton.place(x=150, y=240)
 
 
 def getUserID():
+    """
+    This method is used to get the users ID number from the users database table.
+    :return:
+    """
     cur.execute("SELECT uid::int FROM USERS WHERE username =%s",
                 (username1,))
     uid = cur.fetchone()
@@ -105,8 +127,16 @@ def getUserID():
 
 
 def getUsername():
+    """
+    This method returns the username that has been retrieved from the login form.
+    :return:
+    """
     return username1
 
 
 def getTimeLoggedIn():
+    """
+    This method returns the user time when they logged in.
+    :return:
+    """
     return time_logged_in

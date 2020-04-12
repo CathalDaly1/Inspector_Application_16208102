@@ -1,11 +1,14 @@
-from tkinter import *
 import tkinter as tk
+from tkinter import *
+
 import UserCredentials.loginUser
 import UserCredentials.registerUser
 
 
 class UserMainScreen(tk.Tk):
-
+    """
+    This method creates the tkinter window
+    """
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.iconbitmap(self,
@@ -25,22 +28,34 @@ class UserMainScreen(tk.Tk):
         self.show_frame(create_account)
 
     def show_frame(self, cont):
+        """
+        This method initializes the frame
+        :param cont:
+        """
         frame = self.frames[cont]
         frame.tkraise()
 
 
-# Calls login method from the LoginUser class
 def login():
+    """
+    This method is called when the 'login' button is pressed. Directs the user to the login screen.
+    """
     UserCredentials.loginUser.LoginUser()
 
 
 # Calls login method from the RegisterUser class
 def register():
+    """
+    This method is called when the 'register' button is pressed. Directs the user to the register screen.
+    """
     UserCredentials.registerUser.registerUser()
 
 
 # Class to create a user, setup here is the GUI
 class create_account(tk.Frame):
+    """
+    This method sets up the tkinter window with the contents of the window(labels, buttons)
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller

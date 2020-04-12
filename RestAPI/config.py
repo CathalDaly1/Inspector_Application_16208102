@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Api, Resource, reqparse
 
 app = Flask(__name__)
 
@@ -27,4 +26,3 @@ def index(name, location):
     db.session.commit()
 
     print("Added new user")
-    

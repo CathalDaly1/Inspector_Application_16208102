@@ -1,8 +1,8 @@
-import psycopg2
-import psycopg2.extras
 import json
 
-from flask import Flask, render_template, request
+import psycopg2
+import psycopg2.extras
+from flask import Flask
 
 app = Flask(__name__)
 
@@ -19,6 +19,7 @@ def connectToDB():
 
 conn = connectToDB()
 cur = conn.cursor()
+
 
 def executeQuery(query):
     cur.execute(query)

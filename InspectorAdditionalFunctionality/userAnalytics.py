@@ -1,29 +1,27 @@
 import csv
 import tkinter as tk
-import UserCredentials.loginUser
-import DBConnection.connectToDB
-import InspectorAdditionalFunctionality.ExportData
-
 from tkinter import ttk
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from matplotlib import style
-import xlwt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+
+import DBConnection.connectToDB
+import UserCredentials.loginUser
 
 style.use('fivethirtyeight')
-
-# ToDo Add new column in DB for module code and also assignment number or title
 
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
-'''Analytics screen allows the user to filter via module code and assignment number
-They can then view the assignments graded and the students details. A bar graph is 
-also displayed showing the distribution of grades for that assignment. The user can 
-also export the data in the table into a CSV file if they wish. '''
-
 
 def analyticsScreen():
+    """
+    Analytics screen allows the user to filter via module code and assignment number
+    They can then view the assignments graded and the students details. A bar graph is
+    also displayed showing the distribution of grades for that assignment. The user can
+    also export the data in the table into a CSV file if they wish.
+    """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("850x800+100+100")
@@ -69,12 +67,21 @@ def analyticsScreen():
     moduleCombobox.place(x=230, y=100)
 
     def displayAssignment():
+        """
+        This method is called the display assignment button is pressed.
+        """
         assignmentCombobox()
 
     def refreshTable():
+        """
+        This method refreshes the tkinter table(treeview) and it is called when a new search is made.
+        """
         listBox.delete(*listBox.get_children())
 
     def assignmentCombobox():
+        """
+        This method allows the user to choose a module code and also an assignment to filter.
+        """
         global moduleCodeSelection
         global assignmentSelection
         global assignmentCombo
@@ -95,6 +102,10 @@ def analyticsScreen():
         saveAssignmentSelection.place(x=400, y=127)
 
     def displayModuleAssignments():
+        """
+        This method displays the data in the table and also generates the bar chart. Data is retrieved from the
+        database assignments table.
+        """
         refreshTable()
         exportData_Button.config(state="active")
         cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno = %s",
@@ -110,7 +121,6 @@ def analyticsScreen():
         grade = []
 
         for row1 in assignmentData:
-
             # x axis is the number of assignments graded in order to graph them
             numberOfGradedAssignments.append(len(grade))
             grade.append(row1[6])
@@ -125,17 +135,20 @@ def analyticsScreen():
             subplot1.set_title('Grade Distribution for ' + str(moduleCodeSelection))
 
     def showTable():
+        """
+        This method calls the displayModuleAssignments method.
+        """
         global moduleCodeSelection
         global assignmentSelect
         moduleCodeSelection = moduleCombobox.get()
         assignmentSelect = assignmentCombo.get()
         displayModuleAssignments()
 
-    def back():
-        window.destroy()
-
     def exportData():
-        print("Export button pressed - implement")
+        """
+        This method is called when the 'export data' button is pressed. Exports data from table into a comma
+        separated file.
+        """
         cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
 
@@ -152,6 +165,12 @@ def analyticsScreen():
 
         exportDataConfirmed_lbl = tk.Label(window, text="Data Exported to AssignmentData.csv", font=("Calibri", 12))
         exportDataConfirmed_lbl.place(x=550, y=125)
+
+    def back():
+        """
+        This method is called when the back button is pressed. Window is destroyed.
+        """
+        window.destroy()
 
     exportData_lbl = tk.Label(window, text="Export Data - CSV ", font=("Calibri", 14))
     exportData_lbl.place(x=550, y=95)

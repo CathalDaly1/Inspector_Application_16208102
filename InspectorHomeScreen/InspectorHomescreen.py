@@ -1,18 +1,18 @@
 import tkinter as tk
 
+import InspectorAdditionalFunctionality.emailSystem
+import InspectorAdditionalFunctionality.userAnalytics
 import InspectorGradingFunctionality.FileAccessScreen
 import UserCredentials.loginUser
-import InspectorAdditionalFunctionality.userAnalytics
-import InspectorAdditionalFunctionality.emailSystem
 
 
 def Homescreen():
+    """
+    This method creates the HomeScreen in the application. Creates contents of the tkinter window.
+    """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("800x800+100+100")
-
-    def proceedButton():
-        InspectorGradingFunctionality.FileAccessScreen.FileDisplayWindow()
 
     username1 = UserCredentials.loginUser.getUsername()
     lbl_title = tk.Label(window, text="Inspector - Grading Application", font=("Arial Bold", 20))
@@ -56,11 +56,16 @@ def Homescreen():
                                                                                                               y=200)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E = Complete Grading", font=("Calibri", 12)).place(x=200,
                                                                                                                  y=222)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 1 = Canned Comment 1", font=("Calibri", 12)).place(x=400, y=120)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 2 = Canned Comment 2", font=("Calibri", 12)).place(x=400, y=140)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 3 = Canned Comment 3", font=("Calibri", 12)).place(x=400, y=160)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 4 = Canned Comment 4", font=("Calibri", 12)).place(x=400, y=180)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 5 = Canned Comment 5", font=("Calibri", 12)).place(x=400, y=200)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 1 = Canned Comment 1", font=("Calibri", 12)).place(x=400,
+                                                                                                                 y=120)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 2 = Canned Comment 2", font=("Calibri", 12)).place(x=400,
+                                                                                                                 y=140)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 3 = Canned Comment 3", font=("Calibri", 12)).place(x=400,
+                                                                                                                 y=160)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 4 = Canned Comment 4", font=("Calibri", 12)).place(x=400,
+                                                                                                                 y=180)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 5 = Canned Comment 5", font=("Calibri", 12)).place(x=400,
+                                                                                                                 y=200)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key Q = Quit Inspector", font=("Calibri", 12)).place(x=400,
                                                                                                                y=222)
     prog_keys_lbl.place(x=30, y=400)
@@ -69,12 +74,13 @@ def Homescreen():
     quit_button.place(x=30, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",
-                               command=InspectorAdditionalFunctionality.userAnalytics.analyticsScreen, height=2, width=12)
+                               command=InspectorAdditionalFunctionality.userAnalytics.analyticsScreen, height=2,
+                               width=12)
     view_analytics.place(x=250, y=730)
 
     send_emails = tk.Button(window, text="Email System", fg="black",
                             command=InspectorAdditionalFunctionality.emailSystem.emailSystem, height=2, width=12)
     send_emails.place(x=450, y=730)
 
-    proceed_button = tk.Button(window, text="Proceed", fg="black", command=proceedButton, height=2, width=12)
+    proceed_button = tk.Button(window, text="Proceed", fg="black", command=InspectorGradingFunctionality.FileAccessScreen.FileDisplayWindow, height=2, width=12)
     proceed_button.place(x=650, y=730)

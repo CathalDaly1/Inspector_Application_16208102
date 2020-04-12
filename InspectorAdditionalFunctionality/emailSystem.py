@@ -1,14 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
 
-import UserCredentials.loginUser
 import DBConnection.connectToDB
+import UserCredentials.loginUser
 
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
 
 def emailSystem():
+    """
+    This class creates a tkinter window which will allow the user to send mass emails to students with assignments
+    attached.
+    """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("850x800+100+100")
@@ -32,9 +36,15 @@ def emailSystem():
     moduleCombobox.place(x=230, y=100)
 
     def displayAssignment():
+        """
+        This docsting must be filled in
+        """
         assignmentCombobox()
 
     def displayModuleAssignments():
+        """
+        This class retrieves assignment information from the assignments table in the database.
+        """
         cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s",
                     (userID, moduleCodeSelection))
 
@@ -43,6 +53,9 @@ def emailSystem():
         conn.commit()
 
     def assignmentCombobox():
+        """
+        This docsting must be filled in
+        """
         global moduleCodeSelection
         moduleCodeSelection = moduleCombobox.get()
         label_assignment = tk.Label(window, text="Choose Assignment No.: ", font=("Calibri", 14))
@@ -61,11 +74,17 @@ def emailSystem():
         saveAssignmentSelection.place(x=400, y=127)
 
     def showTable():
+        """
+        This docsting must be filled in
+        """
         global moduleCodeSelection
         moduleCodeSelection = moduleCombobox.get()
         displayModuleAssignments()
 
     def back():
+        """
+        This docsting must be filled in
+        """
         window.destroy()
 
     saveModuleSelection = tk.Button(window, text="Display Assignments", fg="black", command=displayAssignment, width=15)

@@ -1,6 +1,7 @@
 import hashlib
 import tkinter as tk
 from tkinter import *
+
 import DBConnection.connectToDB
 
 conn = DBConnection.connectToDB.connectToDB()
@@ -8,6 +9,9 @@ cur = conn.cursor()
 
 
 def forgotUsernameScreen():
+    """
+    This method creates the tkinter window along with the labels and buttons in the window.
+    """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("500x350+400+300")
@@ -19,6 +23,11 @@ def forgotUsernameScreen():
     confirmPassword_verify = StringVar()
 
     def verify_password():
+        """
+        This verifies that the password and email entered exists in the database.
+        If it is in the database the user can change their username by adding a new
+        username into the entry box on this screen.
+        """
         newUsername = username_entry.get()
         email = email_entry.get()
         password = password_entry.get()
@@ -50,6 +59,9 @@ def forgotUsernameScreen():
             errorLbl.place(x=190, y=270)
 
     def back():
+        """
+        This method is called when the 'back' button is pressed. The login window is destroyed.
+        """
         window.destroy()
 
     # Creates the GUI elements for buttons and labels
