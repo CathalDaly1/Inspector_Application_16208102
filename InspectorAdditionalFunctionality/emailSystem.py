@@ -83,7 +83,12 @@ def emailSystem():
 
     def showTable():
         """
-        This docstring must be filled in
+        This method works with list and tuple manipulation in python
+        Firstly, select student ID numbers and associated filenames from the database
+        concat the studentmail extension for each of the student numbers
+        concat the pdf extension for each of the filenames
+        Create a map converting student ids(ints) to strings. Also merge lists of the studeent IDs and filenames
+        in order to get the file from the file system.
         """
         global moduleCodeSelection, assignmentSelect, studentEmail
         moduleCodeSelection = moduleCombobox.get()
@@ -131,7 +136,6 @@ def emailSystem():
                 email_user = '16208102@studentmail.ul.ie'
                 email_password = ''
                 email_send = f
-                print(email_send)
 
                 subject = emailSubjectEntry.get('1.0', 'end-1c')
 
@@ -145,6 +149,7 @@ def emailSystem():
                 server.starttls()
                 server.login(email_user, email_password)
 
+                # ToDo implement this with tkinter or else store it in the database??
                 filename = ("C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments2/Graded Assignments/" + b)
 
                 # Attaching file to the email
