@@ -95,6 +95,7 @@ def emailSystem():
         studentID = cur.fetchall()
         studentIdList = [item for t in studentID for item in t]
         emailExtension = "@studentmail.ul.ie"
+        global studentEmail
         studentEmail = [str(s) + emailExtension for s in studentIdList]
 
         cur.execute("SELECT filename from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
@@ -115,12 +116,8 @@ def emailSystem():
         filePathMergedList = mergeLists(studentIDConvert, studentFilesWithExtension)
 
         # Join the contents of the tuple and add a '/' for the filepath
+        global filePathCreation
         filePathCreation = list(map('/'.join, filePathMergedList))
-
-        # looping through the two lists using zip
-
-        # for f, b in zip(studentIDConvert, filePathCreation):
-        #     print(f, b)
 
     def send_email():
         """
@@ -128,13 +125,13 @@ def emailSystem():
         """
 
         try:
-            list1 = ['cathald96@gmail.com', '16208102@studentmail.ul.ie']
-            list2 = ['161234234/test2.txt.pdf', '16208102/test2.txt.pdf']
-
-            for f, b in zip(list1, list2):
+            global studentEmail, filePathCreation
+            # looping through the two lists using zip
+            for f, b in zip(studentEmail, filePathCreation):
                 email_user = '16208102@studentmail.ul.ie'
                 email_password = ''
                 email_send = f
+                print(email_send)
 
                 subject = emailSubjectEntry.get('1.0', 'end-1c')
 
@@ -148,7 +145,7 @@ def emailSystem():
                 server.starttls()
                 server.login(email_user, email_password)
 
-                filename = ("C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments/Graded Assignments/" + b)
+                filename = ("C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments2/Graded Assignments/" + b)
 
                 # Attaching file to the email
                 with open(filename, "rb") as attachment:
@@ -171,7 +168,7 @@ def emailSystem():
                 text = msg.as_string()
                 server.sendmail(email_user, email_send, text)
                 server.quit()
-                print("email has been sent!")
+                print("email has been sent to " + f)
 
         except Exception as error:
             print(str(error))

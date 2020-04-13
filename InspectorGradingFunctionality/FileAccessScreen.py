@@ -128,8 +128,8 @@ class FileSelectionWindow(tk.Frame):
                     item_text = listBox.item(item, "values")
                 userID = UserCredentials.loginUser.getUserID()
                 cur.execute(
-                    "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s",
-                    (userID, selection, item_text[0]))
+                    "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and modulecode=%s",
+                    (userID, selection, item_text[0], assignmentModuleCode))
                 vals = cur.fetchone()
                 conn.commit()
 
@@ -227,13 +227,13 @@ class FileSelectionWindow(tk.Frame):
                     else:
                         try:
                             cur1.execute(
-                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s",
-                                (studentFiles, userID))
+                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s and modulecode=%s",
+                                (studentFiles, userID, assignmentModuleCode))
                             studentGrade = cur1.fetchall()
                             conn.commit()
                             cur1.execute(
-                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s",
-                                (studentFiles, userID))
+                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s and modulecode=%s",
+                                (studentFiles, userID, assignmentModuleCode))
                             graded = cur1.fetchone()
                             conn.commit()
                             oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
@@ -820,8 +820,8 @@ class FileSelectionWindow(tk.Frame):
                     userIDNo = UserCredentials.loginUser.getUserID()
 
                     cur.execute(
-                        "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s",
-                        (userID, selection, item_text[0]))
+                        "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
+                        (userID, selection, item_text[0], assignmentModuleCode))
                     vals = cur.fetchone()
                     print(vals)
                     conn.commit()
