@@ -72,28 +72,61 @@ def emailSystem():
         """
         This class retrieves assignment information from the assignments table in the database.
         """
-        test = tk.Label(window, text="Module code: " + str(moduleCodeSelection) + " and Assignment number: " +
-                                     str(assignmentSelect) + " saved", font=("Calibri", 14))
-        test.place(x=25, y=160)
+        detailsSaved = tk.Label(window, text="Module code: " + str(moduleCodeSelection) + " and Assignment number: " +
+                                             str(assignmentSelect),
+                                font=("Calibri", 14))
+        detailsSaved.place(x=25, y=160)
+
+        recipientsLoaded = tk.Label(window, text="Recipients loaded into email system",
+                                    font=("Calibri", 14))
+        recipientsLoaded.place(x=25, y=187)
 
     def showTable():
         """
-        This docsting must be filled in
+        This docstring must be filled in
         """
-        global moduleCodeSelection, assignmentSelect
+        global moduleCodeSelection, assignmentSelect, studentEmail
         moduleCodeSelection = moduleCombobox.get()
         assignmentSelect = assignmentCombo.get()
         displayModuleAssignments()
 
-    # ToDo implement with tkinter and also implement attachments, not sure how I will do that
+        cur.execute("SELECT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
+                    (userID, moduleCodeSelection, assignmentSelect))
+        studentID = cur.fetchall()
+        studentIdList = [item for t in studentID for item in t]
+        emailExtension = "@studentmail.ul.ie"
+        studentEmail = [str(s) + emailExtension for s in studentIdList]
+
+        cur.execute("SELECT filename from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
+                    (userID, moduleCodeSelection, assignmentSelect))
+        studentAssignment = cur.fetchall()
+        filenameExt = [item for t in studentAssignment for item in t]
+        fileExtension = ".pdf"
+        studentFilesWithExtension = [str(s) + fileExtension for s in filenameExt]
+
+        # Convert list of ints to list of strings
+        studentIDConvert = list(map(str, studentIdList))
+
+        def mergeLists(list1, list2):
+            merged_list = [(list1[i], list2[i]) for i in range(0, len(list1))]
+            return merged_list
+
+        # Merging two lists in order to get filepath which gets the student ID and the name of the document
+        filePathMergedList = mergeLists(studentIDConvert, studentFilesWithExtension)
+
+        # Join the contents of the tuple and add a '/' for the filepath
+        filePathCreation = list(map('/'.join, filePathMergedList))
+        print(str(filePathCreation))
+
     def send_email():
         """
         This method will allow the user to send emails to students with attachment and grade.
         """
+
         try:
             email_user = '16208102@studentmail.ul.ie'
             email_password = ''
-            email_send = ['cathald96@gmail.com', 'cathald96@gmail.com', 'cathald96@gmail.com']
+            email_send = ['cathald96@gmail.com']
 
             subject = emailSubjectEntry.get('1.0', 'end-1c')
 
@@ -106,8 +139,25 @@ def emailSystem():
             server.starttls()
             server.login(email_user, email_password)
 
+            filename = "C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments/Graded Assignments/16208102/test3.txt.pdf"
+
+            # Attaching file to the email
+            with open(filename, "rb") as attachment:
+                # Add file as application/octet-stream
+                # Email client can usually download this automatically as attachment
+                part = MIMEBase("application", "octet-stream")
+                part.set_payload(attachment.read())
+
+            encoders.encode_base64(part)
+
+            part.add_header(
+                "Content-Disposition",
+                f"attachment; filename= {filename}",
+            )
+
             body = emailBodyEntry.get('1.0', 'end-1c')
             msg.attach(MIMEText(body, 'plain'))
+            msg.attach(part)
 
             text = msg.as_string()
             server.sendmail(email_user, email_send, text)
@@ -120,7 +170,7 @@ def emailSystem():
 
     def back():
         """
-        This docsting must be filled in
+        This method is called when the backbutton is pressed. Window is destroyed and closed.
         """
         window.destroy()
 
@@ -128,16 +178,16 @@ def emailSystem():
     saveModuleSelection.place(x=400, y=100)
 
     emailSubject_lbl = tk.Label(window, text="Email Subject: ", font=("Calibri", 14))
-    emailSubject_lbl.place(x=25, y=200)
+    emailSubject_lbl.place(x=25, y=220)
 
     emailSubjectEntry: tk.Text = tk.Text(window, height="2", width="60")
-    emailSubjectEntry.place(x=160, y=205)
+    emailSubjectEntry.place(x=160, y=225)
 
     emailBody_lbl = tk.Label(window, text="Email Body: ", font=("Calibri", 14))
-    emailBody_lbl.place(x=25, y=260)
+    emailBody_lbl.place(x=25, y=300)
 
     emailBodyEntry: tk.Text = tk.Text(window, height="10", width="60")
-    emailBodyEntry.place(x=160, y=265)
+    emailBodyEntry.place(x=160, y=305)
 
     sendEmailButton = tk.Button(window, text="Send emails", fg="black", command=send_email,
                                 width=15)
