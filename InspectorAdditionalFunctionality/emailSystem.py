@@ -116,7 +116,11 @@ def emailSystem():
 
         # Join the contents of the tuple and add a '/' for the filepath
         filePathCreation = list(map('/'.join, filePathMergedList))
-        print(str(filePathCreation))
+
+        # looping through the two lists using zip
+
+        # for f, b in zip(studentIDConvert, filePathCreation):
+        #     print(f, b)
 
     def send_email():
         """
@@ -124,45 +128,50 @@ def emailSystem():
         """
 
         try:
-            email_user = '16208102@studentmail.ul.ie'
-            email_password = ''
-            email_send = ['cathald96@gmail.com']
+            list1 = ['cathald96@gmail.com', '16208102@studentmail.ul.ie']
+            list2 = ['161234234/test2.txt.pdf', '16208102/test2.txt.pdf']
 
-            subject = emailSubjectEntry.get('1.0', 'end-1c')
+            for f, b in zip(list1, list2):
+                email_user = '16208102@studentmail.ul.ie'
+                email_password = 'Detlef228425'
+                email_send = f
 
-            msg = MIMEMultipart()
-            msg['From'] = email_user
-            msg['To'] = ",".join(email_send)
-            msg['Subject'] = subject
+                subject = emailSubjectEntry.get('1.0', 'end-1c')
 
-            server = smtplib.SMTP('smtp-mail.outlook.com')
-            server.starttls()
-            server.login(email_user, email_password)
+                msg = MIMEMultipart()
+                msg['From'] = email_user
+                # msg['To'] = ",".join(email_send)
+                msg['To'] = email_send
+                msg['Subject'] = subject
 
-            filename = "C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments/Graded Assignments/16208102/test3.txt.pdf"
+                server = smtplib.SMTP('smtp-mail.outlook.com')
+                server.starttls()
+                server.login(email_user, email_password)
 
-            # Attaching file to the email
-            with open(filename, "rb") as attachment:
-                # Add file as application/octet-stream
-                # Email client can usually download this automatically as attachment
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(attachment.read())
+                filename = ("C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments/Graded Assignments/" + b)
 
-            encoders.encode_base64(part)
+                # Attaching file to the email
+                with open(filename, "rb") as attachment:
+                    # Add file as application/octet-stream
+                    # Email client can usually download this automatically as attachment
+                    part = MIMEBase("application", "octet-stream")
+                    part.set_payload(attachment.read())
 
-            part.add_header(
-                "Content-Disposition",
-                f"attachment; filename= {filename}",
-            )
+                encoders.encode_base64(part)
 
-            body = emailBodyEntry.get('1.0', 'end-1c')
-            msg.attach(MIMEText(body, 'plain'))
-            msg.attach(part)
+                part.add_header(
+                    "Content-Disposition",
+                    f"attachment; filename= {filename}",
+                )
 
-            text = msg.as_string()
-            server.sendmail(email_user, email_send, text)
-            server.quit()
-            print("email has been sent!")
+                body = emailBodyEntry.get('1.0', 'end-1c')
+                msg.attach(MIMEText(body, 'plain'))
+                msg.attach(part)
+
+                text = msg.as_string()
+                server.sendmail(email_user, email_send, text)
+                server.quit()
+                print("email has been sent!")
 
         except Exception as error:
             print(str(error))
