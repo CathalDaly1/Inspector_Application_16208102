@@ -133,7 +133,7 @@ def emailSystem():
 
             for f, b in zip(list1, list2):
                 email_user = '16208102@studentmail.ul.ie'
-                email_password = 'Detlef228425'
+                email_password = ''
                 email_send = f
 
                 subject = emailSubjectEntry.get('1.0', 'end-1c')
