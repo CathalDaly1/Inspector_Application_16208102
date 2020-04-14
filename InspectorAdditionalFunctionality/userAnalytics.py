@@ -8,6 +8,7 @@ from matplotlib import style
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import xlsxwriter
+from xlsxwriter.exceptions import FileCreateError
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
@@ -168,17 +169,31 @@ def analyticsScreen():
                                        + moduleCodeSelection + "-" + assignmentSelect + '.xlsx')
         worksheet = workbook.add_worksheet()
 
-        for colidx, heading in enumerate(cur.description):
-            worksheet.write(0, colidx, heading[0])  # first element of each tuple
+        # Set the 'time_graded' column with the datetime for format
+        format1 = workbook.add_format({'num_format': 'mmm d yyyy hh:mm:ss'})
+        worksheet.set_column('I:I', 20, format1)
+        worksheet.set_column('E:E', 11)
 
-        # Write rows
-        for rowidx, row in enumerate(assignmentData):
-            for colindex, col in enumerate(row):
-                worksheet.write(rowidx + 1, colindex, col)
-        workbook.close()
+        try:
+            # Writes the headings in the DB table into the xls file
+            for column, heading in enumerate(cur.description):
+                worksheet.write(0, column, heading[0])  # first element of each tuple
 
-        exportDataConfirmed_lbl = tk.Label(window, text="Data Exported to AssignmentData.csv", font=("Calibri", 12))
-        exportDataConfirmed_lbl.place(x=550, y=125)
+            # Writes the rows in the DB table into the xls file
+            for rows, row in enumerate(assignmentData):
+                for colindex, col in enumerate(row):
+                    worksheet.write(rows + 1, colindex, col)
+            workbook.close()
+
+            print("File location of exported data: " + correctParentPath + '/ExportedCSVFiles/')
+
+            exportDataConfirmed_lbl = tk.Label(window, text="Data Exported and saved", font=("Calibri", 12))
+            exportDataConfirmed_lbl.place(x=550, y=125)
+
+        except FileCreateError as error:
+            print(str(error))
+            exportDataConfirmed_lbl = tk.Label(window, text="Error saving file", fg="red", font=("Calibri", 12))
+            exportDataConfirmed_lbl.place(x=550, y=125)
 
     def back():
         """

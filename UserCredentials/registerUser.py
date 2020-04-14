@@ -23,7 +23,7 @@ def registerUser():
     email = StringVar()
     confirmPassword = StringVar()
 
-    def register():
+    def register_verify():
         """
         This method verifies that the username, password and confirmation password are identical.
         The user is then registered. The credentials are entered in the database and the user
@@ -82,5 +82,5 @@ def registerUser():
     Label(window, text="Confirm Password", font=("Calibri", 14)).pack()
     confirm_password_entry = Entry(window, show="*", textvariable=confirmPassword)
     confirm_password_entry.pack()
-    Button(window, text="Register", width=10, height=1, command=register, borderwidth=3).place(x=280, y=270)
+    Button(window, text="Register", width=10, height=1, command=register_verify, borderwidth=3).place(x=280, y=270)
     Button(window, text="Back", width=10, height=1, command=back, borderwidth=3).place(x=150, y=270)

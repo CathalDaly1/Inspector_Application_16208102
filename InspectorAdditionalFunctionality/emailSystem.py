@@ -134,7 +134,7 @@ def emailSystem():
             # looping through the two lists using zip
             for f, b in zip(studentEmail, filePathCreation):
                 email_user = '16208102@studentmail.ul.ie'
-                email_password = ''
+                email_password = 'Detlef228425'
                 email_send = f
 
                 subject = emailSubjectEntry.get('1.0', 'end-1c')
@@ -159,7 +159,7 @@ def emailSystem():
                     part = MIMEBase("application", "octet-stream")
                     part.set_payload(attachment.read())
 
-                encoders.encode_base64(part)
+                    encoders.encode_base64(part)
 
                 part.add_header(
                     "Content-Disposition",
