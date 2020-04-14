@@ -97,6 +97,7 @@ def emailSystem():
         cur.execute("SELECT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
         studentID = cur.fetchall()
+        global studentIdList
         studentIdList = [item for t in studentID for item in t]
         emailExtension = "@studentmail.ul.ie"
         global studentEmail
@@ -130,11 +131,11 @@ def emailSystem():
         """
 
         try:
-            global studentEmail, filePathCreation
+            global studentEmail, filePathCreation, studentIdList
             # looping through the two lists using zip
-            for f, b in zip(studentEmail, filePathCreation):
+            for f, b, a in zip(studentEmail, filePathCreation, studentIdList):
                 email_user = '16208102@studentmail.ul.ie'
-                email_password = 'Detlef228425'
+                email_password = ''
                 email_send = f
 
                 subject = emailSubjectEntry.get('1.0', 'end-1c')
@@ -166,7 +167,13 @@ def emailSystem():
                     f"attachment; filename= {filename}",
                 )
 
+                # get grade from database
+                cur.execute("SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
+                            (userID, moduleCodeSelection, assignmentSelect, a))
+                studentFinalGrade = cur.fetchall()
+
                 body = emailBodyEntry.get('1.0', 'end-1c')
+                body += "\n + Final grade for this assignment = " + str(studentFinalGrade)
                 msg.attach(MIMEText(body, 'plain'))
                 msg.attach(part)
 
