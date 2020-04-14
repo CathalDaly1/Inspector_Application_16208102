@@ -11,7 +11,7 @@ from fpdf import FPDF
 import DBConnection.connectToDB
 import InspectorGradingFunctionality.cannedComments
 import UserCredentials.loginUser
-
+import InspectorGradingFunctionality.ChangingGrades
 # initialize queue for thread
 the_queue = queue.Queue()
 
@@ -375,30 +375,31 @@ class FileSelectionWindow(tk.Frame):
 
         # ToDo implement this functionality with tkinter
         def changeValueOfAllAssignments():
-            change = str(input("Do you wish to add/subtract marks? (A(dd) or S(ubtract))"))
-
-            if change.lower() == "a":
-                marks = int(input("Enter number of marks you wish to add or subtract"))
-                cur.execute(
-                    "Update assignments set final_grade = final_grade + %s where modulecode =%s and assignmentNo = %s",
-                    (marks, assignmentModuleCode, assignmentNo,))
-                conn.commit()
-
-            elif change.lower() == "s":
-                marks = int(input("Enter number of marks you wish to add or subtract"))
-                cur.execute(
-                    "Update assignments set final_grade = final_grade - %s where modulecode =%s and assignmentNo = %s",
-                    (marks, assignmentModuleCode, assignmentNo,))
-                conn.commit()
-
-            else:
-                print("Please enter a valid option")
-                changeValueOfAllAssignments()
-
-            conn.commit()
-            count = cur.rowcount
-            print(count, "Record Updated successfully ")
-            refreshListbox()
+            InspectorGradingFunctionality.ChangingGrades.changeStudentsGrades()
+            # change = str(input("Do you wish to add/subtract marks? (A(dd) or S(ubtract))"))
+            #
+            # if change.lower() == "a":
+            #     marks = int(input("Enter number of marks you wish to add or subtract"))
+            #     cur.execute(
+            #         "Update assignments set final_grade = final_grade + %s where modulecode =%s and assignmentNo = %s",
+            #         (marks, assignmentModuleCode, assignmentNo,))
+            #     conn.commit()
+            #
+            # elif change.lower() == "s":
+            #     marks = int(input("Enter number of marks you wish to add or subtract"))
+            #     cur.execute(
+            #         "Update assignments set final_grade = final_grade - %s where modulecode =%s and assignmentNo = %s",
+            #         (marks, assignmentModuleCode, assignmentNo,))
+            #     conn.commit()
+            #
+            # else:
+            #     print("Please enter a valid option")
+            #     changeValueOfAllAssignments()
+            #
+            # conn.commit()
+            # count = cur.rowcount
+            # print(count, "Record Updated successfully ")
+            # refreshListbox()
 
         # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
