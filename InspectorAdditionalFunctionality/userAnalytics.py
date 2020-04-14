@@ -1,10 +1,13 @@
 import csv
+import os
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk
 
 from matplotlib import style
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+import xlsxwriter
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
@@ -146,22 +149,33 @@ def analyticsScreen():
 
     def exportData():
         """
-        This method is called when the 'export data' button is pressed. Exports data from table into a comma
-        separated file.
+        This method is called when the 'export data' button is pressed. Exports data from table into an
+        excel file.
         """
         cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
 
         assignmentData = cur.fetchall()
         conn.commit()
+        # Get the root directory of the project in the users machine
+        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+        path = Path(ROOT_DIR)
+        # Get the parent folder of the project
+        parentPath = str(path.parent)
+        # Replace the \\ in the filepath with / in order for the application to be able to save the file
+        correctParentPath = (parentPath.replace("\\", "/"))
+        workbook = xlsxwriter.Workbook(correctParentPath + '/ExportedCSVFiles/'
+                                       + moduleCodeSelection + "-" + assignmentSelect + '.xlsx')
+        worksheet = workbook.add_worksheet()
 
-        with open(r'AssignmentData.csv', 'w', encoding='utf-8') as f:
-            writer = csv.writer(f, delimiter=',')
-            writer.writerow(('aID', 'User ID', 'Module Code', 'Assignment Number', 'Student ID Number', 'Filename',
-                             'Final Grade', 'Graded Status', 'Time Graded'))
-            for row in assignmentData:
-                writer.writerow(row)
-        conn.commit()
+        for colidx, heading in enumerate(cur.description):
+            worksheet.write(0, colidx, heading[0])  # first element of each tuple
+
+        # Write rows
+        for rowidx, row in enumerate(assignmentData):
+            for colindex, col in enumerate(row):
+                worksheet.write(rowidx + 1, colindex, col)
+        workbook.close()
 
         exportDataConfirmed_lbl = tk.Label(window, text="Data Exported to AssignmentData.csv", font=("Calibri", 12))
         exportDataConfirmed_lbl.place(x=550, y=125)

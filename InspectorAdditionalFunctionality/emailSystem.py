@@ -5,7 +5,6 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from tkinter import ttk
-import pandas as pd
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
@@ -26,7 +25,7 @@ def emailSystem():
 
     userID = UserCredentials.loginUser.getUserID()
 
-    lbl_title = tk.Label(window, text="Inspector - Email System", font=("Arial Bold", 18))
+    lbl_title = tk.Label(window, text="Inspector - Mass Mailing System", font=("Arial Bold", 18))
     lbl_title.place(x=400, y=50, anchor="center")
 
     label_module = tk.Label(window, text="Choose module from list: ", font=("Calibri", 14))
@@ -123,6 +122,7 @@ def emailSystem():
         # Join the contents of the tuple and add a '/' for the filepath
         global filePathCreation
         filePathCreation = list(map('/'.join, filePathMergedList))
+        print(filePathCreation)
 
     def send_email():
         """
@@ -175,6 +175,13 @@ def emailSystem():
                 server.quit()
                 print("email has been sent to " + f)
 
+                emailSent_lbl = tk.Label(window, text="Email Recipients: ", font=("Calibri", 14))
+                emailSent_lbl.place(x=25, y=550)
+
+                emailSentList: tk.Text = tk.Text(window, height="5", width="60")
+                emailSentList.place(x=160, y=550)
+                emailSentList.insert('1.0', "Email has been sent to:" + f)
+
         except Exception as error:
             print(str(error))
             print("Failed to send email")
@@ -189,10 +196,10 @@ def emailSystem():
     saveModuleSelection.place(x=400, y=100)
 
     emailSubject_lbl = tk.Label(window, text="Email Subject: ", font=("Calibri", 14))
-    emailSubject_lbl.place(x=25, y=220)
+    emailSubject_lbl.place(x=25, y=235)
 
     emailSubjectEntry: tk.Text = tk.Text(window, height="2", width="60")
-    emailSubjectEntry.place(x=160, y=225)
+    emailSubjectEntry.place(x=160, y=240)
 
     emailBody_lbl = tk.Label(window, text="Email Body: ", font=("Calibri", 14))
     emailBody_lbl.place(x=25, y=300)
@@ -202,7 +209,8 @@ def emailSystem():
 
     sendEmailButton = tk.Button(window, text="Send emails", fg="black", command=send_email,
                                 width=15)
-    sendEmailButton.place(x=400, y=600)
+    sendEmailButton.place(x=533, y=480)
 
     back_button = tk.Button(window, text="Back", fg="black", command=back, height=2, width=12)
     back_button.place(x=350, y=730)
+
