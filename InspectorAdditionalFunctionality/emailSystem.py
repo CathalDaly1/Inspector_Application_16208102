@@ -100,7 +100,7 @@ def emailSystem():
         global studentIdList
         studentIdList = [item for t in studentID for item in t]
         emailExtension = "@studentmail.ul.ie"
-        global studentEmail
+        global studentEmail, studentAssignment
         studentEmail = [str(s) + emailExtension for s in studentIdList]
 
         cur.execute("SELECT filename from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
@@ -131,11 +131,11 @@ def emailSystem():
         """
 
         try:
-            global studentEmail, filePathCreation, studentIdList
+            global studentEmail, filePathCreation, studentIdList, studentAssignment
             # looping through the two lists using zip
-            for f, b, a in zip(studentEmail, filePathCreation, studentIdList):
+            for f, b, a, c in zip(studentEmail, filePathCreation, studentIdList, studentAssignment):
                 email_user = '16208102@studentmail.ul.ie'
-                email_password = ''
+                email_password = 'Detlef228425'
                 email_send = f
 
                 subject = emailSubjectEntry.get('1.0', 'end-1c')
@@ -168,8 +168,8 @@ def emailSystem():
                 )
 
                 # get grade from database
-                cur.execute("SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
-                            (userID, moduleCodeSelection, assignmentSelect, a))
+                cur.execute("SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
+                            (userID, moduleCodeSelection, assignmentSelect, a, c))
                 studentFinalGrade = cur.fetchall()
 
                 body = emailBodyEntry.get('1.0', 'end-1c')

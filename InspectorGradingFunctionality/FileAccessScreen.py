@@ -3,8 +3,11 @@ import os
 import queue
 import re
 import tkinter as tk
+from pathlib import Path
+from pydoc import text
 from tkinter import ttk, messagebox
 
+import fitz
 import psycopg2
 from fpdf import FPDF
 
@@ -12,6 +15,7 @@ import DBConnection.connectToDB
 import InspectorGradingFunctionality.cannedComments
 import UserCredentials.loginUser
 import InspectorGradingFunctionality.ChangingGrades
+
 # initialize queue for thread
 the_queue = queue.Queue()
 
@@ -472,6 +476,10 @@ class FileSelectionWindow(tk.Frame):
 
             menubar = tk.Menu(window)
 
+            open(
+                "C:/Users/catha/PycharmProjects/Inspector_Application/HighlightFiles/highlightedText.txt",
+                'w').close()
+
             global file
             global gradedFilesFolder
             fileExtensionSelection = re.search(r'\.\w+$', selection)
@@ -729,6 +737,29 @@ class FileSelectionWindow(tk.Frame):
             global assignment
             assignment = open(file, encoding="ISO-8859-1").read()
 
+            def highlightingTextInFile():
+                savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
+                doc = fitz.open(gradedFilesFolder + "\\" + savingFilePDF)
+                print(str(gradedFilesFolder + "\\" + savingFilePDF))
+                page = doc[0]
+
+                with open('C:/Users/catha/PycharmProjects/Inspector_Application/HighlightFiles/highlightedText.txt',
+                          "r") as file2:
+                    text1 = file2.read()
+                text_instances = page.searchFor(text1)
+
+                for inst in text_instances:
+                    print(inst, type(inst))
+                    highlight = page.addHighlightAnnot(inst)
+
+                try:
+                    doc.save(gradedFilesFolder + "\\" + "Corrected-" + savingFilePDF,
+                             garbage=4, deflate=True, clean=True)
+                    doc.close()
+                    os.remove(gradedFilesFolder + "\\" + savingFilePDF)
+                except RuntimeError:
+                    print("PDF file may be open")
+
             class TextLineNumbers(tk.Canvas):
 
                 def __init__(self, *args, **kwargs):
@@ -819,7 +850,6 @@ class FileSelectionWindow(tk.Frame):
                 def submitAssignment(self):
                     window.withdraw()
                     userIDNo = UserCredentials.loginUser.getUserID()
-
                     cur.execute(
                         "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
                         (userID, selection, item_text[0], assignmentModuleCode))
@@ -845,22 +875,23 @@ class FileSelectionWindow(tk.Frame):
                         cur.execute(insertAssignments, assignmentValues)
                         conn.commit()
 
-                        refreshListbox()
-                        # Opens file ans copies what is in tge text box and places back in file and saves
-                        s = self.text.get("1.0", tk.END)
-                        f = open(file, "w", encoding='utf-8')
-                        f.write(s)
-                        f.close()
+                    refreshListbox()
+                    # Opens file ans copies what is in the text box and places back in file and saves
+                    s = self.text.get("1.0", tk.END)
+                    f = open(file, "w", encoding='utf-8')
+                    f.write(s)
+                    f.close()
 
-                        # Create a file for each student with their graded files
-                        pdf = FPDF()
-                        pdf.add_page()
-                        pdf.set_font("Arial", size=12)
-                        pdf.multi_cell(0, 5, s)
+                    # Create a file for each student with their graded files
+                    pdf = FPDF()
+                    pdf.add_page()
+                    pdf.set_font("Arial", size=12)
+                    pdf.multi_cell(0, 5, s)
 
-                        # Removed the \t from the filepath in order to save as pdf in 'Graded' file
-                        savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
-                        pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
+                    # Removed the \t from the filepath in order to save as pdf in 'Graded' file
+                    savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
+                    pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
+                    highlightingTextInFile()
 
                 # Highlights code and text when text is selected and highlight button is pressed
                 def highlightCode(self):
@@ -874,6 +905,19 @@ class FileSelectionWindow(tk.Frame):
                         # for tag in text.tag_names():
                         #     text.tag_delete(tag)
                         self.text.config(foreground='yellow')
+
+                    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+                    path = Path(ROOT_DIR)
+                    # Get the parent folder of the project
+                    parentPath = str(path.parent)
+                    # Replace the \\ in the filepath with / in order for the application to be able to save the file
+                    correctParentPath = (parentPath.replace("\\", "/"))
+
+                    fileHighlightText = (str(correctParentPath) + "/HighlightFiles/highlightedText.txt")
+                    fileContainingText = open(fileHighlightText, "a")
+
+                    hText = self.text.get(tk.SEL_FIRST, tk.SEL_LAST)
+                    fileContainingText.write(hText)
 
                 def addAssignmentComments(self):
                     self.text.insert(tk.END, "\n")
