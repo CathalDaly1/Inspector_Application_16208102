@@ -1,7 +1,7 @@
 import tkinter as tk
 
-import InspectorAdditionalFunctionality.emailSystem
-import InspectorAdditionalFunctionality.userAnalytics
+import InspectorEmailingSystem.emailSystem
+import InspectorUserAnalytics.userAnalytics
 import InspectorGradingFunctionality.FileAccessScreen
 import UserCredentials.loginUser
 
@@ -74,12 +74,12 @@ def Homescreen():
     quit_button.place(x=30, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",
-                               command=InspectorAdditionalFunctionality.userAnalytics.analyticsScreen, height=2,
+                               command=InspectorUserAnalytics.userAnalytics.analyticsScreen, height=2,
                                width=12)
     view_analytics.place(x=250, y=730)
 
     send_emails = tk.Button(window, text="Email System", fg="black",
-                            command=InspectorAdditionalFunctionality.emailSystem.emailSystem, height=2, width=12)
+                            command=InspectorEmailingSystem.emailSystem.emailSystem, height=2, width=12)
     send_emails.place(x=450, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black", command=InspectorGradingFunctionality.FileAccessScreen.FileDisplayWindow, height=2, width=12)
