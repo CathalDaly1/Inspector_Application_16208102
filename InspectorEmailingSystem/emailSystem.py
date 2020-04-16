@@ -4,6 +4,7 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from itertools import count
 from tkinter import ttk
 from tkinter.ttk import Progressbar
 
@@ -26,7 +27,7 @@ def emailSystem():
 
     userID = UserCredentials.loginUser.getUserID()
 
-    lbl_title = tk.Label(window, text="Inspector - Mass Mailing System", font=("Arial Bold", 18))
+    lbl_title = tk.Label(window, text="Inspector - Mailing System", font=("Arial Bold", 18))
     lbl_title.place(x=400, y=50, anchor="center")
 
     label_module = tk.Label(window, text="Choose module from list: ", font=("Calibri", 14))
@@ -46,13 +47,13 @@ def emailSystem():
 
     def displayAssignment():
         """
-        This docsting must be filled in
+        This docstring must be filled in
         """
         assignmentCombobox()
 
     def assignmentCombobox():
         """
-        This docsting must be filled in
+        This docstring must be filled in
         """
         global moduleCodeSelection, assignmentSelection, assignmentCombo
         moduleCodeSelection = moduleCombobox.get()
@@ -80,7 +81,9 @@ def emailSystem():
                                              str(assignmentSelect),
                                 font=("Calibri", 14))
         detailsSaved.place(x=25, y=180)
-        recipientsLoaded = tk.Label(window, text="Recipients loaded into email system",
+        global studentIdList
+        numberOfRecipients = len(studentIdList)
+        recipientsLoaded = tk.Label(window, text=str(numberOfRecipients) + " Recipient(s) loaded into email system",
                                     font=("Calibri", 14))
         recipientsLoaded.place(x=25, y=207)
 
@@ -92,26 +95,26 @@ def emailSystem():
         import time
         progress['value'] = 20
         window.update_idletasks()
-        time.sleep(0.7)
+        time.sleep(0.45)
 
         progress['value'] = 40
         window.update_idletasks()
-        time.sleep(0.7)
+        time.sleep(0.45)
 
         progress['value'] = 50
         window.update_idletasks()
-        time.sleep(0.7)
+        time.sleep(0.45)
 
         progress['value'] = 60
         window.update_idletasks()
-        time.sleep(0.7)
+        time.sleep(0.45)
 
         progress['value'] = 80
         window.update_idletasks()
-        time.sleep(0.7)
+        time.sleep(0.45)
         progress['value'] = 100
 
-    loading = tk.Label(window, text="Loading data to email system: ", font=("Calibri", 14))
+    loading = tk.Label(window, text="Loading data into the email system: ", font=("Calibri", 14))
     loading.place(x=25, y=155)
     progress.place(x=273, y=157)
 
@@ -127,15 +130,15 @@ def emailSystem():
         global moduleCodeSelection, assignmentSelect, studentEmail
         moduleCodeSelection = moduleCombobox.get()
         assignmentSelect = assignmentCombo.get()
-        displayModuleAssignments()
 
         cur.execute("SELECT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
         studentID = cur.fetchall()
+
         global studentIdList
         studentIdList = [item for t in studentID for item in t]
-
         emailExtension = "@studentmail.ul.ie"
+
         global studentEmail, studentAssignment
         studentEmail = [str(s) + emailExtension for s in studentIdList]
 
@@ -161,6 +164,8 @@ def emailSystem():
         # Join the contents of the tuple and add a '/' for the filepath
         global filePathCreation
         filePathCreation = list(map('/'.join, filePathMergedList))
+
+        displayModuleAssignments()
 
     def send_email():
         """
@@ -204,8 +209,9 @@ def emailSystem():
                 )
 
                 # get grade from database
-                cur.execute("SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
-                            (userID, moduleCodeSelection, assignmentSelect, a, c))
+                cur.execute(
+                    "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
+                    (userID, moduleCodeSelection, assignmentSelect, a, c))
                 studentFinalGrade = cur.fetchall()
                 grade = [item for t in studentFinalGrade for item in t]
                 body = emailBodyEntry.get('1.0', 'end-1c')
@@ -254,6 +260,5 @@ def emailSystem():
                                 width=15)
     sendEmailButton.place(x=533, y=500)
 
-    back_button = tk.Button(window, text="Back", fg="black", command=back, height=2, width=12)
-    back_button.place(x=350, y=730)
-
+    back_button = tk.Button(window, text="Back", fg="black", command=back, width=12)
+    back_button.place(x=160, y=500)
