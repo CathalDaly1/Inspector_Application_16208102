@@ -64,9 +64,13 @@ class FileSelectionWindow(tk.Frame):
             global assignmentModuleCode, assignmentNo
             assignmentModuleCode = enterModuleCode.get().upper()
             assignmentNo = enterAssignmentNo.get().upper()
-            moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. saved\t\t")
-            moduleCodeSaved_lbl.place(x=527, y=85)
-            return assignmentModuleCode, assignmentNo
+            if assignmentNo and assignmentModuleCode != "":
+                moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. saved\t\t")
+                moduleCodeSaved_lbl.place(x=527, y=85)
+                return assignmentModuleCode, assignmentNo
+            else:
+                moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. Not saved\t\t", fg="red")
+                moduleCodeSaved_lbl.place(x=527, y=85)
 
         def clearEntry():
             displayAssignment.config(state="active")

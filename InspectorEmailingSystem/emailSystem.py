@@ -5,6 +5,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from tkinter import ttk
+from tkinter.ttk import Progressbar
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
@@ -30,6 +31,9 @@ def emailSystem():
 
     label_module = tk.Label(window, text="Choose module from list: ", font=("Calibri", 14))
     label_module.place(x=25, y=95)
+
+    progress = Progressbar(window, orient=tk.HORIZONTAL,
+                           length=100, mode='determinate')
 
     # As there are duplicates of assignments with module codes have to use distinct
     cur.execute("SELECT DISTINCT modulecode FROM assignments WHERE user_id =%s",
@@ -71,14 +75,45 @@ def emailSystem():
         """
         This class retrieves assignment information from the assignments table in the database.
         """
+        bar()
         detailsSaved = tk.Label(window, text="Module code: " + str(moduleCodeSelection) + " and Assignment number: " +
                                              str(assignmentSelect),
                                 font=("Calibri", 14))
-        detailsSaved.place(x=25, y=160)
-
+        detailsSaved.place(x=25, y=180)
         recipientsLoaded = tk.Label(window, text="Recipients loaded into email system",
                                     font=("Calibri", 14))
-        recipientsLoaded.place(x=25, y=187)
+        recipientsLoaded.place(x=25, y=207)
+
+    def bar():
+        """
+        This method displays a progress bar
+        :rtype: object
+        """
+        import time
+        progress['value'] = 20
+        window.update_idletasks()
+        time.sleep(0.7)
+
+        progress['value'] = 40
+        window.update_idletasks()
+        time.sleep(0.7)
+
+        progress['value'] = 50
+        window.update_idletasks()
+        time.sleep(0.7)
+
+        progress['value'] = 60
+        window.update_idletasks()
+        time.sleep(0.7)
+
+        progress['value'] = 80
+        window.update_idletasks()
+        time.sleep(0.7)
+        progress['value'] = 100
+
+    loading = tk.Label(window, text="Loading data to email system: ", font=("Calibri", 14))
+    loading.place(x=25, y=155)
+    progress.place(x=273, y=157)
 
     def showTable():
         """
@@ -99,8 +134,6 @@ def emailSystem():
         studentID = cur.fetchall()
         global studentIdList
         studentIdList = [item for t in studentID for item in t]
-
-        print(studentIdList)
 
         emailExtension = "@studentmail.ul.ie"
         global studentEmail, studentAssignment
@@ -186,10 +219,10 @@ def emailSystem():
                 print("email has been sent to " + f)
 
                 emailSent_lbl = tk.Label(window, text="Email Recipients: ", font=("Calibri", 14))
-                emailSent_lbl.place(x=25, y=550)
+                emailSent_lbl.place(x=25, y=580)
 
                 emailSentList: tk.Text = tk.Text(window, height="5", width="60")
-                emailSentList.place(x=160, y=550)
+                emailSentList.place(x=160, y=580)
                 emailSentList.insert('1.0', "Email has been sent to:" + f)
 
         except Exception as error:
@@ -206,20 +239,20 @@ def emailSystem():
     saveModuleSelection.place(x=400, y=100)
 
     emailSubject_lbl = tk.Label(window, text="Email Subject: ", font=("Calibri", 14))
-    emailSubject_lbl.place(x=25, y=235)
+    emailSubject_lbl.place(x=25, y=255)
 
     emailSubjectEntry: tk.Text = tk.Text(window, height="2", width="60")
-    emailSubjectEntry.place(x=160, y=240)
+    emailSubjectEntry.place(x=160, y=260)
 
     emailBody_lbl = tk.Label(window, text="Email Body: ", font=("Calibri", 14))
-    emailBody_lbl.place(x=25, y=300)
+    emailBody_lbl.place(x=25, y=320)
 
     emailBodyEntry: tk.Text = tk.Text(window, height="10", width="60")
-    emailBodyEntry.place(x=160, y=305)
+    emailBodyEntry.place(x=160, y=325)
 
     sendEmailButton = tk.Button(window, text="Send emails", fg="black", command=send_email,
                                 width=15)
-    sendEmailButton.place(x=533, y=480)
+    sendEmailButton.place(x=533, y=500)
 
     back_button = tk.Button(window, text="Back", fg="black", command=back, height=2, width=12)
     back_button.place(x=350, y=730)
