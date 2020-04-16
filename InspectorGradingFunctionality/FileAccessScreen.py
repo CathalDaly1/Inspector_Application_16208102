@@ -753,10 +753,11 @@ class FileSelectionWindow(tk.Frame):
                     highlight = page.addHighlightAnnot(inst)
 
                 try:
-                    doc.save(gradedFilesFolder + "\\" + "Corrected-" + savingFilePDF,
+                    os.remove(gradedFilesFolder + "\\" + savingFilePDF)
+                    doc.save(gradedFilesFolder + "\\" + savingFilePDF,
                              garbage=4, deflate=True, clean=True)
                     doc.close()
-                    os.remove(gradedFilesFolder + "\\" + savingFilePDF)
+
                 except RuntimeError:
                     print("PDF file may be open")
 

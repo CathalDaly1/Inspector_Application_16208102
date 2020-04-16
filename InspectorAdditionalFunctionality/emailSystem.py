@@ -99,6 +99,9 @@ def emailSystem():
         studentID = cur.fetchall()
         global studentIdList
         studentIdList = [item for t in studentID for item in t]
+
+        print(studentIdList)
+
         emailExtension = "@studentmail.ul.ie"
         global studentEmail, studentAssignment
         studentEmail = [str(s) + emailExtension for s in studentIdList]
@@ -106,8 +109,10 @@ def emailSystem():
         cur.execute("SELECT filename from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
         studentAssignment = cur.fetchall()
+
         filenameExt = [item for t in studentAssignment for item in t]
         fileExtension = ".pdf"
+        global studentFilesWithExtension
         studentFilesWithExtension = [str(s) + fileExtension for s in filenameExt]
 
         # Convert list of ints to list of strings
@@ -123,17 +128,15 @@ def emailSystem():
         # Join the contents of the tuple and add a '/' for the filepath
         global filePathCreation
         filePathCreation = list(map('/'.join, filePathMergedList))
-        print(filePathCreation)
 
     def send_email():
         """
         This method will allow the user to send emails to students with attachment and grade.
         """
-
         try:
-            global studentEmail, filePathCreation, studentIdList, studentAssignment
+            global studentEmail, studentIdList, studentAssignment, studentFilesWithExtension
             # looping through the two lists using zip
-            for f, b, a, c in zip(studentEmail, filePathCreation, studentIdList, studentAssignment):
+            for f, a, c, m in zip(studentEmail, studentIdList, studentAssignment, studentFilesWithExtension):
                 email_user = '16208102@studentmail.ul.ie'
                 email_password = 'Detlef228425'
                 email_send = f
@@ -150,8 +153,8 @@ def emailSystem():
                 server.starttls()
                 server.login(email_user, email_password)
 
-                # ToDo implement this with tkinter or else store it in the database??
-                filename = ("C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments2/Graded Assignments/" + b)
+                filename = ("C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments2/Graded Assignments/" + str(a)
+                            + "/Corrected-" + str(m))
 
                 # Attaching file to the email
                 with open(filename, "rb") as attachment:
@@ -171,9 +174,9 @@ def emailSystem():
                 cur.execute("SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
                             (userID, moduleCodeSelection, assignmentSelect, a, c))
                 studentFinalGrade = cur.fetchall()
-
+                grade = [item for t in studentFinalGrade for item in t]
                 body = emailBodyEntry.get('1.0', 'end-1c')
-                body += "\n + Final grade for this assignment = " + str(studentFinalGrade)
+                body += "\n\n Final grade for this assignment = " + str(grade) + " Marks"
                 msg.attach(MIMEText(body, 'plain'))
                 msg.attach(part)
 
