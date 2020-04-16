@@ -13,7 +13,7 @@ def menuOptions():
     """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("600x520+1250+60")
+    window.geometry("600x520+1250+50")
     window.resizable(False, False)
 
     conn = DBConnection.connectToDB.connectToDB()

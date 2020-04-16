@@ -2,6 +2,7 @@ import datetime
 import os
 import queue
 import re
+import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import ttk, messagebox
@@ -381,33 +382,8 @@ class FileSelectionWindow(tk.Frame):
             saveButton = tk.Button(self, text="Save", width=13, command=saveKeysButton)
             saveButton.place(x=300, y=755)
 
-        # ToDo implement this functionality with tkinter
         def changeValueOfAllAssignments():
             InspectorGradingFunctionality.ChangingGrades.changeStudentsGrades()
-            # change = str(input("Do you wish to add/subtract marks? (A(dd) or S(ubtract))"))
-            #
-            # if change.lower() == "a":
-            #     marks = int(input("Enter number of marks you wish to add or subtract"))
-            #     cur.execute(
-            #         "Update assignments set final_grade = final_grade + %s where modulecode =%s and assignmentNo = %s",
-            #         (marks, assignmentModuleCode, assignmentNo,))
-            #     conn.commit()
-            #
-            # elif change.lower() == "s":
-            #     marks = int(input("Enter number of marks you wish to add or subtract"))
-            #     cur.execute(
-            #         "Update assignments set final_grade = final_grade - %s where modulecode =%s and assignmentNo = %s",
-            #         (marks, assignmentModuleCode, assignmentNo,))
-            #     conn.commit()
-            #
-            # else:
-            #     print("Please enter a valid option")
-            #     changeValueOfAllAssignments()
-            #
-            # conn.commit()
-            # count = cur.rowcount
-            # print(count, "Record Updated successfully ")
-            # refreshListbox()
 
         # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
@@ -508,7 +484,7 @@ class FileSelectionWindow(tk.Frame):
             file_menu.add_command(label="View Keystrokes", command=MenuOptions.commandsMenu.menuOptions)
             # file_menu.add_command(label="View Canned Comments", command=viewCannedComments)
             file_menu.add_separator()
-            file_menu.add_command(label="Close Window", command="")
+            file_menu.add_command(label="Quit Inspector", command=quit)
             menubar.add_cascade(label="File", menu=file_menu)
 
             helpMenu = tk.Menu(menubar, tearoff=0)
@@ -668,7 +644,7 @@ class FileSelectionWindow(tk.Frame):
             valueKeyCDisplay = fetchedKeyValuesDisplay[2]
             valueKeyDDisplay = fetchedKeyValuesDisplay[3]
 
-            keystrokes_lbl = tk.Label(window, width=50, height=18, relief="solid", bd=1, padx=10, bg="white")
+            keystrokes_lbl = tk.Label(window, width=50, height=22, relief="solid", bd=1, padx=10, bg="white")
             keystrokes_lbl.pack_propagate(0)
             keystrokes_lbl.place(x=790, y=95)
             tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
