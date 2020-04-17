@@ -2,7 +2,7 @@ import tkinter as tk
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
-import InspectorGradingFunctionality.FileAccessScreen
+import InspectorGradingFunctionality.AccessingFiles
 
 
 def menuOptions():
@@ -23,8 +23,8 @@ def menuOptions():
     lbl_title.pack()
 
     userID = UserCredentials.loginUser.getUserID()
-    assignmentModuleCode = InspectorGradingFunctionality.FileAccessScreen.getModuleCode()
-    assignmentNo = InspectorGradingFunctionality.FileAccessScreen.getAssignmentNo()
+    assignmentModuleCode = InspectorGradingFunctionality.AccessingFiles.getModuleCode()
+    assignmentNo = InspectorGradingFunctionality.AccessingFiles.getAssignmentNo()
 
     cur.execute(
         "SELECT  valueKeyA, commentA, valueKeyB, commentB,  valueKeyC, commentC, valueKeyD, commentD, total FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",

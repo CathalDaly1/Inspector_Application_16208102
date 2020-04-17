@@ -4,7 +4,7 @@ from PIL import ImageTk, Image
 
 import InspectorEmailingSystem.emailSystem
 import InspectorUserAnalytics.userAnalytics
-import InspectorGradingFunctionality.FileAccessScreen
+import InspectorGradingFunctionality.AccessingFiles
 import UserCredentials.loginUser
 
 
@@ -88,6 +88,6 @@ def Homescreen():
     send_emails.place(x=450, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black",
-                               command=InspectorGradingFunctionality.FileAccessScreen.FileDisplayWindow, height=2,
+                               command=InspectorGradingFunctionality.AccessingFiles.FileDisplayWindow, height=2,
                                width=12)
     proceed_button.place(x=650, y=730)

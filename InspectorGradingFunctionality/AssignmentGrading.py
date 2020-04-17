@@ -11,7 +11,7 @@ from fpdf import FPDF
 
 import UserCredentials.loginUser
 import DBConnection.connectToDB
-import InspectorGradingFunctionality.FileAccessScreen
+import InspectorGradingFunctionality.AccessingFiles
 import InspectorMenuOptions.commandsMenu
 
 conn = DBConnection.connectToDB.connectToDB()
@@ -29,11 +29,11 @@ def selectAssignment():
     menubar = tk.Menu(window)
 
     userID = UserCredentials.loginUser.getUserID()
-    assignmentModuleCode = InspectorGradingFunctionality.FileAccessScreen.getModuleCode()
-    assignmentNo = InspectorGradingFunctionality.FileAccessScreen.getAssignmentNo()
-    selection = InspectorGradingFunctionality.FileAccessScreen.getSelection()
-    item_text = InspectorGradingFunctionality.FileAccessScreen.getItem()
-    filePath = InspectorGradingFunctionality.FileAccessScreen.getFilepath()
+    assignmentModuleCode = InspectorGradingFunctionality.AccessingFiles.getModuleCode()
+    assignmentNo = InspectorGradingFunctionality.AccessingFiles.getAssignmentNo()
+    selection = InspectorGradingFunctionality.AccessingFiles.getSelection()
+    item_text = InspectorGradingFunctionality.AccessingFiles.getItem()
+    filePath = InspectorGradingFunctionality.AccessingFiles.getFilepath()
 
     open(
         "C:/Users/catha/PycharmProjects/Inspector_Application/HighlightFiles/highlightedText.txt",
@@ -73,6 +73,7 @@ def selectAssignment():
     window.config(menu=menubar)
 
     def startGrading(event):
+        window.unbind("<s>", bind_id)
         userID = UserCredentials.loginUser.getUserID()
         cur.execute(
             "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
@@ -181,6 +182,7 @@ def selectAssignment():
         keystrokeGrading.bind('5', cannedComment5)
 
     window.bind('s', startGrading)
+    bind_id = window.bind("<a>", startGrading)
 
     def queue_callback():
         try:
