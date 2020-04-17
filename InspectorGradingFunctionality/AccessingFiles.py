@@ -110,6 +110,7 @@ class FileSelectionWindow(tk.Frame):
                 refreshListbox()
             except NameError as error:
                 print(error)
+        # Bind the click event to mouse click(Left click)
         self.bind("<1>", onClickEvent)
 
         # Gets the click of the element in the listbox in order to open file in the next window

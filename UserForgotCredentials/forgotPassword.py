@@ -41,17 +41,23 @@ def forgotPasswordScreen():
 
         errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Arial", 8), fg="red")
         if usernameCredentials:
-            for row in usernameCredentials:
-                if username == row[0] and newPassword == confirmNewPassword:
-                    t_hashed = hashlib.sha256(confirmNewPassword.encode())
-                    t_password = t_hashed.hexdigest()
-                    cur.execute("Update Users set password = %s where username = %s and email=%s",
-                                (t_password, username, email))
-                    conn.commit()
-                    window.destroy()
+            if newPassword == confirmNewPassword:
+                t_hashed = hashlib.sha256(confirmNewPassword.encode())
+                t_password = t_hashed.hexdigest()
+                cur.execute("Update Users set password = %s where username = %s and email=%s",
+                            (t_password, username, email))
+                conn.commit()
+                window.destroy()
+            else:
+                # Clears the text in the entry box
+                username_entry.delete('0', 'end')
+                email_entry.delete('0', 'end')
+                newPassword_entry.delete('0', 'end')
+                confirm_newPassword_entry.delete('0', 'end')
+                errorLbl.place(x=190, y=270)
         else:
-            # Clears the text in the entry box
             username_entry.delete('0', 'end')
+            email_entry.delete('0', 'end')
             newPassword_entry.delete('0', 'end')
             confirm_newPassword_entry.delete('0', 'end')
             errorLbl.place(x=190, y=270)

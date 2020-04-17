@@ -42,14 +42,20 @@ def forgotUsernameScreen():
 
         errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Arial", 8), fg="red")
         if rows:
-            for row in rows:
-                if password == confirmPassword and t_password == row[0] and email == row[1]:
-                    t_hashed = hashlib.sha256(confirmPassword.encode())
-                    t_password = t_hashed.hexdigest()
-                    cur.execute("Update Users set username = %s where password = %s and email=%s",
-                                (newUsername, t_password, email))
-                    conn.commit()
-                    window.destroy()
+            if password == confirmPassword:
+                t_hashed = hashlib.sha256(confirmPassword.encode())
+                t_password = t_hashed.hexdigest()
+                cur.execute("Update Users set username = %s where password = %s and email=%s",
+                            (newUsername, t_password, email))
+                conn.commit()
+                window.destroy()
+            else:
+                # Clears the text in the entry box
+                username_entry.delete('0', 'end')
+                email_entry.delete('0', 'end')
+                password_entry.delete('0', 'end')
+                confirm_Password_entry.delete('0', 'end')
+                errorLbl.place(x=190, y=270)
         else:
             # Clears the text in the entry box
             username_entry.delete('0', 'end')
