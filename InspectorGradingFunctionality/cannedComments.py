@@ -60,8 +60,8 @@ def cannedCommentScreen():
         the comments will just be inserted into the database.
         :return:
         """
-        moduleCode = moduleCodeEntry.get("1.0", 'end-1c')
-        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c')
+        moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
+        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
         comment1 = commentsEntry1.get("1.0", 'end-1c')
         comment2 = commentsEntry2.get("1.0", 'end-1c')
         comment3 = commentsEntry3.get("1.0", 'end-1c')

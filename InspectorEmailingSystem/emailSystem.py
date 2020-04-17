@@ -116,7 +116,7 @@ def emailSystem():
 
     loading = tk.Label(window, text="Loading data into the email system: ", font=("Calibri", 14))
     loading.place(x=25, y=155)
-    progress.place(x=273, y=157)
+    progress.place(x=305, y=157)
 
     def showTable():
         """

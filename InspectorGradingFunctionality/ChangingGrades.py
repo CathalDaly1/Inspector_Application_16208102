@@ -1,7 +1,6 @@
 import tkinter as tk
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
 
 
 def changeStudentsGrades():
@@ -43,9 +42,9 @@ def changeStudentsGrades():
         """
         This method adds a certain mark to all assignments in the database that have already been graded
         """
-        addedMarks = addMarksEntry.get("1.0", 'end-1c')
-        moduleCode = moduleCodeEntry.get("1.0", 'end-1c')
-        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c')
+        addedMarks = addMarksEntry.get("1.0", 'end-1c').upper()
+        moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
+        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
 
         cur.execute(
             "Update assignments set final_grade = final_grade + %s where modulecode =%s and assignmentNo = %s",
@@ -59,9 +58,9 @@ def changeStudentsGrades():
         """
                 This method subtracts a certain mark to all assignments in the database that have already been graded
                 """
-        subtractedMarks = addMarksEntry.get("1.0", 'end-1c')
-        moduleCode = moduleCodeEntry.get("1.0", 'end-1c')
-        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c')
+        subtractedMarks = addMarksEntry.get("1.0", 'end-1c').upper()
+        moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
+        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
         cur.execute(
             "Update assignments set final_grade = final_grade - %s where modulecode =%s and assignmentNo = %s",
             (subtractedMarks, moduleCode, assignmentNo,))
