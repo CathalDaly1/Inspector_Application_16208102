@@ -56,13 +56,6 @@ class FileSelectionWindow(tk.Frame):
         conn = DBConnection.connectToDB.connectToDB()
         cur = conn.cursor()
 
-        def refreshListbox():
-            listBox.delete(*listBox.get_children())
-            assignmentFilePath = filePath.get()
-            abspath = os.path.abspath(assignmentFilePath)
-            root_node = listBox.insert('', 'end', text=abspath, open=True)
-            process_directory(root_node, abspath)
-
         def saveModuleCode():
             global assignmentModuleCode, assignmentNo
             assignmentModuleCode = enterModuleCode.get().upper()
@@ -104,6 +97,20 @@ class FileSelectionWindow(tk.Frame):
                 itemSelectedError_lbl = tk.Label(self, text='Please select an item from the list below', fg="red",
                                                  font=("Arial", 9))
                 itemSelectedError_lbl.place(x=380, y=460, anchor="center")
+
+        def refreshListbox():
+            listBox.delete(*listBox.get_children())
+            assignmentFilePath = filePath.get()
+            abspath = os.path.abspath(assignmentFilePath)
+            root_node = listBox.insert('', 'end', text=abspath, open=True)
+            process_directory(root_node, abspath)
+
+        def onClickEvent(event):
+            try:
+                refreshListbox()
+            except NameError as error:
+                print(error)
+        self.bind("<1>", onClickEvent)
 
         # Gets the click of the element in the listbox in order to open file in the next window
         def doubleClickListboxEvent(event):
