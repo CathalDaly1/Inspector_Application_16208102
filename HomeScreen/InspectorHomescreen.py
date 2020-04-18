@@ -2,9 +2,9 @@ import tkinter as tk
 from PIL import ImageTk, Image
 
 
-import InspectorEmailingSystem.emailSystem
-import InspectorUserAnalytics.userAnalytics
-import InspectorGradingFunctionality.AccessingFiles
+import EmailSystem.emailSystem
+import UsersAnalytics.userAnalytics
+import GradingFunctionality.AccessingFiles
 import UserCredentials.loginUser
 
 
@@ -79,15 +79,15 @@ def Homescreen():
     quit_button.place(x=30, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",
-                               command=InspectorUserAnalytics.userAnalytics.analyticsScreen, height=2,
+                               command=UsersAnalytics.userAnalytics.analyticsScreen, height=2,
                                width=12)
     view_analytics.place(x=250, y=730)
 
     send_emails = tk.Button(window, text="Email System", fg="black",
-                            command=InspectorEmailingSystem.emailSystem.emailSystem, height=2, width=12)
+                            command=EmailSystem.emailSystem.emailSystem, height=2, width=12)
     send_emails.place(x=450, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black",
-                               command=InspectorGradingFunctionality.AccessingFiles.FileDisplayWindow, height=2,
+                               command=GradingFunctionality.AccessingFiles.FileDisplayWindow, height=2,
                                width=12)
     proceed_button.place(x=650, y=730)

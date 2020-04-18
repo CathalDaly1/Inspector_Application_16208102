@@ -4,7 +4,6 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from itertools import count
 from tkinter import ttk
 from tkinter.ttk import Progressbar
 
@@ -77,6 +76,7 @@ def emailSystem():
         This class retrieves assignment information from the assignments table in the database.
         """
         bar()
+        global assignmentSelect
         detailsSaved = tk.Label(window, text="Module code: " + str(moduleCodeSelection) + " and Assignment number: " +
                                              str(assignmentSelect),
                                 font=("Calibri", 14))
@@ -124,22 +124,35 @@ def emailSystem():
         Firstly, select student ID numbers and associated filenames from the database
         concat the studentmail extension for each of the student numbers
         concat the pdf extension for each of the filenames
-        Create a map converting student ids(ints) to strings. Also merge lists of the studeent IDs and filenames
-        in order to get the file from the file system.
         """
-        global moduleCodeSelection, assignmentSelect, studentEmail
-        moduleCodeSelection = moduleCombobox.get()
+        global assignmentSelect, studentIdList
         assignmentSelect = assignmentCombo.get()
 
         cur.execute("SELECT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
         studentID = cur.fetchall()
 
-        global studentIdList
         studentIdList = [item for t in studentID for item in t]
+
+        displayModuleAssignments()
+
+    def convertListToString(s):
+        # initialize an empty string
+        str1 = ""
+
+        # traverse in the string
+        for ele in s:
+            str1 += ele
+
+            # return string
+        return str1
+
+    def send_email():
+        """
+        This method will allow the user to send emails to students with attachment and grade.
+        """
         emailExtension = "@studentmail.ul.ie"
 
-        global studentEmail, studentAssignment
         studentEmail = [str(s) + emailExtension for s in studentIdList]
 
         cur.execute("SELECT filename from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
@@ -148,31 +161,10 @@ def emailSystem():
 
         filenameExt = [item for t in studentAssignment for item in t]
         fileExtension = ".pdf"
-        global studentFilesWithExtension
+
         studentFilesWithExtension = [str(s) + fileExtension for s in filenameExt]
 
-        # Convert list of ints to list of strings
-        studentIDConvert = list(map(str, studentIdList))
-
-        def mergeLists(list1, list2):
-            merged_list = [(list1[i], list2[i]) for i in range(0, len(list1))]
-            return merged_list
-
-        # Merging two lists in order to get filepath which gets the student ID and the name of the document
-        filePathMergedList = mergeLists(studentIDConvert, studentFilesWithExtension)
-
-        # Join the contents of the tuple and add a '/' for the filepath
-        global filePathCreation
-        filePathCreation = list(map('/'.join, filePathMergedList))
-
-        displayModuleAssignments()
-
-    def send_email():
-        """
-        This method will allow the user to send emails to students with attachment and grade.
-        """
         try:
-            global studentEmail, studentIdList, studentAssignment, studentFilesWithExtension
             # looping through the two lists using zip
             for f, a, c, m in zip(studentEmail, studentIdList, studentAssignment, studentFilesWithExtension):
                 email_user = '16208102@studentmail.ul.ie'
@@ -191,11 +183,17 @@ def emailSystem():
                 server.starttls()
                 server.login(email_user, email_password)
 
-                filename = ("C:/Users/catha/OneDrive/Desktop/OneDrive/Assignments2/Graded Assignments/" + str(a)
-                            + "/Corrected-" + str(m))
+                cur.execute(
+                    "SELECT DISTINCT filepath from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
+                    (userID, moduleCodeSelection, assignmentSelect, a, c))
+                fetchedFilepath = cur.fetchone()
+
+                extractFilepath = (convertListToString(fetchedFilepath))
+                correctPath = (extractFilepath.replace("\\", "/"))
+                gradedFile = (str(correctPath) + "/Graded Assignments/" + str(a) + "/Corrected - " + str(m))
 
                 # Attaching file to the email
-                with open(filename, "rb") as attachment:
+                with open(gradedFile, "rb") as attachment:
                     # Add file as application/octet-stream
                     # Email client can usually download this automatically as attachment
                     part = MIMEBase("application", "octet-stream")
@@ -205,7 +203,7 @@ def emailSystem():
 
                 part.add_header(
                     "Content-Disposition",
-                    f"attachment; filename= {filename}",
+                    f"attachment; filename= {m}",
                 )
 
                 # get grade from database

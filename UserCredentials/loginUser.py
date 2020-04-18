@@ -4,9 +4,9 @@ import tkinter as tk
 from tkinter import *
 
 import DBConnection.connectToDB
-import InspectorHomeScreen.InspectorHomescreen
-import UserForgotCredentials.forgotPassword
-import UserForgotCredentials.forgotUsername
+import HomeScreen.InspectorHomescreen
+import ChangingUsersCredentials.forgotPassword
+import ChangingUsersCredentials.forgotUsername
 
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
@@ -41,8 +41,7 @@ def LoginUser():
         """
         This method checks if the username and password entered are in the database.
         """
-        global username1
-        global time_logged_in
+        global username1, time_logged_in
 
         # username = request.form['username']
         # print(username)
@@ -68,7 +67,7 @@ def LoginUser():
         if rows:
             for row in rows:
                 if username1 == row[0] and t_password == row[1]:
-                    InspectorHomeScreen.InspectorHomescreen.Homescreen()
+                    HomeScreen.InspectorHomescreen.Homescreen()
                     window.destroy()
         else:
             # Clears the text in the entry box
@@ -82,7 +81,7 @@ def LoginUser():
         forgot password screen.
         :param event:
         """
-        UserForgotCredentials.forgotPassword.forgotPasswordScreen()
+        ChangingUsersCredentials.forgotPassword.forgotPasswordScreen()
 
     def callbackUsername(event):
         """
@@ -90,7 +89,7 @@ def LoginUser():
         forgot username screen.
         :param event:
         """
-        UserForgotCredentials.forgotUsername.forgotUsernameScreen()
+        ChangingUsersCredentials.forgotUsername.forgotUsernameScreen()
 
     Label(window, text="").pack()
     Label(window, text="Please enter your credentials below", font=("Bold", 18)).pack()

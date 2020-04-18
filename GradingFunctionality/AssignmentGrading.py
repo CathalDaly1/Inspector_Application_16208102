@@ -11,8 +11,8 @@ from fpdf import FPDF
 
 import UserCredentials.loginUser
 import DBConnection.connectToDB
-import InspectorGradingFunctionality.AccessingFiles
-import InspectorMenuOptions.commandsMenu
+import GradingFunctionality.AccessingFiles
+import MenuOptions.commandsMenu
 
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
@@ -29,15 +29,20 @@ def selectAssignment():
     menubar = tk.Menu(window)
 
     userID = UserCredentials.loginUser.getUserID()
-    assignmentModuleCode = InspectorGradingFunctionality.AccessingFiles.getModuleCode()
-    assignmentNo = InspectorGradingFunctionality.AccessingFiles.getAssignmentNo()
-    selection = InspectorGradingFunctionality.AccessingFiles.getSelection()
-    item_text = InspectorGradingFunctionality.AccessingFiles.getItem()
-    filePath = InspectorGradingFunctionality.AccessingFiles.getFilepath()
+    assignmentModuleCode = GradingFunctionality.AccessingFiles.getModuleCode()
+    assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
+    selection = GradingFunctionality.AccessingFiles.getSelection()
+    item_text = GradingFunctionality.AccessingFiles.getItem()
+    filePath = GradingFunctionality.AccessingFiles.getFilepath()
 
-    open(
-        "C:/Users/catha/PycharmProjects/Inspector_Application/HighlightFiles/highlightedText.txt",
-        'w').close()
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    path = Path(ROOT_DIR)
+    # Get the parent folder of the project
+    parentPath = str(path.parent)
+    # Replace the \\ in the filepath with / in order for the application to be able to save the file
+    correctParentPath = (parentPath.replace("\\", "/"))
+    fileHighlightText = (str(correctParentPath) + "/HighlightFiles/highlightedText.txt")
+    open(fileHighlightText, 'w').close()
 
     global file
     global gradedFilesFolder
@@ -60,7 +65,7 @@ def selectAssignment():
 
     # Menubar in the top left of the screen
     file_menu = tk.Menu(menubar, tearoff=0)
-    file_menu.add_command(label="View Keystrokes", command=InspectorMenuOptions.commandsMenu.menuOptions)
+    file_menu.add_command(label="View Keystrokes", command=MenuOptions.commandsMenu.menuOptions)
     # file_menu.add_command(label="View Canned Comments", command=viewCannedComments)
     file_menu.add_separator()
     file_menu.add_command(label="Quit Inspector", command=quit)
@@ -277,8 +282,7 @@ def selectAssignment():
         print(str(gradedFilesFolder + "\\" + savingFilePDF))
         page = doc[0]
 
-        with open('C:/Users/catha/PycharmProjects/Inspector_Application/HighlightFiles/highlightedText.txt',
-                  "r") as file2:
+        with open(fileHighlightText, "r") as file2:
             text1 = file2.read()
         text_instances = page.searchFor(text1)
 
@@ -385,6 +389,7 @@ def selectAssignment():
         def submitAssignment(self):
             window.withdraw()
             userIDNo = UserCredentials.loginUser.getUserID()
+            assignmentFilePath = GradingFunctionality.AccessingFiles.getFilepath()
             cur.execute(
                 "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
                 (userID, selection, item_text[0], assignmentModuleCode))
@@ -395,17 +400,20 @@ def selectAssignment():
             if vals is not None:
                 if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
                         item_text[0]):
-                    cur.execute(
-                        "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
-                        (final, userID, assignmentModuleCode, selection, item_text[0],))
-                    conn.commit()
-                    #refreshListbox()
+                    try:
+                        cur.execute(
+                            "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
+                            (final, userID, assignmentModuleCode, selection, item_text[0],))
+                        conn.commit()
+                    except NameError:
+                        messagebox.showwarning(title="Inspector - Grading application",
+                                           message="You have not finished grading")
             else:
                 time_graded = datetime.datetime.now()
-                insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded, filepath) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 assignmentValues = (
                     userIDNo, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y',
-                    time_graded)
+                    time_graded, assignmentFilePath)
                 # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(insertAssignments, assignmentValues)
                 conn.commit()
@@ -441,14 +449,6 @@ def selectAssignment():
                 #     text.tag_delete(tag)
                 self.text.config(foreground='yellow')
 
-            ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-            path = Path(ROOT_DIR)
-            # Get the parent folder of the project
-            parentPath = str(path.parent)
-            # Replace the \\ in the filepath with / in order for the application to be able to save the file
-            correctParentPath = (parentPath.replace("\\", "/"))
-
-            fileHighlightText = (str(correctParentPath) + "/HighlightFiles/highlightedText.txt")
             fileContainingText = open(fileHighlightText, "a")
 
             hText = self.text.get(tk.SEL_FIRST, tk.SEL_LAST)

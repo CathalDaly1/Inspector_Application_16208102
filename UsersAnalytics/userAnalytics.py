@@ -171,8 +171,10 @@ def analyticsScreen():
 
         # Set the 'time_graded' column with the datetime for format
         format1 = workbook.add_format({'num_format': 'mmm d yyyy hh:mm:ss'})
-        worksheet.set_column('I:I', 20, format1)
         worksheet.set_column('E:E', 11)
+        worksheet.set_column('F:F', 11)
+        worksheet.set_column('I:I', 20, format1)
+        worksheet.set_column('J:J', 51)
 
         try:
             # Writes the headings in the DB table into the xls file

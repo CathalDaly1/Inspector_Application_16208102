@@ -7,10 +7,10 @@ from tkinter import ttk, messagebox
 import psycopg2
 
 import DBConnection.connectToDB
-import InspectorGradingFunctionality.cannedComments
+import GradingFunctionality.cannedComments
 import UserCredentials.loginUser
-import InspectorGradingFunctionality.ChangingGrades
-import InspectorGradingFunctionality.AssignmentGrading
+import GradingFunctionality.ChangingGrades
+import GradingFunctionality.AssignmentGrading
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -100,14 +100,16 @@ class FileSelectionWindow(tk.Frame):
 
         def refreshListbox():
             listBox.delete(*listBox.get_children())
-            assignmentFilePath = filePath.get()
-            abspath = os.path.abspath(assignmentFilePath)
+            assignmentPath = filePath.get()
+            abspath = os.path.abspath(assignmentPath)
             root_node = listBox.insert('', 'end', text=abspath, open=True)
             process_directory(root_node, abspath)
 
         def onClickEvent(event):
             try:
-                refreshListbox()
+                if assignmentNo and assignmentModuleCode != "":
+                    print("this")
+                    refreshListbox()
             except NameError as error:
                 print(error)
         # Bind the click event to mouse click(Left click)
@@ -130,7 +132,7 @@ class FileSelectionWindow(tk.Frame):
                 print("Cannot select " + str(error))
 
         def selectAssignment():
-            InspectorGradingFunctionality.AssignmentGrading.selectAssignment()
+            GradingFunctionality.AssignmentGrading.selectAssignment()
 
         def listboxSelection():
             # Check if the filepath has been entered
@@ -143,8 +145,8 @@ class FileSelectionWindow(tk.Frame):
                     item_text = listBox.item(item, "values")
                 userID = UserCredentials.loginUser.getUserID()
                 cur.execute(
-                    "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and modulecode=%s",
-                    (userID, selection, item_text[0], assignmentModuleCode))
+                    "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and modulecode=%s and assignmentNo=%s",
+                    (userID, selection, item_text[0], assignmentModuleCode, assignmentNo))
                 vals = cur.fetchone()
                 conn.commit()
 
@@ -209,8 +211,6 @@ class FileSelectionWindow(tk.Frame):
 
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
 
-                    return assignmentFilePath
-
             else:
                 directoryErrorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
                 directoryErrorLbl.place(x=320, y=145)
@@ -243,13 +243,13 @@ class FileSelectionWindow(tk.Frame):
                     else:
                         try:
                             cur1.execute(
-                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s and modulecode=%s",
-                                (studentFiles, userID, assignmentModuleCode))
+                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
+                                (studentFiles, userID, assignmentModuleCode, assignmentNo))
                             studentGrade = cur1.fetchall()
                             conn.commit()
                             cur1.execute(
-                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s and modulecode=%s",
-                                (studentFiles, userID, assignmentModuleCode))
+                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
+                                (studentFiles, userID, assignmentModuleCode, assignmentNo))
                             graded = cur1.fetchone()
                             conn.commit()
                             oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
@@ -390,7 +390,7 @@ class FileSelectionWindow(tk.Frame):
             saveButton.place(x=300, y=755)
 
         def changeValueOfAllAssignments():
-            InspectorGradingFunctionality.ChangingGrades.changeStudentsGrades()
+            GradingFunctionality.ChangingGrades.changeStudentsGrades()
 
         # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
@@ -445,7 +445,7 @@ class FileSelectionWindow(tk.Frame):
 
         # Buttons at the bottom of the student file selection screen
         cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15,
-                                         command=InspectorGradingFunctionality.cannedComments.cannedCommentScreen)
+                                         command=GradingFunctionality.cannedComments.cannedCommentScreen)
         cannedCommentsButton.place(x=320, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
