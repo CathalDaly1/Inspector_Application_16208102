@@ -218,7 +218,6 @@ class FileSelectionWindow(tk.Frame):
         '''Checks if file is in the directory, adds other columns if it is a file
         display data from the database into the to treeview
         '''
-
         def process_directory(parentNode, assignmentFilePath):
 
             cur1 = conn.cursor()

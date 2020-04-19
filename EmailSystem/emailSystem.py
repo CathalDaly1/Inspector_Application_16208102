@@ -1,3 +1,4 @@
+import os
 import smtplib
 import tkinter as tk
 from email import encoders
@@ -6,6 +7,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from tkinter import ttk
 from tkinter.ttk import Progressbar
+
+from gevent._compat import izip
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
@@ -128,7 +131,7 @@ def emailSystem():
         global assignmentSelect, studentIdList
         assignmentSelect = assignmentCombo.get()
 
-        cur.execute("SELECT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
+        cur.execute("SELECT DISTINCT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
         studentID = cur.fetchall()
 
@@ -175,7 +178,6 @@ def emailSystem():
 
                 msg = MIMEMultipart()
                 msg['From'] = email_user
-                # msg['To'] = ",".join(email_send)
                 msg['To'] = email_send
                 msg['Subject'] = subject
 
@@ -193,29 +195,29 @@ def emailSystem():
                 gradedFile = (str(correctPath) + "/Graded Assignments/" + str(a) + "/Corrected - " + str(m))
 
                 # Attaching file to the email
-                with open(gradedFile, "rb") as attachment:
-                    # Add file as application/octet-stream
-                    # Email client can usually download this automatically as attachment
-                    part = MIMEBase("application", "octet-stream")
-                    part.set_payload(attachment.read())
-
+                listOfFiles = os.listdir(str(correctPath) + "/Graded Assignments/" + str(a))
+                filePathString = (str(correctPath) + "/Graded Assignments/" + str(a) + "/")
+                concatPathAndFiles = [filePathString + s for s in listOfFiles]
+                for files in concatPathAndFiles:
+                    part = MIMEBase('application', "octet-stream")
+                    part.set_payload(open(files, "rb").read())
                     encoders.encode_base64(part)
-
-                part.add_header(
-                    "Content-Disposition",
-                    f"attachment; filename= {m}",
-                )
+                    part.add_header('Content-Disposition', 'attachment; filename="{0}"'.format(os.path.basename(files)))
+                    msg.attach(part)
 
                 # get grade from database
                 cur.execute(
-                    "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
-                    (userID, moduleCodeSelection, assignmentSelect, a, c))
+                    "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
+                    (userID, moduleCodeSelection, assignmentSelect, a))
                 studentFinalGrade = cur.fetchall()
-                grade = [item for t in studentFinalGrade for item in t]
+
+                # Fetch grades from database, sum the tuples if there are more than one grade for one student
+                sumOfGrades = [sum(x) for x in izip(*studentFinalGrade)]
+                # grade = [item for t in sumOfGrades for item in t]
                 body = emailBodyEntry.get('1.0', 'end-1c')
-                body += "\n\n Final grade for this assignment = " + str(grade) + " Marks"
+                body += "\n\n Final grade for this assignment = " + str(sumOfGrades) + " Marks"
                 msg.attach(MIMEText(body, 'plain'))
-                msg.attach(part)
+                # msg.attach(part)
 
                 text = msg.as_string()
                 server.sendmail(email_user, email_send, text)
