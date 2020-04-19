@@ -20,6 +20,10 @@ def cannedCommentScreen():
     conn = DBConnection.connectToDB.connectToDB()
     cur = conn.cursor()
 
+    comments_lbl = tk.Label(window, fg="black", text="Enter canned comments below",
+                            font=("Calibri Bold", 16))
+    comments_lbl.place(x=180, y=10)
+
     moduleCode_lbl = tk.Label(window, fg="black", text="Module Code: ", font=("Calibri", 12))
     moduleCode_lbl.place(x=30, y=50)
     moduleCodeEntry: tk.Text = tk.Text(window, height="1", width="10")
@@ -30,9 +34,6 @@ def cannedCommentScreen():
     assignmentNoEntry: tk.Text = tk.Text(window, height="1", width="10")
     assignmentNoEntry.place(x=350, y=50)
 
-    comments_lbl = tk.Label(window, fg="black", text="Enter canned comments below",
-                            font=("Calibri Bold", 14))
-    comments_lbl.place(x=200, y=20)
     comment1_lbl = tk.Label(window, fg="black", text="Comment 1: ", font=("Calibri", 12))
     comment1_lbl.place(x=30, y=82)
     commentsEntry1: tk.Text = tk.Text(window, height="2", width="50")
@@ -58,19 +59,26 @@ def cannedCommentScreen():
         moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
         assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
 
-        if moduleCode or assignmentNo != "":
-            cur.execute("SELECT * FROM cannedComments WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",
-                        (userID, moduleCode, assignmentNo))
-            cannedComments = cur.fetchone()
-            conn.commit()
+        if moduleCode and assignmentNo != "":
+            try:
+                cur.execute("SELECT * FROM cannedComments WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",
+                            (userID, moduleCode, assignmentNo))
+                cannedComments = cur.fetchone()
+                conn.commit()
 
-            commentsEntry1.insert(tk.END, cannedComments[3])
-            commentsEntry2.insert(tk.END, cannedComments[4])
-            commentsEntry3.insert(tk.END, cannedComments[5])
-            commentsEntry4.insert(tk.END, cannedComments[6])
-            commentsEntry5.insert(tk.END, cannedComments[7])
+                commentsEntry1.insert(tk.END, cannedComments[3])
+                commentsEntry2.insert(tk.END, cannedComments[4])
+                commentsEntry3.insert(tk.END, cannedComments[5])
+                commentsEntry4.insert(tk.END, cannedComments[6])
+                commentsEntry5.insert(tk.END, cannedComments[7])
+
+            except TypeError:
+                error_lbl = tk.Label(window, text="No Previous records saved in the database\t\t", fg="red",
+                                     font=("Calibri", 10))
+                error_lbl.place(x=200, y=315)
         else:
-            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No.", fg="red", font=("Calibri", 10))
+            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No.", fg="red",
+                                 font=("Calibri", 10))
             error_lbl.place(x=200, y=315)
 
     def saveCommentsButton():
@@ -103,7 +111,8 @@ def cannedCommentScreen():
                 # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(insertComments, val1)
                 conn.commit()
-                newCommentsSaved_lbl = tk.Label(window, text="Canned Comments have been saved", font=("Calibri", 10))
+                newCommentsSaved_lbl = tk.Label(window, text="Canned Comments have been saved",
+                                                font=("Calibri", 10))
                 newCommentsSaved_lbl.place(x=250, y=315)
 
             else:
@@ -111,13 +120,16 @@ def cannedCommentScreen():
                 val2 = (comment1, comment2, comment3, comment4, comment5, userID, moduleCode, assignmentNo)
                 cur.execute(updateComments, val2)
                 conn.commit()
-                commentsUpdated_lbl = tk.Label(window, text="Canned Comments have been updated", font=("Calibri", 10))
+                commentsUpdated_lbl = tk.Label(window, text="Canned Comments have been updated",
+                                               font=("Calibri", 10))
                 commentsUpdated_lbl.place(x=250, y=315)
 
             return [comment1, comment2, comment3, comment4, comment5]
         else:
-            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No.", fg="red", font=("Calibri", 10))
+            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No.", fg="red",
+                                 font=("Calibri", 10))
             error_lbl.place(x=200, y=315)
+
 
     def closeWindow():
         """

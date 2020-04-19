@@ -108,22 +108,22 @@ def selectAssignment():
         def keyA(event):
             global total1
             total1 += valueKeyA
-            the_queue.put("Key A: " + str(total1) + " marks - " + commentA)
+            the_queue.put(str(total1) + " marks - " + commentA)
 
         def keyB(event):
             global total1
             total1 += valueKeyB
-            the_queue.put("Key B: " + str(total1) + " marks - " + commentB)
+            the_queue.put(str(total1) + " marks - " + commentB)
 
         def keyC(event):
             global total1
             total1 += valueKeyC
-            the_queue.put("Key C: " + str(total1) + " marks - " + commentC)
+            the_queue.put(str(total1) + " marks - " + commentC)
 
         def keyD(event):
             global total1
             total1 += valueKeyD
-            the_queue.put("Key C: " + str(total1) + " marks - " + commentD)
+            the_queue.put(str(total1) + " marks - " + commentD)
 
         def keyE(event):
             global total1
@@ -386,40 +386,7 @@ def selectAssignment():
         def _on_change(self, event):
             self.codeLineNumbers.redraw()
 
-        def submitAssignment(self):
-            window.withdraw()
-            userIDNo = UserCredentials.loginUser.getUserID()
-            assignmentFilePath = GradingFunctionality.AccessingFiles.getFilepath()
-            cur.execute(
-                "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
-                (userID, selection, item_text[0], assignmentModuleCode))
-            vals = cur.fetchone()
-            print(vals)
-            conn.commit()
-
-            if vals is not None:
-                if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
-                        item_text[0]):
-                    try:
-                        cur.execute(
-                            "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
-                            (final, userID, assignmentModuleCode, selection, item_text[0],))
-                        conn.commit()
-                    except NameError:
-                        messagebox.showwarning(title="Inspector - Grading application",
-                                           message="You have not finished grading")
-            else:
-                time_graded = datetime.datetime.now()
-                insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded, filepath) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                assignmentValues = (
-                    userIDNo, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y',
-                    time_graded, assignmentFilePath)
-                # Executes the insertion ans passes values username and password into the insertion
-                cur.execute(insertAssignments, assignmentValues)
-                conn.commit()
-
-            # refreshListbox()
-            # Opens file ans copies what is in the text box and places back in file and saves
+        def savePDFFile(self):
             s = self.text.get("1.0", tk.END)
             f = open(file, "w", encoding='utf-8')
             f.write(s)
@@ -435,6 +402,46 @@ def selectAssignment():
             savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
             pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
             highlightingTextInFile()
+
+        def submitAssignment(self):
+            userIDNo = UserCredentials.loginUser.getUserID()
+            assignmentFilePath = GradingFunctionality.AccessingFiles.getFilepath()
+            cur.execute(
+                "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
+                (userID, selection, item_text[0], assignmentModuleCode))
+            vals = cur.fetchone()
+            print(vals)
+            conn.commit()
+
+            if vals is not None:
+                if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
+                        item_text[0]):
+
+                    cur.execute(
+                        "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
+                        (final, userID, assignmentModuleCode, selection, item_text[0],))
+                    conn.commit()
+
+                    window.withdraw()
+                    self.savePDFFile()
+
+            else:
+                try:
+                    time_graded = datetime.datetime.now()
+                    insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded, filepath) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    assignmentValues = (
+                        userIDNo, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y',
+                        time_graded, assignmentFilePath)
+                    # Executes the insertion ans passes values username and password into the insertion
+                    cur.execute(insertAssignments, assignmentValues)
+                    conn.commit()
+
+                    window.withdraw()
+                    self.savePDFFile()
+
+                except NameError:
+                    messagebox.showwarning(title="Inspector - Grading application",
+                                           message="You have not finished grading")
 
         # Highlights code and text when text is selected and highlight button is pressed
         def highlightCode(self):

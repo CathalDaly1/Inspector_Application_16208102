@@ -108,7 +108,6 @@ class FileSelectionWindow(tk.Frame):
         def onClickEvent(event):
             try:
                 if assignmentNo and assignmentModuleCode != "":
-                    print("this")
                     refreshListbox()
             except NameError as error:
                 print(error)
@@ -196,19 +195,25 @@ class FileSelectionWindow(tk.Frame):
 
                     # ToDo Look into cleaning this up. Not fully working yet. Need text boxes to disappear when new module is searched and is already in the db
                     userID = UserCredentials.loginUser.getUserID()
-                    cur.execute(
-                        "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
-                        (userID, assignmentModuleCode, assignmentNo))
-                    vals = cur.fetchone()
-                    if vals is None:
-                        changeKeyValues()
+                    if moduleCode and assignmentNo != "":
+                        cur.execute(
+                            "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
+                            (userID, assignmentModuleCode, assignmentNo))
+                        vals = cur.fetchone()
+
+                        if vals is None:
+                            changeKeyValues()
+                        else:
+                            changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
+                                                              command=changeKeyValues)
+                            changeKeyValuesButton.place(x=320, y=500)
                     else:
-                        changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
-                                                          command=changeKeyValues)
-                        changeKeyValuesButton.place(x=320, y=500)
+                        moduleCodeSaved_lbl = tk.Label(self, text="Please enter the Module Code and Assignment No.\t\t",
+                                                       fg="red")
+                        moduleCodeSaved_lbl.place(x=527, y=85)
 
                     # Double click on an element in the listbox will run the doubleClickListboxEvent() method
-
+                    refreshListbox()
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
 
             else:
@@ -254,6 +259,7 @@ class FileSelectionWindow(tk.Frame):
                             oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
                                                   open=False)
                             process_directory(oid3, abspath)
+
                         except (psycopg2.Error, AttributeError):
                             # ToDo fix this error in postgresql transaction error, bad practice
                             conn.rollback()
