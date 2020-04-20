@@ -5,10 +5,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 import psycopg2
+from PIL import ImageTk
 
 import DBConnection.connectToDB
 import GradingFunctionality.cannedComments
 import UserCredentials.loginUser
+import UserCredentials.LoginRegistrationScreen
 import GradingFunctionality.ChangingGrades
 import GradingFunctionality.AssignmentGrading
 
@@ -63,7 +65,6 @@ class FileSelectionWindow(tk.Frame):
             if assignmentNo and assignmentModuleCode != "":
                 moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. saved\t\t")
                 moduleCodeSaved_lbl.place(x=527, y=85)
-                return assignmentModuleCode, assignmentNo
             else:
                 moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. Not saved\t\t", fg="red")
                 moduleCodeSaved_lbl.place(x=527, y=85)
@@ -87,6 +88,7 @@ class FileSelectionWindow(tk.Frame):
                 else:
                     moduleCodeError_lbl = tk.Label(self, text="Please enter Module Code and Assignment No.", fg="red")
                     moduleCodeError_lbl.place(x=527, y=85)
+                    displayAssignment.config(state="active")
 
                 item = listBox.selection()[0]
                 global itemSelected
@@ -111,6 +113,7 @@ class FileSelectionWindow(tk.Frame):
                     refreshListbox()
             except NameError as error:
                 print(error)
+
         # Bind the click event to mouse click(Left click)
         self.bind("<1>", onClickEvent)
 
@@ -133,6 +136,17 @@ class FileSelectionWindow(tk.Frame):
         def selectAssignment():
             GradingFunctionality.AssignmentGrading.selectAssignment()
 
+        def infoLabel():
+            global infoText_lbl
+            infoText_lbl = tk.Label(self, text="Open Assignment: Double Click Student ID.\n"
+                                               "Click once on filename, click 'Select Assignment'",  anchor='w', fg="red", font=("Arial", 10))
+            infoText_lbl.place(x=510, y=173)
+            deleteInfoLabel()
+
+        def deleteInfoLabel():
+            self.after(10000, infoText_lbl.destroy)
+            refreshListbox()
+
         def listboxSelection():
             # Check if the filepath has been entered
             if filePath.get() != "":
@@ -143,25 +157,32 @@ class FileSelectionWindow(tk.Frame):
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
                 userID = UserCredentials.loginUser.getUserID()
-                cur.execute(
-                    "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and modulecode=%s and assignmentNo=%s",
-                    (userID, selection, item_text[0], assignmentModuleCode, assignmentNo))
-                vals = cur.fetchone()
-                conn.commit()
 
-                if vals is not None:
-                    if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
-                            item_text[0]):
-                        result = messagebox.askquestion("Inspector Grading",
-                                                        "Do you want to regrade this assignment?")
-                        if result == 'yes':
-                            selectAssignment()
-                            filepathErrorLbl.destroy()
-                        else:
-                            print("Close message box")
-                else:
-                    selectAssignment()
-                    filepathErrorLbl.destroy()
+                try:
+                    cur.execute(
+                        "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and modulecode=%s and assignmentNo=%s",
+                        (userID, selection, item_text[0], assignmentModuleCode, assignmentNo))
+                    vals = cur.fetchone()
+                    conn.commit()
+
+                    if vals is not None:
+                        if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
+                                item_text[0]):
+                            result = messagebox.askquestion("Inspector Grading",
+                                                            "Do you want to regrade this assignment?")
+
+                            if result == 'yes':
+                                selectAssignment()
+                                filepathErrorLbl.destroy()
+                            else:
+                                print("Close message box")
+                    else:
+                        selectAssignment()
+                        filepathErrorLbl.destroy()
+
+                except (psycopg2.Error, AttributeError):
+                    refreshListbox()
+                    infoLabel()
 
             else:
                 filepathErrorLbl.place(x=320, y=180)
@@ -174,10 +195,11 @@ class FileSelectionWindow(tk.Frame):
             saveModuleCode()
             global assignmentFilePath
             assignmentFilePath = filePath.get()
+
             # Check if the entered filepath exists on the users file system
-            if os.path.exists(assignmentFilePath):
+            if os.path.exists(assignmentFilePath) and assignmentModuleCode and assignmentNo != "":
                 dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Arial", 8))
-                dirLabel.place(x=320, y=145)
+                dirLabel.place(x=320, y=142)
 
                 # Loops through the files in the filepath and displays them
                 for filename in os.listdir(assignmentFilePath):
@@ -213,16 +235,17 @@ class FileSelectionWindow(tk.Frame):
                         moduleCodeSaved_lbl.place(x=527, y=85)
 
                     # Double click on an element in the listbox will run the doubleClickListboxEvent() method
-                    refreshListbox()
+                    # refreshListbox()
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
-
+                refreshListbox()
             else:
                 directoryErrorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
-                directoryErrorLbl.place(x=320, y=145)
+                directoryErrorLbl.place(x=320, y=142)
 
         '''Checks if file is in the directory, adds other columns if it is a file
         display data from the database into the to treeview
         '''
+
         def process_directory(parentNode, assignmentFilePath):
 
             cur1 = conn.cursor()
@@ -231,7 +254,6 @@ class FileSelectionWindow(tk.Frame):
             for studentFiles in os.listdir(assignmentFilePath):
                 fileExtension = re.search(r'\.\w+$', studentFiles)
                 # Check if file ends with an extension, otherwise it is a folder
-
                 abspath = os.path.join(assignmentFilePath, studentFiles)
                 if fileExtension is not None:
                     isdir = os.path.isdir(abspath)

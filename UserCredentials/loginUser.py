@@ -11,15 +11,6 @@ import ChangingUsersCredentials.forgotUsername
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
 
-parameters = {
-    "username": "test"
-}
-
-
-# response = requests.get("http://localhost:5000/userInfo/")
-# print(response.status_code)
-# print(response.json())
-
 
 def LoginUser():
     """
@@ -63,7 +54,7 @@ def LoginUser():
         # Check if there is data in the database
         # Loops through the username's and passwords
         # Creates a set of [Username, password] and checks if they match
-        errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Arial", 8), fg="red")
+        errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Calibri", 10), fg="red")
         if rows:
             for row in rows:
                 if username1 == row[0] and t_password == row[1]:
@@ -73,7 +64,7 @@ def LoginUser():
             # Clears the text in the entry box
             username_entry.delete('0', 'end')
             password_entry.delete('0', 'end')
-            errorLbl.place(x=170, y=170)
+            errorLbl.place(x=158, y=190)
 
     def callbackPassword(event):
         """
@@ -92,24 +83,24 @@ def LoginUser():
         ChangingUsersCredentials.forgotUsername.forgotUsernameScreen()
 
     Label(window, text="").pack()
-    Label(window, text="Please enter your credentials below", font=("Bold", 18)).pack()
+    Label(window, text="Please enter your credentials below", font=("Calibri Bold", 18)).pack()
     Label(window, text="").pack()
-    Label(window, text="Username", font=("Calibri", 14)).pack()
-    username_entry = Entry(window, textvariable=username_verify)
+    Label(window, text="Username", font=("Calibri", 15)).pack()
+    username_entry = Entry(window, textvariable=username_verify, font=("Calibri", 13))
     username_entry.pack()
-    Label(window, text="Password", font=("Calibri", 14)).pack()
-    password_entry = Entry(window, show="*", textvariable=password_verify)
+    Label(window, text="Password", font=("Calibri", 15)).pack()
+    password_entry = Entry(window, show="*", textvariable=password_verify, font=("Calibri", 13))
     password_entry.pack()
-    lblUsername = tk.Label(window, text=r"Forgot Username?", fg="blue", cursor="hand2")
-    lblUsername.place(x=200, y=190)
+    lblUsername = tk.Label(window, text=r"Forgot Username?", fg="blue", cursor="hand2", font=("Calibri", 11))
+    lblUsername.place(x=190, y=210)
     lblUsername.bind("<Button-1>", callbackUsername)
-    lblPassword = tk.Label(window, text=r"Forgot Password?", fg="blue", cursor="hand2")
-    lblPassword.place(x=200, y=210)
+    lblPassword = tk.Label(window, text=r"Forgot Password?", fg="blue", cursor="hand2", font=("Calibri", 11))
+    lblPassword.place(x=190, y=230)
     lblPassword.bind("<Button-1>", callbackPassword)
-    loginButton = Button(window, text="Login", width=10, height=1, command=login_verify, borderwidth=3)
-    loginButton.place(x=280, y=240)
-    backButton = Button(window, text="Back", width=10, height=1, command=back, borderwidth=3)
-    backButton.place(x=150, y=240)
+    loginButton = Button(window, text="Login", width=10, height=1, command=login_verify, font=("Calibri", 12), borderwidth=3)
+    loginButton.place(x=280, y=260)
+    backButton = Button(window, text="Back", width=10, height=1, command=back, font=("Calibri", 12), borderwidth=3)
+    backButton.place(x=140, y=260)
 
 
 def getUserID():

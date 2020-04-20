@@ -416,15 +416,19 @@ def selectAssignment():
             if vals is not None:
                 if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
                         item_text[0]):
+                    try:
+                        cur.execute(
+                            "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
+                            (final, userID, assignmentModuleCode, selection, item_text[0],))
+                        conn.commit()
 
-                    cur.execute(
-                        "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
-                        (final, userID, assignmentModuleCode, selection, item_text[0],))
-                    conn.commit()
+                        window.withdraw()
+                        self.savePDFFile()
 
-                    window.withdraw()
-                    self.savePDFFile()
-
+                    except NameError:
+                        messagebox.showwarning(title="Inspector - Grading application",
+                                               message="You have not finished grading")
+                        window.attributes("-topmost", True)
             else:
                 try:
                     time_graded = datetime.datetime.now()
@@ -442,6 +446,7 @@ def selectAssignment():
                 except NameError:
                     messagebox.showwarning(title="Inspector - Grading application",
                                            message="You have not finished grading")
+                    window.attributes("-topmost", True)
 
         # Highlights code and text when text is selected and highlight button is pressed
         def highlightCode(self):

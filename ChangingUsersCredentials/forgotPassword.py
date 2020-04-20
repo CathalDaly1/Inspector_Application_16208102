@@ -39,7 +39,7 @@ def forgotPasswordScreen():
         usernameCredentials = cur.fetchall()
         conn.commit()
 
-        errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Arial", 8), fg="red")
+        errorLbl = tk.Label(window, text="Credentials are incorrect", font=("Calibri", 10), fg="red")
         if usernameCredentials:
             if newPassword == confirmNewPassword:
                 t_hashed = hashlib.sha256(confirmNewPassword.encode())
@@ -54,13 +54,13 @@ def forgotPasswordScreen():
                 email_entry.delete('0', 'end')
                 newPassword_entry.delete('0', 'end')
                 confirm_newPassword_entry.delete('0', 'end')
-                errorLbl.place(x=190, y=270)
+                errorLbl.place(x=180, y=280)
         else:
             username_entry.delete('0', 'end')
             email_entry.delete('0', 'end')
             newPassword_entry.delete('0', 'end')
             confirm_newPassword_entry.delete('0', 'end')
-            errorLbl.place(x=190, y=270)
+            errorLbl.place(x=180, y=280)
 
     def back():
         """
@@ -69,21 +69,22 @@ def forgotPasswordScreen():
         window.destroy()
 
     # Creates the GUI elements for buttons and labels
+    Label(window, text="Enter username and new password", font=("Calibri Bold", 18)).pack()
     Label(window, text="").pack()
-    Label(window, text="Enter username and new password", font=("Bold", 18)).pack()
-    Label(window, text="").pack()
-    Label(window, text="Username", font=("Calibri", 14)).pack()
-    username_entry = Entry(window, textvariable=username_verify)
+    Label(window, text="Username", font=("Calibri", 15)).pack()
+    username_entry = Entry(window, textvariable=username_verify, font=("Calibri", 13))
     username_entry.pack()
-    Label(window, text="Email", font=("Calibri", 14)).pack()
-    email_entry = Entry(window, textvariable=email_verify)
+    Label(window, text="Email", font=("Calibri", 15)).pack()
+    email_entry = Entry(window, textvariable=email_verify, font=("Calibri", 13))
     email_entry.pack()
-    Label(window, text="New Password", font=("Calibri", 14)).pack()
-    newPassword_entry = Entry(window, show="*", textvariable=newPassword_verify)
+    Label(window, text="New Password", font=("Calibri", 15)).pack()
+    newPassword_entry = Entry(window, show="*", textvariable=newPassword_verify, font=("Calibri", 13))
     newPassword_entry.pack()
-    Label(window, text="Confirm New Password", font=("Calibri", 14)).pack()
-    confirm_newPassword_entry = Entry(window, show="*", textvariable=confirmNewPassword_verify)
+    Label(window, text="Confirm New Password", font=("Calibri", 15)).pack()
+    confirm_newPassword_entry = Entry(window, show="*", textvariable=confirmNewPassword_verify, font=("Calibri", 13))
     confirm_newPassword_entry.pack()
     Label(window, text="").pack()
-    Button(window, text="Confirm", width=10, height=1, command=verify_username).place(x=280, y=290)
-    Button(window, text="Back", width=10, height=1, command=back).place(x=150, y=290)
+    confirmButton = Button(window, text="Confirm", width=10, height=1, command=verify_username, font=("Calibri", 12))
+    confirmButton.place(x=280, y=305)
+    backButton = Button(window, text="Back", width=10, height=1, command=back, font=("Calibri", 12))
+    backButton.place(x=150, y=305)
