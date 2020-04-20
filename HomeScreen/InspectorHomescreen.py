@@ -75,19 +75,19 @@ def Homescreen():
                                                                                                                y=242)
     prog_keys_lbl.place(x=30, y=400)
 
-    quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=quit, height=2, width=12)
+    quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=quit, height=2, width=12, font=("Calibri", 11))
     quit_button.place(x=30, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",
                                command=UsersAnalytics.userAnalytics.analyticsScreen, height=2,
-                               width=12)
+                               width=12, font=("Calibri", 11))
     view_analytics.place(x=250, y=730)
 
     send_emails = tk.Button(window, text="Email System", fg="black",
-                            command=EmailSystem.emailSystem.emailSystem, height=2, width=12)
+                            command=EmailSystem.emailSystem.emailSystem, font=("Calibri", 11), height=2, width=12)
     send_emails.place(x=450, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black",
                                command=GradingFunctionality.AccessingFiles.FileDisplayWindow, height=2,
-                               width=12)
+                               width=12, font=("Calibri", 11))
     proceed_button.place(x=650, y=730)

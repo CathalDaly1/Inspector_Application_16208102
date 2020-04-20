@@ -64,10 +64,10 @@ class FileSelectionWindow(tk.Frame):
             assignmentNo = enterAssignmentNo.get().upper()
             if assignmentNo and assignmentModuleCode != "":
                 moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. saved\t\t")
-                moduleCodeSaved_lbl.place(x=527, y=85)
+                moduleCodeSaved_lbl.place(x=527, y=87)
             else:
                 moduleCodeSaved_lbl = tk.Label(self, text="Module code and Assignment No. Not saved\t\t", fg="red")
-                moduleCodeSaved_lbl.place(x=527, y=85)
+                moduleCodeSaved_lbl.place(x=527, y=87)
 
         def clearEntry():
             displayAssignment.config(state="active")
@@ -198,8 +198,8 @@ class FileSelectionWindow(tk.Frame):
 
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath) and assignmentModuleCode and assignmentNo != "":
-                dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Arial", 8))
-                dirLabel.place(x=320, y=142)
+                dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Calibri", 9))
+                dirLabel.place(x=340, y=142)
 
                 # Loops through the files in the filepath and displays them
                 for filename in os.listdir(assignmentFilePath):
@@ -239,8 +239,8 @@ class FileSelectionWindow(tk.Frame):
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
                 refreshListbox()
             else:
-                directoryErrorLbl = tk.Label(self, text="Directory does not exists", font=("Arial", 8), fg="red")
-                directoryErrorLbl.place(x=320, y=142)
+                directoryErrorLbl = tk.Label(self, text="Directory does not exists", font=("Calibri", 9), fg="red")
+                directoryErrorLbl.place(x=340, y=142)
 
         '''Checks if file is in the directory, adds other columns if it is a file
         display data from the database into the to treeview
@@ -440,28 +440,28 @@ class FileSelectionWindow(tk.Frame):
         fileAccessPath = tk.Label(self, fg="black", text="Enter File Path of Assignments: ", font=("Calibri", 12))
         fileAccessPath.place(x=75, y=110)
 
-        filePath: tk.Entry = tk.Entry(self, width="35")
+        filePath: tk.Entry = tk.Entry(self, width="31", font=("Calibri", 11))
         filePath.place(x=300, y=115)
         filePath.insert(0, '')
 
         displayAssignment = tk.Button(self, text="Display Assignments", command=getFileSelection, width=15)
-        displayAssignment.place(x=530, y=110)
+        displayAssignment.place(x=530, y=114)
 
         clearButton = tk.Button(self, text="Clear Path", command=clearEntry, height=1, width=13)
-        clearButton.place(x=660, y=110)
+        clearButton.place(x=660, y=114)
 
         moduleCode = tk.Label(self, fg="black", text="Enter Assignments Module Code: ", font=("Calibri", 12))
         moduleCode.place(x=75, y=85)
 
-        enterModuleCode: tk.Entry = tk.Entry(self, width="12")
+        enterModuleCode: tk.Entry = tk.Entry(self, width="12", font=("Calibri", 11))
         enterModuleCode.place(x=300, y=87)
         enterModuleCode.insert(0, '')
 
         assignmentNumber = tk.Label(self, fg="black", text="Assignment No.: ", font=("Calibri", 12))
         assignmentNumber.place(x=370, y=85)
 
-        enterAssignmentNo: tk.Entry = tk.Entry(self, width="5")
-        enterAssignmentNo.place(x=480, y=87)
+        enterAssignmentNo: tk.Entry = tk.Entry(self, width="5", font=("Calibri", 11))
+        enterAssignmentNo.place(x=482, y=88)
         enterAssignmentNo.insert(0, '')
 
         lbl_sub_title = tk.Label(self, text="List of Student Files", font=("Arial", 15))
