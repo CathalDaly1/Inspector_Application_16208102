@@ -88,7 +88,7 @@ def menuOptions():
                  valueKeyCDisplay) + " - Comment C: " + str(commentCDisplay) + "\n\n"
                                                                                "Key D: +" + str(
                  valueKeyDDisplay) + " - Comment D: " + str(commentDDisplay) + "\n\n"
-                                                                               "Key E: Exit grading"
+                                                                               "Key E: Complete grading"
                   + "\n\n"
                     "Canned Comment 1: " + str(comment1Display)
                   + "\n\n"

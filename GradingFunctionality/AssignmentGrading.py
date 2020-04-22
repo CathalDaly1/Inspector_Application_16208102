@@ -97,7 +97,6 @@ def selectAssignment():
             (userID, assignmentModuleCode, assignmentNo))
         fetchedCategories = cur.fetchone()
 
-
         global total1
         total1 = fetchedKeyValues[8]
         valueKeyA = fetchedKeyValues[0]
@@ -115,23 +114,22 @@ def selectAssignment():
         def keyA(event):
             global total1
             total1 += valueKeyA
-            the_queue.put(str(total1) + " marks - " + commentA)
-            keystrokeGrading.unbind_all('a')
+            the_queue.put("Awarded " + str(valueKeyA) + " marks\n" + str(total1) + " marks - " + commentA)
 
         def keyB(event):
             global total1
             total1 += valueKeyB
-            the_queue.put(str(total1) + " marks - " + commentB)
+            the_queue.put("Awarded " + str(valueKeyB) + " marks\n" + str(total1) + " marks - " + commentB)
 
         def keyC(event):
             global total1
             total1 += valueKeyC
-            the_queue.put(str(total1) + " marks - " + commentC)
+            the_queue.put("Awarded " + str(valueKeyC) + " marks\n" + str(total1) + " marks - " + commentC)
 
         def keyD(event):
             global total1
             total1 += valueKeyD
-            the_queue.put(str(total1) + " marks - " + commentD)
+            the_queue.put("Awarded " + str(valueKeyD) + " marks\n" + str(total1) + " marks - " + commentD)
 
         def keyE(event):
             global total1
@@ -223,24 +221,29 @@ def selectAssignment():
                 the_queue.put("You have not added category E")
                 print("Category E:" + str(error))
 
-        keystrokeGrading.bind('a', keyA)
-        keystrokeGrading.bind('b', keyB)
-        keystrokeGrading.bind('c', keyC)
-        keystrokeGrading.bind('d', keyD)
-        keystrokeGrading.bind('e', keyE)
+        keystrokeGrading.bind('a', keyA) and keystrokeGrading.bind("<A>", keyA)
+        keystrokeGrading.bind('b', keyB) and keystrokeGrading.bind("<B>", keyB)
+        keystrokeGrading.bind('c', keyC) and keystrokeGrading.bind("<C>", keyC)
+        keystrokeGrading.bind('d', keyD) and keystrokeGrading.bind("<D>", keyD)
+        keystrokeGrading.bind('e', keyE) and keystrokeGrading.bind("<E>", keyE)
         keystrokeGrading.bind('1', cannedComment1)
         keystrokeGrading.bind('2', cannedComment2)
         keystrokeGrading.bind('3', cannedComment3)
         keystrokeGrading.bind('4', cannedComment4)
         keystrokeGrading.bind('5', cannedComment5)
-        keystrokeGrading.bind('A', gradingCategoryA)
-        keystrokeGrading.bind('B', gradingCategoryB)
-        keystrokeGrading.bind('C', gradingCategoryC)
-        keystrokeGrading.bind('D', gradingCategoryD)
-        keystrokeGrading.bind('E', gradingCategoryE)
+        keystrokeGrading.bind('<Control-a>', gradingCategoryA) and keystrokeGrading.bind('<Control-A>',
+                                                                                         gradingCategoryA)
+        keystrokeGrading.bind('<Control-b>', gradingCategoryB) and keystrokeGrading.bind('<Control-B>',
+                                                                                         gradingCategoryB)
+        keystrokeGrading.bind('<Control-c>', gradingCategoryC) and keystrokeGrading.bind('<Control-C>',
+                                                                                         gradingCategoryC)
+        keystrokeGrading.bind('<Control-d>', gradingCategoryD) and keystrokeGrading.bind('<Control-D>',
+                                                                                         gradingCategoryD)
+        keystrokeGrading.bind('<Control-e>', gradingCategoryE) and keystrokeGrading.bind('<Control-E>',
+                                                                                         gradingCategoryE)
 
     window.bind('s', startGrading)
-    bind_id = window.bind("<a>", startGrading)
+    bind_id = window.bind("<s>", startGrading)
 
     def queue_callback():
         try:
@@ -289,12 +292,12 @@ def selectAssignment():
     tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
     tk.Label(keystrokes_lbl, bg="white", justify=tk.LEFT,
              text="View detailed keystrokes: File->View Keystrokes" + "\n" + "Key S: Start Grading" + "\n"
-                  + "Ctrl + S: Complete Grading" + "\n" + "Ctrl + R: Highlight Text\n"
-                  + "Key a: +" + str(valueKeyADisplay) + " - Comment A \n" + "Key b: +" +
-                  str(valueKeyBDisplay) + " - Comment B \n" + "Key c: + " +
-                  str(valueKeyCDisplay) + " - Comment C \n" + "Key d: + " +
+                  + "Ctrl + S: Submit Assignment" + "\n" + "Ctrl + R: Highlight Text\n"
+                  + "Key A: +" + str(valueKeyADisplay) + " - Comment A \n" + "Key B: +" +
+                  str(valueKeyBDisplay) + " - Comment B \n" + "Key C: + " +
+                  str(valueKeyCDisplay) + " - Comment C \n" + "Key D: + " +
                   str(valueKeyDDisplay) + " - Comment D \n"
-                  + "Key E: Exit grading\n"
+                  + "Key E: Finish grading\n"
                   +
                   "Canned Comment 1: Key 1\n"
                   +
@@ -306,15 +309,15 @@ def selectAssignment():
                   +
                   "Canned Comment 5: Key 5\n"
                   +
-                  "Category A: Key A\n"
+                  "Category A: Ctrl + A\n"
                   +
-                  "Category B: Key B\n"
+                  "Category B: Ctrl + B\n"
                   +
-                  "Category C: Key C\n"
+                  "Category C: Ctrl + C\n"
                   +
-                  "Category D: Key D\n"
+                  "Category D: Ctrl + D\n"
                   +
-                  "Category E: Key E\n", wraplengt=345, font=("Arial", 12)).pack()
+                  "Category E: Ctrl + E\n", wraplengt=345, font=("Arial", 12)).pack()
 
     studentFinalGrade = tk.Label(window, wraplengt=350, font=("Arial", 12))
     studentFinalGrade.place(x=790, y=570)
