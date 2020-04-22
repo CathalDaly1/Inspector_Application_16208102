@@ -1,7 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 
-
 import EmailSystem.emailSystem
 import UsersAnalytics.userAnalytics
 import GradingFunctionality.AccessingFiles
@@ -43,7 +42,7 @@ def Homescreen():
              font=("Calibri", 12)).pack()
 
     # Created Label for pre programmed keys section
-    prog_keys_lbl = tk.Label(window, width=100, height=19, relief="solid", bd=1, padx=10, bg="white")
+    prog_keys_lbl = tk.Label(window, width=100, height=21, relief="solid", bd=1, padx=10, bg="white")
     prog_keys_lbl.pack_propagate(0)
 
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys\n", font=("Calibri Bold", 16)).pack()
@@ -53,14 +52,17 @@ def Homescreen():
                   "bottom of this screen there are options to access the user analytics \n"
                   "and the Inspector Email system. ", font=("Calibri", 12)).pack()
 
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A = +x marks", font=("Calibri", 12)).place(x=200, y=140)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B = +x marks", font=("Calibri", 12)).place(x=200, y=160)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = +x marks", font=("Calibri", 12)).place(x=200, y=180)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = +x marks", font=("Calibri", 12)).place(x=200, y=200)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key S = Start Grading", font=("Calibri", 12)).place(x=200,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A = +x marks", font=("Calibri", 12)).place(x=140, y=140)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B = +x marks", font=("Calibri", 12)).place(x=140, y=160)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C = +x marks", font=("Calibri", 12)).place(x=140, y=180)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D = +x marks", font=("Calibri", 12)).place(x=140, y=200)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key S = Start Grading", font=("Calibri", 12)).place(x=140,
                                                                                                               y=220)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E = Complete Grading", font=("Calibri", 12)).place(x=200,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E = Complete Grading", font=("Calibri", 12)).place(x=140,
                                                                                                                  y=242)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Ctrl + R = Highlight text", font=("Calibri", 12)).place(x=140,
+                                                                                                             y=264)
+
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 1 = Canned Comment 1", font=("Calibri", 12)).place(x=400,
                                                                                                                  y=140)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 2 = Canned Comment 2", font=("Calibri", 12)).place(x=400,
@@ -73,9 +75,12 @@ def Homescreen():
                                                                                                                  y=220)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key Q = Quit Inspector", font=("Calibri", 12)).place(x=400,
                                                                                                                y=242)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Ctrl + S = Submit Assignment", font=("Calibri", 12)).place(
+        x=400, y=264)
     prog_keys_lbl.place(x=30, y=400)
 
-    quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=quit, height=2, width=12, font=("Calibri", 11))
+    quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=quit, height=2, width=12,
+                            font=("Calibri", 11))
     quit_button.place(x=30, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",

@@ -130,7 +130,6 @@ def cannedCommentScreen():
                                  font=("Calibri", 10))
             error_lbl.place(x=200, y=315)
 
-
     def closeWindow():
         """
         This method is called when the close button is pressed and it destroys the tkinter canned comments window.

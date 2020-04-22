@@ -13,6 +13,7 @@ import UserCredentials.loginUser
 import UserCredentials.LoginRegistrationScreen
 import GradingFunctionality.ChangingGrades
 import GradingFunctionality.AssignmentGrading
+import GradingFunctionality.gradingCategories
 
 # initialize queue for thread
 the_queue = queue.Queue()
@@ -331,7 +332,7 @@ class FileSelectionWindow(tk.Frame):
             keyDCommentEntry: tk.Text = tk.Text(self, height="2", width="45")
             keyDCommentEntry.place(x=350, y=692)
 
-            total_lbl = tk.Label(self, fg="black", text="Total Marks: ", font=("Calibri", 12))
+            total_lbl = tk.Label(self, fg="black", text="Initial Marks: ", font=("Calibri", 12))
             total_lbl.place(x=75, y=728)
             totalEntry: tk.Text = tk.Text(self, height="1", width="10")
             totalEntry.place(x=170, y=733)
@@ -481,6 +482,10 @@ class FileSelectionWindow(tk.Frame):
         selectStudentAssignButton = tk.Button(self, text="Change assignments marks", fg="black",
                                               command=changeValueOfAllAssignments, width=22)
         selectStudentAssignButton.place(x=75, y=470)
+
+        categoriesButton = tk.Button(self, text="Add grading categories", width=22,
+                                          command=GradingFunctionality.gradingCategories.gradingCategoriesScreen)
+        categoriesButton.place(x=75, y=500)
 
 
 def getModuleCode():

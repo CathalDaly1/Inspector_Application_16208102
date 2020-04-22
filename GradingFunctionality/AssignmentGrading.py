@@ -2,6 +2,7 @@ import datetime
 import os
 import queue
 import re
+import time
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox
@@ -91,6 +92,12 @@ def selectAssignment():
         fetchedKeyValues = cur.fetchone()
         conn.commit()
 
+        cur.execute(
+            "SELECT categoryA, categoryB, categoryC, categoryD, categoryE FROM gradingCategories WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
+            (userID, assignmentModuleCode, assignmentNo))
+        fetchedCategories = cur.fetchone()
+
+
         global total1
         total1 = fetchedKeyValues[8]
         valueKeyA = fetchedKeyValues[0]
@@ -109,6 +116,7 @@ def selectAssignment():
             global total1
             total1 += valueKeyA
             the_queue.put(str(total1) + " marks - " + commentA)
+            keystrokeGrading.unbind_all('a')
 
         def keyB(event):
             global total1
@@ -175,6 +183,46 @@ def selectAssignment():
                 the_queue.put("You have not added a comment for Key 5")
                 print("Comment 5:" + str(error))
 
+        def gradingCategoryA(event):
+            try:
+                categoryA = fetchedCategories[0]
+                the_queue.put("Category: " + str(categoryA))
+            except TypeError as error:
+                the_queue.put("You have not added category A")
+                print("Category A:" + str(error))
+
+        def gradingCategoryB(event):
+            try:
+                categoryB = fetchedCategories[1]
+                the_queue.put("Category: " + str(categoryB))
+            except TypeError as error:
+                the_queue.put("You have not added category B")
+                print("Category B:" + str(error))
+
+        def gradingCategoryC(event):
+            try:
+                categoryC = fetchedCategories[2]
+                the_queue.put("Category: " + str(categoryC))
+            except TypeError as error:
+                the_queue.put("You have not added category C")
+                print("Category C:" + str(error))
+
+        def gradingCategoryD(event):
+            try:
+                categoryD = fetchedCategories[3]
+                the_queue.put("Category: " + str(categoryD))
+            except TypeError as error:
+                the_queue.put("You have not added category D")
+                print("Category D:" + str(error))
+
+        def gradingCategoryE(event):
+            try:
+                categoryE = fetchedCategories[4]
+                the_queue.put("Category: " + str(categoryE))
+            except TypeError as error:
+                the_queue.put("You have not added category E")
+                print("Category E:" + str(error))
+
         keystrokeGrading.bind('a', keyA)
         keystrokeGrading.bind('b', keyB)
         keystrokeGrading.bind('c', keyC)
@@ -185,6 +233,11 @@ def selectAssignment():
         keystrokeGrading.bind('3', cannedComment3)
         keystrokeGrading.bind('4', cannedComment4)
         keystrokeGrading.bind('5', cannedComment5)
+        keystrokeGrading.bind('A', gradingCategoryA)
+        keystrokeGrading.bind('B', gradingCategoryB)
+        keystrokeGrading.bind('C', gradingCategoryC)
+        keystrokeGrading.bind('D', gradingCategoryD)
+        keystrokeGrading.bind('E', gradingCategoryE)
 
     window.bind('s', startGrading)
     bind_id = window.bind("<a>", startGrading)
@@ -213,7 +266,7 @@ def selectAssignment():
     window.after(100, queue_callback)
 
     assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
-    assign_correction_lbl.place(x=400, y=25, anchor="center")
+    assign_correction_lbl.place(x=400, y=26, anchor="center")
 
     subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
     subTitle_lbl.place(x=400, y=70, anchor="center")
@@ -230,37 +283,47 @@ def selectAssignment():
     valueKeyCDisplay = fetchedKeyValuesDisplay[2]
     valueKeyDDisplay = fetchedKeyValuesDisplay[3]
 
-    keystrokes_lbl = tk.Label(window, width=50, height=22, relief="solid", bd=1, padx=10, bg="white")
+    keystrokes_lbl = tk.Label(window, width=47, height=27, relief="solid", bd=1, padx=10, bg="white")
     keystrokes_lbl.pack_propagate(0)
     keystrokes_lbl.place(x=790, y=95)
     tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
     tk.Label(keystrokes_lbl, bg="white", justify=tk.LEFT,
              text="View detailed keystrokes: File->View Keystrokes" + "\n" + "Key S: Start Grading" + "\n"
-                  + "Key A: +" + str(valueKeyADisplay) + " - Comment A: " + "\n" + "Key B: +" +
-                  str(valueKeyBDisplay) + " - Comment B " + "\n" + "Key C: " +
-                  str(valueKeyCDisplay) + " - Comment C " + "\n" + "Key D: " +
-                  str(valueKeyDDisplay) + " - Comment D " + "\n"
-                  + "Key E: Exit grading"
-                  + "\n"
-                    "Canned Comment 1: Key 1"
-                  + "\n"
-                    "Canned Comment 2: Key 2"
-                  + "\n"
-                    "Canned Comment 3: Key 3"
-                  + "\n"
-                    "Canned Comment 4: Key 4"
-                  + "\n"
-                    "Canned Comment 5: Key 5", wraplengt=345,
-             font=("Arial", 12)).pack()
+                  + "Ctrl + S: Complete Grading" + "\n" + "Ctrl + R: Highlight Text\n"
+                  + "Key a: +" + str(valueKeyADisplay) + " - Comment A \n" + "Key b: +" +
+                  str(valueKeyBDisplay) + " - Comment B \n" + "Key c: + " +
+                  str(valueKeyCDisplay) + " - Comment C \n" + "Key d: + " +
+                  str(valueKeyDDisplay) + " - Comment D \n"
+                  + "Key E: Exit grading\n"
+                  +
+                  "Canned Comment 1: Key 1\n"
+                  +
+                  "Canned Comment 2: Key 2\n"
+                  +
+                  "Canned Comment 3: Key 3\n"
+                  +
+                  "Canned Comment 4: Key 4\n"
+                  +
+                  "Canned Comment 5: Key 5\n"
+                  +
+                  "Category A: Key A\n"
+                  +
+                  "Category B: Key B\n"
+                  +
+                  "Category C: Key C\n"
+                  +
+                  "Category D: Key D\n"
+                  +
+                  "Category E: Key E\n", wraplengt=345, font=("Arial", 12)).pack()
 
     studentFinalGrade = tk.Label(window, wraplengt=350, font=("Arial", 12))
-    studentFinalGrade.place(x=790, y=430)
+    studentFinalGrade.place(x=790, y=570)
 
     keystrokeGrading_lbl = tk.Label(window, text="Enter keystroke selections below", font=("Arial", 12))
-    keystrokeGrading_lbl.place(x=790, y=475)
+    keystrokeGrading_lbl.place(x=790, y=520)
 
-    keystrokeGrading: tk.Text = tk.Text(window, height="1", width="15")
-    keystrokeGrading.place(x=790, y=495)
+    keystrokeGrading: tk.Text = tk.Text(window, height="1", width="27", font=("Calibri", 12))
+    keystrokeGrading.place(x=792, y=540)
 
     GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
     GradeTextBox.place(x=45, y=730)
@@ -274,7 +337,10 @@ def selectAssignment():
 
     # Opens the file and copies the contents into the text box for editing
     global assignment
-    assignment = open(file, encoding="ISO-8859-1").read()
+    try:
+        assignment = open(file, encoding="ISO-8859-1").read()
+    except FileNotFoundError:
+        print("Implement this please")
 
     def highlightingTextInFile():
         savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
@@ -283,8 +349,9 @@ def selectAssignment():
         page = doc[0]
 
         with open(fileHighlightText, "r") as file2:
+            time.sleep(0.5)
             text1 = file2.read()
-        text_instances = page.searchFor(text1)
+        text_instances = page.searchFor(text1, hit_max=50)
 
         for inst in text_instances:
             print(inst, type(inst))
@@ -350,7 +417,7 @@ def selectAssignment():
             tk.Frame.__init__(self, *args, **kwargs)
             self.text = generatingLineNumbersLive(self, width=84, wrap=tk.NONE, height=35)
             self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
-            self.codeLineNumbers = TextLineNumbers(self, width=30, bg="yellow")
+            self.codeLineNumbers = TextLineNumbers(self, width=30, bg="deep sky blue")
             self.codeLineNumbers.attach(self.text)
 
             self.codeLineNumbers.pack(side="left", fill="y")
@@ -383,8 +450,18 @@ def selectAssignment():
             backButton2 = tk.Button(window, text="Back", width=15, command=self.back)
             backButton2.place(x=100, y=685)
 
+            window.bind("<Control-S>", lambda event: self.submitAssignment(event))
+            window.bind("<Control-s>", lambda event: self.submitAssignment(event))
+            window.bind("<Escape>", lambda event: self.back(event))
+            window.bind("<Control-r>", lambda event: self.highlightCode(event))
+            window.bind("<Control-R>", lambda event: self.highlightCode(event))
+            window.protocol("WM_DELETE_WINDOW", self.on_closingWindow)
+
         def _on_change(self, event):
             self.codeLineNumbers.redraw()
+
+        def testPrint(self, event):
+            print("check")
 
         def savePDFFile(self):
             s = self.text.get("1.0", tk.END)
@@ -403,7 +480,7 @@ def selectAssignment():
             pdf.output(gradedFilesFolder + "\\" + savingFilePDF)
             highlightingTextInFile()
 
-        def submitAssignment(self):
+        def submitAssignment(self, _event=None):
             userIDNo = UserCredentials.loginUser.getUserID()
             assignmentFilePath = GradingFunctionality.AccessingFiles.getFilepath()
             cur.execute(
@@ -428,7 +505,6 @@ def selectAssignment():
                     except NameError:
                         messagebox.showwarning(title="Inspector - Grading application",
                                                message="You have not finished grading")
-                        window.attributes("-topmost", True)
             else:
                 try:
                     time_graded = datetime.datetime.now()
@@ -446,14 +522,13 @@ def selectAssignment():
                 except NameError:
                     messagebox.showwarning(title="Inspector - Grading application",
                                            message="You have not finished grading")
-                    window.attributes("-topmost", True)
 
         # Highlights code and text when text is selected and highlight button is pressed
-        def highlightCode(self):
+        def highlightCode(self, _event=None):
             count = 0
             if self.text.tag_ranges('sel'):
                 self.text.tag_add('color' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
-                self.text.tag_configure('color' + str(count), foreground='red')
+                self.text.tag_configure('color' + str(count), foreground='black', background='yellow')
                 count += 1
             else:
                 # Do this if you want to overwrite all selection colors when you change color without selection
@@ -466,7 +541,7 @@ def selectAssignment():
             hText = self.text.get(tk.SEL_FIRST, tk.SEL_LAST)
             fileContainingText.write(hText)
 
-        def addAssignmentComments(self):
+        def addAssignmentComments(self, _event=None):
             self.text.insert(tk.END, "\n")
             self.text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
 
@@ -476,13 +551,9 @@ def selectAssignment():
                                       "Do you want to quit grading the assignment?\n File will be saved"):
                 self.submitAssignment()
 
-        # ToDo implement window.protocol("WM_DELETE_WINDOW", on_closingWindow)
-
-        def back(self):
+        def back(self, _event=None):
             # Clears listbox when returning to the file selection screen: this is in order to reselect the path
             # Call on_closingwindow() to save assignment if backbutton is pressed
             self.on_closingWindow()
-            # listBox.delete(*listBox.get_children())
-            # getFileSelection()
 
     lineNumbers(window).place(x=60, y=95)

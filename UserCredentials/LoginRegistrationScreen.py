@@ -60,7 +60,6 @@ class create_account(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
 
         # create a Form label
         Label(self, text="Inspector - Grading Application", bg="grey", width="300", height="2",
@@ -72,11 +71,12 @@ class create_account(tk.Frame):
 
         # create Login Button
         Label(self, text="").pack()
-        loginButton = Button(self, text="Login", command=login, width=10, height=1,font=("Calibri", 16), borderwidth=3)
+        loginButton = Button(self, text="Login", command=login, width=10, height=1, font=("Calibri", 16), borderwidth=3)
         loginButton.pack()
         Label(self, text="").pack()
         # create a register button
-        registerButton = Button(self, text="Register", command=register, width=10, height=1, font=("Calibri", 16), borderwidth=3)
+        registerButton = Button(self, text="Register", command=register, width=10, height=1, font=("Calibri", 16),
+                                borderwidth=3)
         registerButton.pack()
 
 
