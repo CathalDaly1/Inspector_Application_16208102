@@ -1,8 +1,10 @@
+import collections
 import os
 import tkinter as tk
 from pathlib import Path
 from tkinter import ttk
 
+from gevent._compat import izip
 from matplotlib import style
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -112,22 +114,33 @@ def analyticsScreen():
         if assignmentSelect != "":
             refreshTable()
             exportData_Button.config(state="active")
-            cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno = %s",
+            cur.execute("SELECT student_id, filename, final_grade, time_graded FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno = %s",
                         (userID, moduleCodeSelection, assignmentSelect))
 
             assignmentData = cur.fetchall()
             conn.commit()
 
             for row in assignmentData:
-                listBox.insert("", tk.END, values=(row[4], row[5], row[6], row[8]))
+                listBox.insert("", tk.END, values=(row[0], row[1], row[2], row[3]))
 
+            cur.execute(
+                "SELECT DISTINCT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
+                (userID, moduleCodeSelection, assignmentSelect))
+            studentID = cur.fetchall()
+
+            studentIdList = [item for t in studentID for item in t]
             numberOfGradedAssignments = []
             grade = []
 
-            for row1 in assignmentData:
-                # x axis is the number of assignments graded in order to graph them
+            for a in zip(studentIdList):
+                cur.execute(
+                    "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
+                    (userID, moduleCodeSelection, assignmentSelect, a))
+                studentFinalGrade = cur.fetchall()
+                sumOfGrades = [sum(x) for x in izip(*studentFinalGrade)]
+
                 numberOfGradedAssignments.append(len(grade))
-                grade.append(row1[6])
+                grade.append(sumOfGrades[0])
 
                 figure1 = Figure(figsize=(6, 4), dpi=80)
                 subplot1 = figure1.add_subplot(111)
@@ -137,12 +150,6 @@ def analyticsScreen():
                 bar1 = FigureCanvasTkAgg(figure1, window)
                 bar1.get_tk_widget().place(x=150, y=390)
                 subplot1.set_title('Grade Distribution for ' + str(moduleCodeSelection))
-                assignmentNo_lbl = tk.Label(window, text="Assignment data has been displayed. ", fg="black",
-                                            font=("Calibri", 12))
-                assignmentNo_lbl.place(x=550, y=130)
-        else:
-            assignmentNo_errorlbl = tk.Label(window, text="Please enter an assignment No. ", fg="red", font=("Calibri", 12))
-            assignmentNo_errorlbl.place(x=550, y=130)
 
     def showTable():
         """
@@ -181,6 +188,7 @@ def analyticsScreen():
         worksheet.set_column('D:D', 11)
         worksheet.set_column('F:F', 20, format1)
         worksheet.set_column('G:G', 51)
+        worksheet.autofilter('A1:G200')
 
         try:
             # Writes the headings in the DB table into the xls file

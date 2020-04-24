@@ -168,7 +168,7 @@ def emailSystem():
         studentFilesWithExtension = [str(s) + fileExtension for s in filenameExt]
 
         try:
-            # looping through the two lists using zip
+            # looping through several lists using zip
             for f, a, c, m in zip(studentEmail, studentIdList, studentAssignment, studentFilesWithExtension):
                 email_user = '16208102@studentmail.ul.ie'
                 email_password = 'Detlef228425'
@@ -210,9 +210,11 @@ def emailSystem():
                     "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
                     (userID, moduleCodeSelection, assignmentSelect, a))
                 studentFinalGrade = cur.fetchall()
+                print(studentFinalGrade)
 
                 # Fetch grades from database, sum the tuples if there are more than one grade for one student
                 sumOfGrades = [sum(x) for x in izip(*studentFinalGrade)]
+                print(sumOfGrades)
                 # grade = [item for t in sumOfGrades for item in t]
                 body = emailBodyEntry.get('1.0', 'end-1c')
                 body += "\n\n Final grade for this assignment = " + str(sumOfGrades) + " Marks"
