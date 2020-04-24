@@ -72,6 +72,9 @@ class FileSelectionWindow(tk.Frame):
 
         def clearEntry():
             displayAssignment.config(state="active")
+            cannedCommentsButton.config(state="disabled")
+            categoriesButton.config(state="disabled")
+            selectStudentAssignButton.config(state="disabled")
             # This clears the table when clear button is clicked
             listBox.delete(*listBox.get_children())
             filePath.delete('0', 'end')
@@ -199,8 +202,8 @@ class FileSelectionWindow(tk.Frame):
 
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath) and assignmentModuleCode and assignmentNo != "":
-                dirLabel = tk.Label(self, text="Directory Exists\t\t", font=("Calibri", 9))
-                dirLabel.place(x=340, y=142)
+                dirLabel = tk.Label(self, text="\tDirectory Exists\t\t\t", font=("Calibri", 9))
+                dirLabel.place(x=300, y=142)
 
                 # Loops through the files in the filepath and displays them
                 for filename in os.listdir(assignmentFilePath):
@@ -224,6 +227,10 @@ class FileSelectionWindow(tk.Frame):
                             (userID, assignmentModuleCode, assignmentNo))
                         vals = cur.fetchone()
 
+                        cannedCommentsButton.config(state="active")
+                        categoriesButton.config(state="active")
+                        selectStudentAssignButton.config(state="active")
+
                         if vals is None:
                             changeKeyValues()
                         else:
@@ -235,18 +242,15 @@ class FileSelectionWindow(tk.Frame):
                                                        fg="red")
                         moduleCodeSaved_lbl.place(x=527, y=85)
 
-                    # Double click on an element in the listbox will run the doubleClickListboxEvent() method
-                    # refreshListbox()
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
                 refreshListbox()
             else:
-                directoryErrorLbl = tk.Label(self, text="Directory does not exists", font=("Calibri", 9), fg="red")
-                directoryErrorLbl.place(x=340, y=142)
+                directoryErrorLbl = tk.Label(self, text="Ensure Entry boxes are filled in and correct", font=("Calibri", 9), fg="red")
+                directoryErrorLbl.place(x=298, y=142)
 
         '''Checks if file is in the directory, adds other columns if it is a file
         display data from the database into the to treeview
         '''
-
         def process_directory(parentNode, assignmentFilePath):
 
             cur1 = conn.cursor()
@@ -486,6 +490,10 @@ class FileSelectionWindow(tk.Frame):
         categoriesButton = tk.Button(self, text="Add grading categories", width=22,
                                           command=GradingFunctionality.gradingCategories.gradingCategoriesScreen)
         categoriesButton.place(x=75, y=500)
+
+        cannedCommentsButton.config(state="disabled")
+        categoriesButton.config(state="disabled")
+        selectStudentAssignButton.config(state="disabled")
 
 
 def getModuleCode():

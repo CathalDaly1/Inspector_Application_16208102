@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import *
 
-import UserCredentials.loginUser
-import UserCredentials.registerUser
+from UserCredentials import loginUser
+from UserCredentials import registerUser
 
 
 class UserMainScreen(tk.Tk):
@@ -41,7 +41,7 @@ def login():
     """
     This method is called when the 'login' button is pressed. Directs the user to the login screen.
     """
-    UserCredentials.loginUser.LoginUser()
+    loginUser.LoginUser()
 
 
 # Calls login method from the RegisterUser class
@@ -49,7 +49,7 @@ def register():
     """
     This method is called when the 'register' button is pressed. Directs the user to the register screen.
     """
-    UserCredentials.registerUser.registerUser()
+    registerUser.registerUser()
 
 
 # Class to create a user, setup here is the GUI

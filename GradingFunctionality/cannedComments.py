@@ -2,7 +2,7 @@ import tkinter as tk
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
-
+import GradingFunctionality.AccessingFiles
 
 def cannedCommentScreen():
     """
@@ -23,16 +23,6 @@ def cannedCommentScreen():
     comments_lbl = tk.Label(window, fg="black", text="Enter canned comments below",
                             font=("Calibri Bold", 16))
     comments_lbl.place(x=180, y=10)
-
-    moduleCode_lbl = tk.Label(window, fg="black", text="Module Code: ", font=("Calibri", 12))
-    moduleCode_lbl.place(x=30, y=50)
-    moduleCodeEntry: tk.Text = tk.Text(window, height="1", width="10")
-    moduleCodeEntry.place(x=150, y=50)
-
-    assignmentNo_lbl = tk.Label(window, fg="black", text="Assignment No.: ", font=("Calibri", 12))
-    assignmentNo_lbl.place(x=230, y=50)
-    assignmentNoEntry: tk.Text = tk.Text(window, height="1", width="10")
-    assignmentNoEntry.place(x=350, y=50)
 
     comment1_lbl = tk.Label(window, fg="black", text="Comment 1: ", font=("Calibri", 12))
     comment1_lbl.place(x=30, y=82)
@@ -56,8 +46,8 @@ def cannedCommentScreen():
     commentsEntry5.place(x=150, y=277)
 
     def displayPrevious():
-        moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
-        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
+        moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
+        assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
 
         if moduleCode and assignmentNo != "":
             try:
@@ -89,8 +79,8 @@ def cannedCommentScreen():
         the comments will just be inserted into the database.
         :return:
         """
-        moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
-        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
+        moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
+        assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
 
         if moduleCode or assignmentNo != "":
             cur.execute("SELECT * FROM cannedComments WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",
@@ -126,9 +116,9 @@ def cannedCommentScreen():
 
             return [comment1, comment2, comment3, comment4, comment5]
         else:
-            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No.", fg="red",
+            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No. in previous screen", fg="red",
                                  font=("Calibri", 10))
-            error_lbl.place(x=200, y=315)
+            error_lbl.place(x=180, y=315)
 
     def closeWindow():
         """

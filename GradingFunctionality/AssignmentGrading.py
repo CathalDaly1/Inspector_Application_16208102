@@ -20,7 +20,6 @@ cur = conn.cursor()
 
 the_queue = queue.Queue()
 
-
 def selectAssignment():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
@@ -115,26 +114,31 @@ def selectAssignment():
             global total1
             total1 += valueKeyA
             the_queue.put("Awarded " + str(valueKeyA) + " marks\n" + str(total1) + " marks - " + commentA)
+            keystrokeGrading.delete('1.0', tk.END)
 
         def keyB(event):
             global total1
             total1 += valueKeyB
             the_queue.put("Awarded " + str(valueKeyB) + " marks\n" + str(total1) + " marks - " + commentB)
+            keystrokeGrading.delete('1.0', tk.END)
 
         def keyC(event):
             global total1
             total1 += valueKeyC
             the_queue.put("Awarded " + str(valueKeyC) + " marks\n" + str(total1) + " marks - " + commentC)
+            keystrokeGrading.delete('1.0', tk.END)
 
         def keyD(event):
             global total1
             total1 += valueKeyD
             the_queue.put("Awarded " + str(valueKeyD) + " marks\n" + str(total1) + " marks - " + commentD)
+            keystrokeGrading.delete('1.0', tk.END)
 
         def keyE(event):
             global total1
             global final
             the_queue.put("Final Grade: " + str(total1) + " marks")
+            keystrokeGrading.delete('1.0', tk.END)
             # sets the total to the initial value again
             final = total1
             total1 = a
@@ -146,80 +150,81 @@ def selectAssignment():
                 the_queue.put("Comment 1: " + str(comment1))
             except TypeError as error:
                 the_queue.put("You have not added a comment for Key 1")
-                print("Comment 1:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def cannedComment2(event):
             try:
                 comment2 = fetchedComments[1]
-                the_queue.put("Comment 1: " + str(comment2))
+                the_queue.put("Comment 2: " + str(comment2))
             except TypeError as error:
                 the_queue.put("You have not added a comment for Key 2")
-                print("Comment 2:" + str(error))
+
+            keystrokeGrading.delete('1.0', tk.END)
 
         def cannedComment3(event):
             try:
                 comment3 = fetchedComments[2]
 
-                the_queue.put("Comment 1: " + str(comment3))
+                the_queue.put("Comment 3: " + str(comment3))
             except TypeError as error:
                 the_queue.put("You have not added a comment for Key 3")
-                print("Comment 3:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def cannedComment4(event):
             try:
                 comment4 = fetchedComments[3]
-                the_queue.put("Comment 1: " + str(comment4))
+                the_queue.put("Comment 4: " + str(comment4))
             except TypeError as error:
                 the_queue.put("You have not added a comment for Key 4")
-                print("Comment 4:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def cannedComment5(event):
             try:
                 comment5 = fetchedComments[4]
-                the_queue.put("Comment 1: " + str(comment5))
-            except TypeError as error:
+                the_queue.put("Comment 5: " + str(comment5))
+            except TypeError:
                 the_queue.put("You have not added a comment for Key 5")
-                print("Comment 5:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def gradingCategoryA(event):
             try:
                 categoryA = fetchedCategories[0]
                 the_queue.put("Category: " + str(categoryA))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added category A")
-                print("Category A:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def gradingCategoryB(event):
             try:
                 categoryB = fetchedCategories[1]
                 the_queue.put("Category: " + str(categoryB))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added category B")
-                print("Category B:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def gradingCategoryC(event):
             try:
                 categoryC = fetchedCategories[2]
                 the_queue.put("Category: " + str(categoryC))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added category C")
-                print("Category C:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def gradingCategoryD(event):
             try:
                 categoryD = fetchedCategories[3]
                 the_queue.put("Category: " + str(categoryD))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added category D")
-                print("Category D:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         def gradingCategoryE(event):
             try:
                 categoryE = fetchedCategories[4]
                 the_queue.put("Category: " + str(categoryE))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added category E")
-                print("Category E:" + str(error))
+            keystrokeGrading.delete('1.0', tk.END)
 
         keystrokeGrading.bind('a', keyA) and keystrokeGrading.bind("<A>", keyA)
         keystrokeGrading.bind('b', keyB) and keystrokeGrading.bind("<B>", keyB)
@@ -348,17 +353,16 @@ def selectAssignment():
     def highlightingTextInFile():
         savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
         doc = fitz.open(gradedFilesFolder + "\\" + savingFilePDF)
-        print(str(gradedFilesFolder + "\\" + savingFilePDF))
         page = doc[0]
 
         with open(fileHighlightText, "r") as file2:
             time.sleep(0.5)
             text1 = file2.read()
-        text_instances = page.searchFor(text1, hit_max=50)
+        text_instances = page.searchFor(text1, hit_max=200)
 
         for inst in text_instances:
             print(inst, type(inst))
-            highlight = page.addHighlightAnnot(inst)
+            page.addHighlightAnnot(inst)
 
         try:
             doc.save(gradedFilesFolder + "\\" + "Corrected - " + savingFilePDF,
@@ -463,9 +467,6 @@ def selectAssignment():
         def _on_change(self, event):
             self.codeLineNumbers.redraw()
 
-        def testPrint(self, event):
-            print("check")
-
         def savePDFFile(self):
             s = self.text.get("1.0", tk.END)
             f = open(file, "w", encoding='utf-8')
@@ -490,7 +491,6 @@ def selectAssignment():
                 "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
                 (userID, selection, item_text[0], assignmentModuleCode))
             vals = cur.fetchone()
-            print(vals)
             conn.commit()
 
             if vals is not None:

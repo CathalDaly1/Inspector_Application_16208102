@@ -1,4 +1,3 @@
-import csv
 import os
 import tkinter as tk
 from pathlib import Path
@@ -110,33 +109,40 @@ def analyticsScreen():
         This method displays the data in the table and also generates the bar chart. Data is retrieved from the
         database assignments table.
         """
-        refreshTable()
-        exportData_Button.config(state="active")
-        cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno = %s",
-                    (userID, moduleCodeSelection, assignmentSelect))
+        if assignmentSelect != "":
+            refreshTable()
+            exportData_Button.config(state="active")
+            cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno = %s",
+                        (userID, moduleCodeSelection, assignmentSelect))
 
-        assignmentData = cur.fetchall()
-        conn.commit()
+            assignmentData = cur.fetchall()
+            conn.commit()
 
-        for row in assignmentData:
-            listBox.insert("", tk.END, values=(row[4], row[5], row[6], row[8]))
+            for row in assignmentData:
+                listBox.insert("", tk.END, values=(row[4], row[5], row[6], row[8]))
 
-        numberOfGradedAssignments = []
-        grade = []
+            numberOfGradedAssignments = []
+            grade = []
 
-        for row1 in assignmentData:
-            # x axis is the number of assignments graded in order to graph them
-            numberOfGradedAssignments.append(len(grade))
-            grade.append(row1[6])
+            for row1 in assignmentData:
+                # x axis is the number of assignments graded in order to graph them
+                numberOfGradedAssignments.append(len(grade))
+                grade.append(row1[6])
 
-            figure1 = Figure(figsize=(6, 4), dpi=80)
-            subplot1 = figure1.add_subplot(111)
-            xAxis = numberOfGradedAssignments
-            yAxis = grade
-            subplot1.bar(xAxis, yAxis, color='lightsteelblue')
-            bar1 = FigureCanvasTkAgg(figure1, window)
-            bar1.get_tk_widget().place(x=150, y=390)
-            subplot1.set_title('Grade Distribution for ' + str(moduleCodeSelection))
+                figure1 = Figure(figsize=(6, 4), dpi=80)
+                subplot1 = figure1.add_subplot(111)
+                xAxis = numberOfGradedAssignments
+                yAxis = grade
+                subplot1.bar(xAxis, yAxis, color='lightsteelblue')
+                bar1 = FigureCanvasTkAgg(figure1, window)
+                bar1.get_tk_widget().place(x=150, y=390)
+                subplot1.set_title('Grade Distribution for ' + str(moduleCodeSelection))
+                assignmentNo_lbl = tk.Label(window, text="Assignment data has been displayed. ", fg="black",
+                                            font=("Calibri", 12))
+                assignmentNo_lbl.place(x=550, y=130)
+        else:
+            assignmentNo_errorlbl = tk.Label(window, text="Please enter an assignment No. ", fg="red", font=("Calibri", 12))
+            assignmentNo_errorlbl.place(x=550, y=130)
 
     def showTable():
         """
@@ -153,7 +159,7 @@ def analyticsScreen():
         This method is called when the 'export data' button is pressed. Exports data from table into an
         excel file.
         """
-        cur.execute("SELECT * FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
+        cur.execute("SELECT modulecode, assignmentno, student_id, filename, final_grade, time_graded, filepath FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
 
         assignmentData = cur.fetchall()
@@ -171,10 +177,10 @@ def analyticsScreen():
 
         # Set the 'time_graded' column with the datetime for format
         format1 = workbook.add_format({'num_format': 'mmm d yyyy hh:mm:ss'})
-        worksheet.set_column('E:E', 11)
-        worksheet.set_column('F:F', 11)
-        worksheet.set_column('I:I', 20, format1)
-        worksheet.set_column('J:J', 51)
+        worksheet.set_column('C:C', 11)
+        worksheet.set_column('D:D', 11)
+        worksheet.set_column('F:F', 20, format1)
+        worksheet.set_column('G:G', 51)
 
         try:
             # Writes the headings in the DB table into the xls file

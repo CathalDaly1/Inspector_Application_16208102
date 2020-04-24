@@ -2,7 +2,7 @@ import tkinter as tk
 
 import DBConnection.connectToDB
 import UserCredentials.loginUser
-
+import GradingFunctionality.AccessingFiles
 
 def gradingCategoriesScreen():
     """
@@ -23,16 +23,6 @@ def gradingCategoriesScreen():
     categories_lbl = tk.Label(window, fg="black", text="Enter Grading Categories below",
                               font=("Calibri Bold", 16))
     categories_lbl.place(x=180, y=10)
-
-    moduleCode_lbl = tk.Label(window, fg="black", text="Module Code: ", font=("Calibri", 12))
-    moduleCode_lbl.place(x=30, y=50)
-    moduleCodeEntry: tk.Text = tk.Text(window, height="1", width="10")
-    moduleCodeEntry.place(x=150, y=50)
-
-    assignmentNo_lbl = tk.Label(window, fg="black", text="Assignment No.: ", font=("Calibri", 12))
-    assignmentNo_lbl.place(x=230, y=50)
-    assignmentNoEntry: tk.Text = tk.Text(window, height="1", width="10")
-    assignmentNoEntry.place(x=350, y=50)
 
     categoriesA_lbl = tk.Label(window, fg="black", text="Category A: ", font=("Calibri", 12))
     categoriesA_lbl.place(x=30, y=82)
@@ -56,8 +46,8 @@ def gradingCategoriesScreen():
     categoriesEntryE.place(x=150, y=277)
 
     def displayPreviousCategories():
-        moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
-        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
+        moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
+        assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
 
         if moduleCode and assignmentNo != "":
             try:
@@ -89,8 +79,8 @@ def gradingCategoriesScreen():
         the comments will just be inserted into the database.
         :return:
         """
-        moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
-        assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()
+        moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
+        assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
 
         if moduleCode or assignmentNo != "":
             cur.execute("SELECT * FROM gradingCategories WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",
@@ -113,7 +103,7 @@ def gradingCategoriesScreen():
                 conn.commit()
                 newCommentsSaved_lbl = tk.Label(window, text="Grading Categories have been saved",
                                                 font=("Calibri", 10))
-                newCommentsSaved_lbl.place(x=250, y=315)
+                newCommentsSaved_lbl.place(x=230, y=315)
 
             else:
                 updateCategories = "Update gradingCategories set categoryA = %s, categoryB = %s , categoryC = %s , categoryD = %s , categoryE = %s where user_id =%s and moduleCode=%s and assignmentNo = %s"
