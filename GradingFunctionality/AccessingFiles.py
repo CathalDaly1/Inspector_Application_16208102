@@ -42,6 +42,7 @@ class FileDisplayWindow(tk.Tk):
         self.frames[FileSelectionWindow] = frame
         frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(FileSelectionWindow)
+        self.attributes("-topmost", 1)
 
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -173,7 +174,7 @@ class FileSelectionWindow(tk.Frame):
                         if str(vals[1]) == str(userID) and str(vals[4]) == str(selection) and str(vals[5]) == str(
                                 item_text[0]):
                             result = messagebox.askquestion("Inspector Grading",
-                                                            "Do you want to regrade this assignment?")
+                                                            "Do you want to regrade this assignment?", parent=self)
 
                             if result == 'yes':
                                 selectAssignment()

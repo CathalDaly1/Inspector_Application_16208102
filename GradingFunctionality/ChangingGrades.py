@@ -13,6 +13,7 @@ def changeStudentsGrades():
     window.title("Inspector - Grading Application")
     window.geometry("600x380+250+200")
     window.resizable(False, False)
+    window.attributes("-topmost", 1)
 
     conn = DBConnection.connectToDB.connectToDB()
     cur = conn.cursor()

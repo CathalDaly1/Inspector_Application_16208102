@@ -14,6 +14,7 @@ def cannedCommentScreen():
     window.title("Inspector - Grading Application")
     window.geometry("600x380+250+200")
     window.resizable(False, False)
+    window.attributes("-topmost", 1)
 
     userID = UserCredentials.loginUser.getUserID()
 

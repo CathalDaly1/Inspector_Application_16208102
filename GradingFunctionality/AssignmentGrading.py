@@ -20,12 +20,13 @@ cur = conn.cursor()
 
 the_queue = queue.Queue()
 
+
 def selectAssignment():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("1200x985+50+50")
     window.resizable(False, False)
-
+    window.attributes("-topmost", 1)
     menubar = tk.Menu(window)
 
     userID = UserCredentials.loginUser.getUserID()
@@ -506,7 +507,7 @@ def selectAssignment():
                         self.savePDFFile()
 
                     except NameError:
-                        messagebox.showwarning(title="Inspector - Grading application",
+                        messagebox.showwarning(parent=window, title="Inspector - Grading application",
                                                message="You have not finished grading")
             else:
                 try:
@@ -523,7 +524,7 @@ def selectAssignment():
                     self.savePDFFile()
 
                 except NameError:
-                    messagebox.showwarning(title="Inspector - Grading application",
+                    messagebox.showwarning(parent=window, title="Inspector - Grading application",
                                            message="You have not finished grading")
 
         # Highlights code and text when text is selected and highlight button is pressed
@@ -551,7 +552,7 @@ def selectAssignment():
         # If window is closed mid grading, save the file in the folder
         def on_closingWindow(self):
             if messagebox.askokcancel("Quit",
-                                      "Do you want to quit grading the assignment?\n File will be saved"):
+                                      "Do you want to quit grading the assignment?\n File will be saved", parent=window):
                 self.submitAssignment()
 
         def back(self, _event=None):
