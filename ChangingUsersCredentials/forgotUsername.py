@@ -22,11 +22,11 @@ def forgotUsernameScreen():
     password_verify = StringVar()
     confirmPassword_verify = StringVar()
 
-    def verify_password():
+    def changeUsersUsername():
         """
-        This verifies that the password and email entered exists in the database.
-        If it is in the database the user can change their username by adding a new
-        username into the entry box on this screen.
+        The data entered into the form is crosschecked with the users previous data in the database
+        If the password and email entered in the form is equal to that in the database, their
+        new username will be updated and entered into the database.
         """
         newUsername = username_entry.get()
         email = email_entry.get()
@@ -65,9 +65,7 @@ def forgotUsernameScreen():
             errorLbl.place(x=180, y=280)
 
     def back():
-        """
-        This method is called when the 'back' button is pressed. The login window is destroyed.
-        """
+        """This method is called when the 'back' button is pressed. The login window is destroyed."""
         window.destroy()
 
     # Creates the GUI elements for buttons and labels
@@ -86,7 +84,7 @@ def forgotUsernameScreen():
     confirm_Password_entry = Entry(window, show="*", textvariable=confirmPassword_verify, font=("Calibri", 13))
     confirm_Password_entry.pack()
     Label(window, text="").pack()
-    confirmButton = Button(window, text="Confirm", width=10, height=1, command=verify_password, font=("Calibri", 12))
+    confirmButton = Button(window, text="Confirm", width=10, height=1, command=changeUsersUsername, font=("Calibri", 12))
     confirmButton.place(x=280, y=305)
     backButton = Button(window, text="Back", width=10, height=1, command=back, font=("Calibri", 12))
     backButton.place(x=140, y=305)

@@ -109,7 +109,11 @@ def analyticsScreen():
     def displayModuleAssignments():
         """
         This method displays the data in the table and also generates the bar chart. Data is retrieved from the
-        database assignments table.
+        database assignments table. The data displayed in the bar chart is the final grade that each student
+        received. As there may be more than one file graded per assignment submission, there is a for loop that
+        retrieves the final grades of the students in the database and gets the sum of each individually graded
+        assignment. This sum is then displayed in the bar chart.
+        :rtype: object
         """
         if assignmentSelect != "":
             refreshTable()
@@ -132,6 +136,8 @@ def analyticsScreen():
             numberOfGradedAssignments = []
             grade = []
 
+            # Loop through list of student ID numbers, retrieving their final grade(s) for the files that they submitted
+            # The sum of each of the graded file submissions is added and displayed in the bar chart.
             for a in zip(studentIdList):
                 cur.execute(
                     "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
@@ -164,7 +170,9 @@ def analyticsScreen():
     def exportData():
         """
         This method is called when the 'export data' button is pressed. Exports data from table into an
-        excel file.
+        excel file. Throw exception if the excel file is unable to be saved. This may primarily be as
+        a result of the file being opened on the users machine.
+        :rtype: object
         """
         cur.execute("SELECT modulecode, assignmentno, student_id, filename, final_grade, time_graded, filepath FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
@@ -182,7 +190,7 @@ def analyticsScreen():
                                        + moduleCodeSelection + "-" + assignmentSelect + '.xlsx')
         worksheet = workbook.add_worksheet()
 
-        # Set the 'time_graded' column with the datetime for format
+        # Formatting the excel file when it is exported
         format1 = workbook.add_format({'num_format': 'mmm d yyyy hh:mm:ss'})
         worksheet.set_column('C:C', 11)
         worksheet.set_column('D:D', 11)

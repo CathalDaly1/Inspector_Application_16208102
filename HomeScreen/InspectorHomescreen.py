@@ -1,5 +1,4 @@
 import tkinter as tk
-from PIL import ImageTk, Image
 
 import EmailSystem.emailSystem
 import UsersAnalytics.userAnalytics
@@ -8,20 +7,20 @@ import UserCredentials.loginUser
 
 
 def Homescreen():
-    """
-    This method creates the HomeScreen in the application. Creates contents of the tkinter window.
-    """
+    """This method creates the HomeScreen in the application. Creates contents of the tkinter window."""
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("800x800+100+100")
 
-    username1 = UserCredentials.loginUser.getUsername()
+    # Get the time logged in from the loginUser file
+    username = UserCredentials.loginUser.getUsername()
     lbl_title = tk.Label(window, text="Inspector - Grading Application", font=("Arial Bold", 20))
     lbl_title.place(x=400, y=70, anchor="center")
 
-    username_lbl = tk.Label(window, fg="black", text="Welcome: " + str(username1), font=("Calibri", 16))
+    username_lbl = tk.Label(window, fg="black", text="Welcome: " + str(username), font=("Calibri", 16))
     username_lbl.place(x=5, y=5)
 
+    # Get the time logged in from the loginUser file
     time_logged_in = UserCredentials.loginUser.getTimeLoggedIn()
     loggedIn_lbl = tk.Label(window, fg="black", text="Logged in: " + str(time_logged_in), font=("Calibri", 12))
     loggedIn_lbl.place(x=535, y=5)

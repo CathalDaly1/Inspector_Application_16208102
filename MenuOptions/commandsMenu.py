@@ -7,8 +7,9 @@ import GradingFunctionality.AccessingFiles
 
 def menuOptions():
     """
-    This method creates the tkinter window, labels and entry boxes in order for the user to enter
-    comments and save them.
+    This method creates the tkinter window, labels and entry boxes in order for the user to enter comments and save
+    them. Retrieves the key values, comments, canned comments and grading categories from the database for the
+    associated modulecode and assignment number that was entered in the File Access Screen.
     :return:
     """
     window = tk.Tk()

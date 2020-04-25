@@ -47,6 +47,12 @@ def cannedCommentScreen():
     commentsEntry5.place(x=150, y=277)
 
     def displayPrevious():
+        """
+        This method allows the user to display previously saved canned comments of the associated module code and
+        assignment No. Throw exception if the user clicks the edit button if there are no previous canned comments
+        saved in the database.
+        :rtype: object
+        """
         moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
         assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
 

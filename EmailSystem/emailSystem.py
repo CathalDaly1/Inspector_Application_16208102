@@ -7,7 +7,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from tkinter import ttk
 from tkinter.ttk import Progressbar
-
 from gevent._compat import izip
 
 import DBConnection.connectToDB
@@ -47,15 +46,11 @@ def emailSystem():
     moduleCombobox = ttk.Combobox(window, values=moduleCode)
     moduleCombobox.place(x=230, y=100)
 
-    def displayAssignment():
-        """
-        This docstring must be filled in
-        """
-        assignmentCombobox()
-
     def assignmentCombobox():
         """
-        This docstring must be filled in
+        Get the information for the "Assignment No." dropdown list
+        Retrieves the assignment numbers that are in the database for the user that is logged in
+        and for the module code that they have entered in the module code dropdown list.
         """
         global moduleCodeSelection, assignmentSelection, assignmentCombo
         moduleCodeSelection = moduleCombobox.get()
@@ -76,16 +71,18 @@ def emailSystem():
 
     def displayModuleAssignments():
         """
-        This class retrieves assignment information from the assignments table in the database.
+        This method retrieves the selections from the module code and assignment No. dropdown lists.
+        This information is displayed on the GUI screen.
         """
         bar()
-        global assignmentSelect
+        global assignmentSelect, studentIdList
         detailsSaved = tk.Label(window, text="Module code: " + str(moduleCodeSelection) + " and Assignment number: " +
                                              str(assignmentSelect),
                                 font=("Calibri", 14))
         detailsSaved.place(x=25, y=180)
-        global studentIdList
+
         numberOfRecipients = len(studentIdList)
+
         recipientsLoaded = tk.Label(window, text=str(numberOfRecipients) + " Recipient(s) loaded into email system",
                                     font=("Calibri", 14))
         recipientsLoaded.place(x=25, y=207)
@@ -97,7 +94,7 @@ def emailSystem():
 
     def bar():
         """
-        This method displays a progress bar
+        This method displays a progress bar which increases every 0.45 seconds.
         :rtype: object
         """
         import time
@@ -128,10 +125,8 @@ def emailSystem():
 
     def showTable():
         """
-        This method works with list and tuple manipulation in python
-        Firstly, select student ID numbers and associated filenames from the database
-        concat the studentmail extension for each of the student numbers
-        concat the pdf extension for each of the filenames
+        This method retrieves the student ID numbers from the database for the assignment No and module code
+        that was selected in the dropdown lists. Converts the list of tuples into a list of student ID's
         """
         global assignmentSelect, studentIdList
         assignmentSelect = assignmentCombo.get()
@@ -145,19 +140,27 @@ def emailSystem():
         displayModuleAssignments()
 
     def convertListToString(s):
+        """This method converts a list into a string.
+        :param s:
+        :return:
+        """
         # initialize an empty string
-        str1 = ""
+        conversionString = ""
 
         # traverse in the string
-        for ele in s:
-            str1 += ele
+        for element in s:
+            conversionString += element
 
-            # return string
-        return str1
+        # return string
+        return conversionString
 
     def send_email():
         """
         This method will allow the user to send emails to students with attachment and grade.
+        Student ID numbers and associated filenames from the database concat the studentmail
+        extension for each of the student numbers concat the pdf extension for each of the filenames.
+        Throw an exception if the application is unable to connect to the mail server.
+        :rtype: object
         """
         emailExtension = "@studentmail.ul.ie"
 
@@ -175,6 +178,7 @@ def emailSystem():
         try:
             # looping through several lists using zip
             for f, a, c, m in zip(studentEmail, studentIdList, studentAssignment, studentFilesWithExtension):
+                # The email and password may be from an admin email account
                 email_user = '16208102@studentmail.ul.ie'
                 email_password = 'Detlef228425'
                 email_send = f
@@ -186,6 +190,7 @@ def emailSystem():
                 msg['To'] = email_send
                 msg['Subject'] = subject
 
+                # Create SMTP outlook server which will be used to send email to studentmail.ul.ie accounts
                 server = smtplib.SMTP('smtp-mail.outlook.com')
                 server.starttls()
                 server.login(email_user, email_password)
@@ -197,12 +202,13 @@ def emailSystem():
 
                 extractFilepath = (convertListToString(fetchedFilepath))
                 correctPath = (extractFilepath.replace("\\", "/"))
-                gradedFile = (str(correctPath) + "/Graded Assignments/" + str(a) + "/Corrected - " + str(m))
 
                 # Attaching file to the email
                 listOfFiles = os.listdir(str(correctPath) + "/Graded Assignments/" + str(a))
                 filePathString = (str(correctPath) + "/Graded Assignments/" + str(a) + "/")
                 concatPathAndFiles = [filePathString + s for s in listOfFiles]
+
+                # Loop through the files in each folder and attach the graded assignment(s) to the email for each student
                 for files in concatPathAndFiles:
                     part = MIMEBase('application', "octet-stream")
                     part.set_payload(open(files, "rb").read())
@@ -210,21 +216,18 @@ def emailSystem():
                     part.add_header('Content-Disposition', 'attachment; filename="{0}"'.format(os.path.basename(files)))
                     msg.attach(part)
 
-                # get grade from database
+                # Retrieve the students final grade from database
                 cur.execute(
                     "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
                     (userID, moduleCodeSelection, assignmentSelect, a))
                 studentFinalGrade = cur.fetchall()
-                print(studentFinalGrade)
 
                 # Fetch grades from database, sum the tuples if there are more than one grade for one student
                 sumOfGrades = [sum(x) for x in izip(*studentFinalGrade)]
-                print(sumOfGrades)
-                # grade = [item for t in sumOfGrades for item in t]
+
                 body = emailBodyEntry.get('1.0', 'end-1c')
                 body += "\n\n Final grade for this assignment = " + str(sumOfGrades) + " Marks"
                 msg.attach(MIMEText(body, 'plain'))
-                # msg.attach(part)
 
                 text = msg.as_string()
                 server.sendmail(email_user, email_send, text)
@@ -238,17 +241,16 @@ def emailSystem():
                 emailSentList.place(x=160, y=580)
                 emailSentList.insert('1.0', "Email has been sent to:" + f)
 
+        # Throw exception: if connection to mail server was unsuccessful
         except Exception as error:
             print(str(error))
             print("Failed to send email")
 
     def back():
-        """
-        This method is called when the backbutton is pressed. Window is destroyed and closed.
-        """
+        """This method is called when the backbutton is pressed. Window is destroyed and closed."""
         window.destroy()
 
-    saveModuleSelection = tk.Button(window, text="Display Assignments", fg="black", command=displayAssignment, width=15)
+    saveModuleSelection = tk.Button(window, text="Display Assignments", fg="black", command=assignmentCombobox, width=15)
     saveModuleSelection.place(x=400, y=100)
 
     emailSubject_lbl = tk.Label(window, text="Email Subject: ", font=("Calibri", 14))

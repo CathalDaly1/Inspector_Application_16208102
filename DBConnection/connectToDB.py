@@ -6,6 +6,7 @@ import psycopg2
 def connectToDB():
     """
     This class creates a connection to postgresql database for the application
+    Connect to the database. Throw exception if the system cannot connect to the database.
     :return:
     """
     connectionString = 'dbname=InspectorFYP_DB user=postgres password=Detlef228425 host=localhost'

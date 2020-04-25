@@ -32,20 +32,17 @@ def LoginUser():
         """
         This method checks if the username and password entered are in the database.
         """
-        global username1, time_logged_in
-
-        # username = request.form['username']
-        # print(username)
+        global username, time_logged_in
 
         # Get the text which has been entered into the entry area
-        username1 = username_entry.get()
+        username = username_entry.get()
         password1 = password_entry.get()
         # Retrieving the users hashed password
         t_hashed = hashlib.sha256(password1.encode())
         t_password = t_hashed.hexdigest()
         # Executes a select statement which verify's if username and password are in DB
         cur.execute("SELECT username, password  FROM Users WHERE username =%s and password =%s",
-                    (username1, t_password,))
+                    (username, t_password,))
         rows = cur.fetchall()
         conn.commit()
 
@@ -57,7 +54,7 @@ def LoginUser():
         errorLbl = tk.Label(window, text="Incorrect Username or password", font=("Calibri", 10), fg="red")
         if rows:
             for row in rows:
-                if username1 == row[0] and t_password == row[1]:
+                if username == row[0] and t_password == row[1]:
                     HomeScreen.InspectorHomescreen.Homescreen()
                     window.destroy()
         else:
@@ -109,7 +106,7 @@ def getUserID():
     :return:
     """
     cur.execute("SELECT uid::int FROM USERS WHERE username =%s",
-                (username1,))
+                (username,))
     uid = cur.fetchone()
     conn.commit()
     userUID = int(uid[0])
@@ -121,7 +118,7 @@ def getUsername():
     This method returns the username that has been retrieved from the login form.
     :return:
     """
-    return username1
+    return username
 
 
 def getTimeLoggedIn():

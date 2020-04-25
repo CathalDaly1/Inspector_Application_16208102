@@ -4,10 +4,12 @@ import DBConnection.connectToDB
 import UserCredentials.loginUser
 import GradingFunctionality.AccessingFiles
 
+
 def gradingCategoriesScreen():
     """
     This method creates the tkinter window, labels and entry boxes in order for the user to enter
     comments and save them.
+    :rtype: object
     :return:
     """
     window = tk.Tk()
@@ -47,13 +49,20 @@ def gradingCategoriesScreen():
     categoriesEntryE.place(x=150, y=277)
 
     def displayPreviousCategories():
+        """
+        This method allows the user to display previously saved grading categories of the associated module code and
+        assignment No. Throw exception if the user clicks the edit button if there are no previous grading categories
+        saved in the database.
+        :rtype: object
+        """
         moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
         assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
 
         if moduleCode and assignmentNo != "":
             try:
-                cur.execute("SELECT * FROM gradingCategories WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",
-                            (userID, moduleCode, assignmentNo))
+                cur.execute(
+                    "SELECT * FROM gradingCategories WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",
+                    (userID, moduleCode, assignmentNo))
                 categories = cur.fetchone()
                 conn.commit()
 
@@ -94,7 +103,6 @@ def gradingCategoriesScreen():
             categoryC = categoriesEntryC.get("1.0", 'end-1c')
             categoryD = categoriesEntryD.get("1.0", 'end-1c')
             categoryE = categoriesEntryE.get("1.0", 'end-1c')
-            # When save button is pressed, save the comments and destroy the entry's and labels
 
             if not gradingCategory:
                 insertCategories = "INSERT INTO gradingCategories (user_id, moduleCode, assignmentNo, categoryA, categoryB, categoryC, categoryD, categoryE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"

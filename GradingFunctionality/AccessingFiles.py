@@ -2,6 +2,7 @@ import os
 import queue
 import re
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk, messagebox
 
 import psycopg2
@@ -20,12 +21,17 @@ the_queue = queue.Queue()
 
 
 class FileDisplayWindow(tk.Tk):
+    """ This method creates the tkinter frame and window along with the elements of the tkinter window. """
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        tk.Tk.iconbitmap(self,
-                         default='C:/Users/catha/PycharmProjects/Inspector_Application/InspectorImage/Inspector.ico')
+        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+        path = Path(ROOT_DIR)
+        # Get the parent folder of the project
+        parentPath = str(path.parent)
+
+        tk.Tk.iconbitmap(self, default=parentPath + '/InspectorImage/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -45,11 +51,19 @@ class FileDisplayWindow(tk.Tk):
         self.attributes("-topmost", 1)
 
     def show_frame(self, cont):
+        """
+        This method initializes the frame
+        :param cont:
+        """
         frame = self.frames[cont]
         frame.tkraise()
 
 
 class FileSelectionWindow(tk.Frame):
+    """
+    This method sets up the tkinter window with the contents of the window(labels, buttons)
+    """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -61,6 +75,10 @@ class FileSelectionWindow(tk.Frame):
         cur = conn.cursor()
 
         def saveModuleCode():
+            """
+            Gets the module code and assignment number that are entered into the entry boxes
+            :rtype: object
+            """
             global assignmentModuleCode, assignmentNo
             assignmentModuleCode = enterModuleCode.get().upper()
             assignmentNo = enterAssignmentNo.get().upper()
@@ -72,6 +90,10 @@ class FileSelectionWindow(tk.Frame):
                 moduleCodeSaved_lbl.place(x=527, y=87)
 
         def clearEntry():
+            """
+            Clears the entry boxes which will allow the user to re-enter data
+            :rtype: object
+            """
             displayAssignment.config(state="active")
             cannedCommentsButton.config(state="disabled")
             categoriesButton.config(state="disabled")
@@ -82,8 +104,11 @@ class FileSelectionWindow(tk.Frame):
             enterModuleCode.delete('0', 'end')
             enterAssignmentNo.delete('0', 'end')
 
-        # Gets the file name of the selection of the listbox - achieved by 'text'
         def fileAccess():
+            """
+            Checks if the assignment No,
+            :rtype: object
+            """
             global assignmentModuleCode, assignmentNo
             assignmentModuleCode = enterModuleCode.get()
             assignmentNo = enterAssignmentNo.get()
@@ -106,6 +131,10 @@ class FileSelectionWindow(tk.Frame):
                 itemSelectedError_lbl.place(x=380, y=460, anchor="center")
 
         def refreshListbox():
+            """
+            Refreshes the data in the listbox which is being retrieved from the database.
+            :rtype: object
+            """
             listBox.delete(*listBox.get_children())
             assignmentPath = filePath.get()
             abspath = os.path.abspath(assignmentPath)
@@ -113,17 +142,27 @@ class FileSelectionWindow(tk.Frame):
             process_directory(root_node, abspath)
 
         def onClickEvent(event):
+            """
+            When the user clicks on the GUI screen it will refresh the listbox
+            Throw exception if the entry boxes have not been filled in
+            :param event:
+            :rtype: object
+            """
             try:
                 if assignmentNo and assignmentModuleCode != "":
                     refreshListbox()
-            except NameError as error:
-                print(error)
+            except NameError:
+                pass
 
         # Bind the click event to mouse click(Left click)
         self.bind("<1>", onClickEvent)
 
-        # Gets the click of the element in the listbox in order to open file in the next window
         def doubleClickListboxEvent(event):
+            """
+            Gets the click of the element in the listbox in order to open file in the next window
+            :param event:
+            :rtype: object
+            """
             item = listBox.selection()
             try:
                 for i in item:
@@ -156,12 +195,15 @@ class FileSelectionWindow(tk.Frame):
             refreshListbox()
 
         def listboxSelection():
+            """
+            Get the item that has been selected and concats the string with the filepath and the filename selection
+            In order open the file; the full filepath and the name of the file must be selected
+            :rtype: object
+            """
             # Check if the filepath has been entered
             if filePath.get() != "":
                 global item_text
-                # global itemSelected
-                # Get the item that has been selected and concats the string with the filepath and the filename selection
-                # In order open the file; the full filepath and the name of the file must be selected
+
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
                 userID = UserCredentials.loginUser.getUserID()
@@ -195,11 +237,13 @@ class FileSelectionWindow(tk.Frame):
             else:
                 filepathErrorLbl.place(x=320, y=180)
 
-        '''Check of filepath has been entered and if it exists or not
-        if the directory exists then folders and files are displayed in the listbox
-        Displayed also is the status of the assignment grading = Y or N and the grade = 'Int'''
-
         def getFileSelection():
+            """
+            Check of filepath has been entered and if it exists or not
+            if the directory exists then folders and files are displayed in the listbox
+            Displayed also is the status of the assignment grading = Y or N and the grade = 'Int
+            :rtype: object
+            """
             saveModuleCode()
             global assignmentFilePath
             assignmentFilePath = filePath.get()
@@ -215,7 +259,6 @@ class FileSelectionWindow(tk.Frame):
                     # Disable button after it has been clicked once in order for the data to only appear once
                     displayAssignment.config(state="disabled")
                     tempList.sort(key=lambda e: e[0], reverse=True)
-                    # for i, (filename) in enumerate(tempList, start=1):
 
                     # displays the folder and files in that folder
                     abspath = os.path.abspath(assignmentFilePath)
@@ -223,7 +266,6 @@ class FileSelectionWindow(tk.Frame):
                     process_directory(root_node, abspath)
                     displayAssignment.config(state="disabled")
 
-                    # ToDo Look into cleaning this up. Not fully working yet. Need text boxes to disappear when new module is searched and is already in the db
                     userID = UserCredentials.loginUser.getUserID()
                     if moduleCode and assignmentNo != "":
                         cur.execute(
@@ -252,11 +294,12 @@ class FileSelectionWindow(tk.Frame):
                 directoryErrorLbl = tk.Label(self, text="Ensure Entry boxes are filled in and correct", font=("Calibri", 9), fg="red")
                 directoryErrorLbl.place(x=298, y=142)
 
-        '''Checks if file is in the directory, adds other columns if it is a file
-        display data from the database into the to treeview
-        '''
         def process_directory(parentNode, assignmentFilePath):
-
+            """
+            Checks if file is in the directory, adds other columns if it is a file
+            display data from the database into the to treeview
+            :rtype: object
+            """
             cur1 = conn.cursor()
             global fileExtension
             userID = UserCredentials.loginUser.getUserID()

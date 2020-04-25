@@ -56,9 +56,7 @@ def changeStudentsGrades():
         outputBox.insert(tk.END, messageAddMarks)
 
     def saveSubtractedMarks():
-        """
-                This method subtracts a certain mark to all assignments in the database that have already been graded
-                """
+        """ This method subtracts a certain mark to all assignments in the database that have already been graded """
         subtractedMarks = addMarksEntry.get("1.0", 'end-1c').upper()
         moduleCode = moduleCodeEntry.get("1.0", 'end-1c').upper()
         assignmentNo = assignmentNoEntry.get("1.0", 'end-1c').upper()

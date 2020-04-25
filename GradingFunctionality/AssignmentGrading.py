@@ -75,6 +75,13 @@ def selectAssignment():
     window.config(menu=menubar)
 
     def startGrading(event):
+        """
+        This method is used for the keystroke grading in the application. The data in retrieved from the database.
+        This data is then used in the grading process. The user selects a key and that key then performs a task.
+        There is a queue which loads the key selections which is used to add the marks and comments to the
+        students assignment.
+        :rtype: object
+        """
         window.unbind("<s>", bind_id)
         cur.execute(
             "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
@@ -222,6 +229,7 @@ def selectAssignment():
                 the_queue.put("You have not added category E")
             keystrokeGrading.delete('1.0', tk.END)
 
+        # Bind functions to keys
         keystrokeGrading.bind('a', keyA) and keystrokeGrading.bind("<A>", keyA)
         keystrokeGrading.bind('b', keyB) and keystrokeGrading.bind("<B>", keyB)
         keystrokeGrading.bind('c', keyC) and keystrokeGrading.bind("<C>", keyC)
@@ -232,6 +240,8 @@ def selectAssignment():
         keystrokeGrading.bind('3', cannedComment3)
         keystrokeGrading.bind('4', cannedComment4)
         keystrokeGrading.bind('5', cannedComment5)
+
+        # Bind functions to control + key
         keystrokeGrading.bind('<Control-a>', gradingCategoryA) and keystrokeGrading.bind('<Control-A>',
                                                                                          gradingCategoryA)
         keystrokeGrading.bind('<Control-b>', gradingCategoryB) and keystrokeGrading.bind('<Control-B>',
@@ -326,6 +336,14 @@ def selectAssignment():
         print("Implement solution")
 
     def highlightingTextInFile():
+        """
+        This method is used to highlight text in the student assignment. Firstly, the PDF is saved which does not
+        include the highlighted text. The pdf is then opened and the text from the HighlightedText.txt file is
+        copied and the the fitz module in python locates the text in the pdf and then adds a yellow background
+        to the text. The file is then saved. An exception is thrown if the pdf file is opened when the application
+        is saving it.
+        :rtype: object
+        """
         savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
         doc = fitz.open(gradedFilesFolder + "\\" + savingFilePDF)
         page = doc[0]
@@ -333,8 +351,11 @@ def selectAssignment():
         with open(fileHighlightText, "r") as file2:
             time.sleep(0.5)
             text1 = file2.read()
+
+        # Search for the text in the PDF in order to highlight it
         text_instances = page.searchFor(text1, hit_max=200)
 
+        # Loop though the text and add highlight to the text in the HighlightedText.txt file
         for inst in text_instances:
             print(inst, type(inst))
             page.addHighlightAnnot(inst)
@@ -500,8 +521,11 @@ def selectAssignment():
                     messagebox.showwarning(parent=window, title="Inspector - Grading application",
                                            message="You have not finished grading")
 
-        # Highlights code and text when text is selected and highlight button is pressed
         def highlightCode(self, _event=None):
+            """
+            Adds the highlighted text in the assignment grading window to the HighlightedText.txt file
+            :rtype: object
+            """
             count = 0
             if self.text.tag_ranges('sel'):
                 self.text.tag_add('color' + str(count), tk.SEL_FIRST, tk.SEL_LAST)
@@ -519,18 +543,27 @@ def selectAssignment():
             fileContainingText.write(hText)
 
         def addAssignmentComments(self, _event=None):
+            """
+            This method adds the marks and comments generated from the keystrokes into the students assignment
+            :rtype: object
+            """
             self.text.insert(tk.END, "\n")
             self.text.insert(tk.INSERT, assignmentCommentsBox.get("1.0", "end-1c"))
 
-        # If window is closed mid grading, save the file in the folder
         def on_closingWindow(self):
+            """
+            If window is closed mid grading a message box display
+            :rtype: object
+            """
             if messagebox.askokcancel("Quit",
                                       "Do you want to quit grading the assignment?\n File will be saved", parent=window):
                 self.submitAssignment()
 
         def back(self, _event=None):
-            # Clears listbox when returning to the file selection screen: this is in order to reselect the path
-            # Call on_closingwindow() to save assignment if backbutton is pressed
+            """
+            If window is closed mid grading a message box display
+            :rtype: object
+            """
             self.on_closingWindow()
 
     gradingAttributes(window).place(x=60, y=95)

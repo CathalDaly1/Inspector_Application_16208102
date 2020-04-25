@@ -9,10 +9,7 @@ cur = conn.cursor()
 
 
 def forgotPasswordScreen():
-    """
-    This method creates the tkinter window along with the labels and buttons in the window.
-    If the user has forgotten their password they can reset it.
-    """
+    """ This method creates the tkinter window along with the labels and buttons in the window."""
     window = tk.Tk()
     window.title("Inspector - Grading Application")
     window.geometry("500x350+400+300")
@@ -23,11 +20,11 @@ def forgotPasswordScreen():
     newPassword_verify = StringVar()
     confirmNewPassword_verify = StringVar()
 
-    def verify_username():
+    def changeUsersPassword():
         """
-        This verifies that the username and email entered exists in the database.
-        If it is in the database the user can change their password by adding a new
-        password into the entry box on this screen.
+        The data entered into the form is crosschecked with the users previous data in the database
+        If the username and email entered in the form is equal to that in the database, their
+        new password will be updated and entered into the database.
         """
         username = username_entry.get()
         email = email_entry.get()
@@ -63,9 +60,7 @@ def forgotPasswordScreen():
             errorLbl.place(x=180, y=280)
 
     def back():
-        """
-        This method is called when the 'back' button is pressed. The login window is destroyed.
-        """
+        """This method is called when the 'back' button is pressed. The login window is destroyed."""
         window.destroy()
 
     # Creates the GUI elements for buttons and labels
@@ -84,7 +79,7 @@ def forgotPasswordScreen():
     confirm_newPassword_entry = Entry(window, show="*", textvariable=confirmNewPassword_verify, font=("Calibri", 13))
     confirm_newPassword_entry.pack()
     Label(window, text="").pack()
-    confirmButton = Button(window, text="Confirm", width=10, height=1, command=verify_username, font=("Calibri", 12))
+    confirmButton = Button(window, text="Confirm", width=10, height=1, command=changeUsersPassword, font=("Calibri", 12))
     confirmButton.place(x=280, y=305)
     backButton = Button(window, text="Back", width=10, height=1, command=back, font=("Calibri", 12))
     backButton.place(x=150, y=305)
