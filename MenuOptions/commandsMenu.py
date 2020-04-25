@@ -15,6 +15,7 @@ def menuOptions():
     window.title("Inspector - Grading Application")
     window.geometry("550x600+1250+50")
     window.resizable(False, False)
+    window.attributes("-topmost", 1)
 
     conn = DBConnection.connectToDB.connectToDB()
     cur = conn.cursor()
@@ -30,7 +31,6 @@ def menuOptions():
         "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
         (userID, assignmentModuleCode, assignmentNo))
     fetchedComments = cur.fetchone()
-    print("Canned comments:" + str(fetchedComments))
 
     try:
         comment1Display = fetchedComments[0]
@@ -49,7 +49,6 @@ def menuOptions():
         "SELECT  valueKeyA, commentA, valueKeyB, commentB,  valueKeyC, commentC, valueKeyD, commentD, total FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
         (userID, assignmentModuleCode, assignmentNo))
     fetchedKeyValuesDisplay = cur.fetchone()
-    print("keys comments: " + str(fetchedKeyValuesDisplay))
 
     valueKeyADisplay = fetchedKeyValuesDisplay[0]
     commentADisplay = fetchedKeyValuesDisplay[1]
@@ -64,7 +63,6 @@ def menuOptions():
         "SELECT  categoryA, categoryB, categoryC, categoryD,  categoryE  FROM gradingCategories WHERE user_id =%s and modulecode = %s and assignmentno = %s",
         (userID, assignmentModuleCode, assignmentNo))
     gradingCategories = cur.fetchone()
-    print("keys comments: " + str(gradingCategories))
 
     try:
         gradingCategoriesA = gradingCategories[0]
@@ -81,31 +79,31 @@ def menuOptions():
 
     tk.Label(window, bg="white", justify=tk.LEFT,
              text="Key S: Start Grading" + "\n" + "Key A: +" + str(valueKeyADisplay) + " - Comment A: " + str(
-                 commentADisplay) + "\n\n"
+                 commentADisplay) + "\n"
                                     "Key B: +" + str(
-                 valueKeyBDisplay) + " - Comment B: " + str(commentBDisplay) + "\n\n"
+                 valueKeyBDisplay) + " - Comment B: " + str(commentBDisplay) + "\n"
                                                                                "Key C: +" + str(
-                 valueKeyCDisplay) + " - Comment C: " + str(commentCDisplay) + "\n\n"
+                 valueKeyCDisplay) + " - Comment C: " + str(commentCDisplay) + "\n"
                                                                                "Key D: +" + str(
-                 valueKeyDDisplay) + " - Comment D: " + str(commentDDisplay) + "\n\n"
+                 valueKeyDDisplay) + " - Comment D: " + str(commentDDisplay) + "\n"
                                                                                "Key E: Complete grading"
-                  + "\n\n"
+                  + "\n"
                     "Canned Comment 1: " + str(comment1Display)
-                  + "\n\n"
+                  + "\n"
                     "Canned Comment 2: " + str(comment2Display)
-                  + "\n\n"
+                  + "\n"
                     "Canned Comment 3: " + str(comment3Display)
-                  + "\n\n"
+                  + "\n"
                     "Canned Comment 4: " + str(comment4Display)
-                  + "\n\n"
+                  + "\n"
                     "Canned Comment 5: " + str(comment5Display)
-                  + "\n\n"
+                  + "\n"
                     "Category A: " + str(gradingCategoriesA)
-                  + "\n\n"
+                  + "\n"
                     "Category B: " + str(gradingCategoriesB)
-                  + "\n\n"
+                  + "\n"
                     "Category C: " + str(gradingCategoriesC)
-                  + "\n\n"
+                  + "\n"
                     "Category D: " + str(gradingCategoriesD)
-                  + "\n\n"
+                  + "\n"
                     "Category E: " + str(gradingCategoriesE), wraplengt=550, font=("Arial", 12)).pack()

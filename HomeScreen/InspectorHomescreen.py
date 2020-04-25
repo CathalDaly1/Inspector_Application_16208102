@@ -50,43 +50,41 @@ def Homescreen():
              text="In the next screen, enter the value of the pre-programmed keys and\n "
                   "comments in order to be able to select an assignment to grade. At the \n"
                   "bottom of this screen there are options to access the user analytics \n"
-                  "and the Inspector Email system. \n", font=("Calibri", 12)).pack()
+                  "and the Inspector Email system. \n", font=("Calibri", 12)).place(x=120, y=40)
 
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category A -> Ctrl + a", font=("Calibri", 12)).place(x=50,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category A -> Ctrl + a", font=("Calibri", 12)).place(x=20,
                                                                                                                y=140)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category B -> Ctrl + b", font=("Calibri", 12)).place(x=50,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category B -> Ctrl + b", font=("Calibri", 12)).place(x=20,
                                                                                                                y=161)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category C -> Ctrl + c", font=("Calibri", 12)).place(x=50,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category C -> Ctrl + c", font=("Calibri", 12)).place(x=20,
                                                                                                                y=182)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category D -> Ctrl + d", font=("Calibri", 12)).place(x=50,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category D -> Ctrl + d", font=("Calibri", 12)).place(x=20,
                                                                                                                y=203)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category E -> Ctrl + e", font=("Calibri", 12)).place(x=50,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Category E -> Ctrl + e", font=("Calibri", 12)).place(x=20,
                                                                                                                y=224)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Highlight text -> Ctrl + r", font=("Calibri", 12)).place(x=50,
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Highlight text -> Ctrl + r", font=("Calibri", 12)).place(x=20,
                                                                                                              y=246)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Submit Assignment -> Ctrl + s", font=("Calibri", 12)).place(
-        x=50, y=268)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key A -> +x marks", font=("Calibri", 12)).place(x=290, y=140)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B -> +x marks", font=("Calibri", 12)).place(x=290, y=160)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C -> +x marks", font=("Calibri", 12)).place(x=290, y=180)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D -> +x marks", font=("Calibri", 12)).place(x=290, y=200)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key B -> +x marks", font=("Calibri", 12)).place(x=290, y=161)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key C -> +x marks", font=("Calibri", 12)).place(x=290, y=182)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key D -> +x marks", font=("Calibri", 12)).place(x=290, y=203)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key S -> Start Grading", font=("Calibri", 12)).place(x=290,
-                                                                                                              y=220)
+                                                                                                              y=224)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key E -> Complete Grading", font=("Calibri", 12)).place(x=290,
-                                                                                                                 y=242)
+                                                                                                                 y=246)
 
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 1 -> Canned Comment 1", font=("Calibri", 12)).place(x=520,
                                                                                                                  y=140)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 2 -> Canned Comment 2", font=("Calibri", 12)).place(x=520,
-                                                                                                                 y=160)
+                                                                                                                 y=161)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 3 -> Canned Comment 3", font=("Calibri", 12)).place(x=520,
-                                                                                                                 y=180)
+                                                                                                                 y=182)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 4 -> Canned Comment 4", font=("Calibri", 12)).place(x=520,
-                                                                                                                 y=200)
+                                                                                                                 y=203)
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key 5 -> Canned Comment 5", font=("Calibri", 12)).place(x=520,
-                                                                                                                 y=220)
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Key Q -> Quit Inspector", font=("Calibri", 12)).place(x=520,
-                                                                                                               y=242)
+                                                                                                                 y=224)
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Submit Assignment -> Ctrl + s", font=("Calibri", 12)).place(x=520,
+                                                                                                               y=246)
     prog_keys_lbl.place(x=30, y=400)
 
     quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=quit, height=2, width=12,

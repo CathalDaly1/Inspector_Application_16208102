@@ -90,6 +90,11 @@ def emailSystem():
                                     font=("Calibri", 14))
         recipientsLoaded.place(x=25, y=207)
 
+        studentGradeMessage_lbl = tk.Label(window, text="Students graded assignment and grade will be "
+                                                        "automatically included in the email",
+                                           font=("Calibri", 14))
+        studentGradeMessage_lbl.place(x=25, y=233)
+
     def bar():
         """
         This method displays a progress bar
@@ -119,7 +124,7 @@ def emailSystem():
 
     loading = tk.Label(window, text="Loading data into the email system: ", font=("Calibri", 14))
     loading.place(x=25, y=155)
-    progress.place(x=305, y=157)
+    progress.place(x=305, y=158)
 
     def showTable():
         """
@@ -247,10 +252,10 @@ def emailSystem():
     saveModuleSelection.place(x=400, y=100)
 
     emailSubject_lbl = tk.Label(window, text="Email Subject: ", font=("Calibri", 14))
-    emailSubject_lbl.place(x=25, y=255)
+    emailSubject_lbl.place(x=25, y=260)
 
     emailSubjectEntry: tk.Text = tk.Text(window, height="2", width="60")
-    emailSubjectEntry.place(x=160, y=260)
+    emailSubjectEntry.place(x=160, y=265)
 
     emailBody_lbl = tk.Label(window, text="Email Body: ", font=("Calibri", 14))
     emailBody_lbl.place(x=25, y=320)

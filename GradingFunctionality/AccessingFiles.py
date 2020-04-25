@@ -139,7 +139,10 @@ class FileSelectionWindow(tk.Frame):
                 print("Cannot select " + str(error))
 
         def selectAssignment():
-            GradingFunctionality.AssignmentGrading.selectAssignment()
+            try:
+                GradingFunctionality.AssignmentGrading.selectAssignment()
+            except:
+                pass
 
         def infoLabel():
             global infoText_lbl
@@ -342,6 +345,31 @@ class FileSelectionWindow(tk.Frame):
             totalEntry: tk.Text = tk.Text(self, height="1", width="10")
             totalEntry.place(x=170, y=733)
 
+            # userID = UserCredentials.loginUser.getUserID()
+            # cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s and assignmentNo = %s",
+            #             (userID, assignmentModuleCode, assignmentNo))
+            # existingKeystrokeValues = cur.fetchone()
+            # conn.commit()
+            #
+            # keyAEntry.delete("1.0", tk.END)
+            # keyBEntry.delete("1.0", tk.END)
+            # keyCEntry.delete("1.0", tk.END)
+            # keyDEntry.delete("1.0", tk.END)
+            # totalEntry.delete("1.0", tk.END)
+            # keyACommentEntry.delete("1.0", tk.END)
+            # keyBCommentEntry.delete("1.0", tk.END)
+            # keyCCommentEntry.delete("1.0", tk.END)
+            # keyDCommentEntry.delete("1.0", tk.END)
+            # keyAEntry.insert("1.0", existingKeystrokeValues[3])
+            # keyBEntry.insert("1.0", existingKeystrokeValues[5])
+            # keyCEntry.insert("1.0", existingKeystrokeValues[7])
+            # keyDEntry.insert("1.0", existingKeystrokeValues[9])
+            # totalEntry.insert("1.0", existingKeystrokeValues[11])
+            # keyACommentEntry.insert("1.0", existingKeystrokeValues[4])
+            # keyBCommentEntry.insert("1.0", existingKeystrokeValues[6])
+            # keyBCommentEntry.insert("1.0", existingKeystrokeValues[8])
+            # keyBCommentEntry.insert("1.0", existingKeystrokeValues[10])
+
             def saveKeysButton():
                 try:
                     valueKeyA1 = int(keyAEntry.get("1.0", tk.END))
@@ -373,7 +401,6 @@ class FileSelectionWindow(tk.Frame):
                         cur.execute(insertKeysCommentsSQL, keysCommentsValues)
                         conn.commit()
 
-                        a = int(total)
                         keysSaved_lbl = tk.Label(self, text="Values for Keys Saved", font=("Arial", 8))
                         keysSaved_lbl.place(x=320, y=525)
 
@@ -387,36 +414,36 @@ class FileSelectionWindow(tk.Frame):
                         cur.execute(updateKeysCommentsSQL, keysCommentsValues)
                         conn.commit()
 
-                        a = int(total)
                         keysSaved_lbl = tk.Label(self, text="Values for Keys updated", font=("Arial", 8))
                         keysSaved_lbl.place(x=320, y=525)
 
-                    # Collapse key values entry's and labels when button is selected
-                    keyAEntry.destroy()
-                    keyBEntry.destroy()
-                    keyCEntry.destroy()
-                    keyDEntry.destroy()
-                    totalEntry.destroy()
-                    keyA_lbl.destroy()
-                    keyB_lbl.destroy()
-                    keyC_lbl.destroy()
-                    keyD_lbl.destroy()
-                    total_lbl.destroy()
-                    keysHeading_lbl.destroy()
-                    keyAComment_lbl.destroy()
-                    keyACommentEntry.destroy()
-                    keyBComment_lbl.destroy()
-                    keyBCommentEntry.destroy()
-                    keyCComment_lbl.destroy()
-                    keyCCommentEntry.destroy()
-                    keyDComment_lbl.destroy()
-                    keyDCommentEntry.destroy()
-                    saveButton.destroy()
+                        # Collapse key values entry's and labels when button is selected
+                        keyAEntry.destroy()
+                        keyBEntry.destroy()
+                        keyCEntry.destroy()
+                        keyDEntry.destroy()
+                        totalEntry.destroy()
+                        keyA_lbl.destroy()
+                        keyB_lbl.destroy()
+                        keyC_lbl.destroy()
+                        keyD_lbl.destroy()
+                        total_lbl.destroy()
+                        keysHeading_lbl.destroy()
+                        keyAComment_lbl.destroy()
+                        keyACommentEntry.destroy()
+                        keyBComment_lbl.destroy()
+                        keyBCommentEntry.destroy()
+                        keyCComment_lbl.destroy()
+                        keyCCommentEntry.destroy()
+                        keyDComment_lbl.destroy()
+                        keyDCommentEntry.destroy()
+                        saveButton.destroy()
                     changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
                                                       command=changeKeyValues)
                     changeKeyValuesButton.place(x=320, y=500)
+
                 except ValueError:
-                    keysSavedError_lbl = tk.Label(self, text="Enter values for keys", fg="red", font=("Arial", 8))
+                    keysSavedError_lbl = tk.Label(self, text="Enter values for keys\t", fg="red", font=("Arial", 8))
                     keysSavedError_lbl.place(x=320, y=525)
 
             saveButton = tk.Button(self, text="Save", width=13, command=saveKeysButton)

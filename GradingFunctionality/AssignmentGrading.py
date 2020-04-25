@@ -67,20 +67,15 @@ def selectAssignment():
     # Menubar in the top left of the screen
     file_menu = tk.Menu(menubar, tearoff=0)
     file_menu.add_command(label="View Keystrokes", command=MenuOptions.commandsMenu.menuOptions)
-    # file_menu.add_command(label="View Canned Comments", command=viewCannedComments)
     file_menu.add_separator()
     file_menu.add_command(label="Quit Inspector", command=quit)
     menubar.add_cascade(label="File", menu=file_menu)
-
-    helpMenu = tk.Menu(menubar, tearoff=0)
-    menubar.add_cascade(label="Help", menu=helpMenu)
 
     # display the menu
     window.config(menu=menubar)
 
     def startGrading(event):
         window.unbind("<s>", bind_id)
-        userID = UserCredentials.loginUser.getUserID()
         cur.execute(
             "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
             (userID, assignmentModuleCode, assignmentNo))
@@ -149,7 +144,7 @@ def selectAssignment():
             try:
                 comment1 = fetchedComments[0]
                 the_queue.put("Comment 1: " + str(comment1))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added a comment for Key 1")
             keystrokeGrading.delete('1.0', tk.END)
 
@@ -157,7 +152,7 @@ def selectAssignment():
             try:
                 comment2 = fetchedComments[1]
                 the_queue.put("Comment 2: " + str(comment2))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added a comment for Key 2")
 
             keystrokeGrading.delete('1.0', tk.END)
@@ -167,7 +162,7 @@ def selectAssignment():
                 comment3 = fetchedComments[2]
 
                 the_queue.put("Comment 3: " + str(comment3))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added a comment for Key 3")
             keystrokeGrading.delete('1.0', tk.END)
 
@@ -175,7 +170,7 @@ def selectAssignment():
             try:
                 comment4 = fetchedComments[3]
                 the_queue.put("Comment 4: " + str(comment4))
-            except TypeError as error:
+            except TypeError:
                 the_queue.put("You have not added a comment for Key 4")
             keystrokeGrading.delete('1.0', tk.END)
 
@@ -264,14 +259,11 @@ def selectAssignment():
             # Print out the message once there is something in the queue
             studentFinalGrade['text'] = message
             # Insert messages from the queue into the text box
-            GradeTextBox.insert(tk.END, message + "\n")
-            # Scroll to the end of text when new text is added
-            GradeTextBox.see("end")
+            assignmentCommentsBox.insert(tk.END, message + "\n")
+            # Scroll to the end of text when new text is added to the output box
+            assignmentCommentsBox.see("end")
             window.after(100, queue_callback)
 
-    # Start the thread and run the keystrokeApplication_thread function
-    # thread = threading.Thread(target=keystrokeApplication_thread)
-    # thread.start()
     window.after(100, queue_callback)
 
     assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
@@ -280,7 +272,6 @@ def selectAssignment():
     subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
     subTitle_lbl.place(x=400, y=70, anchor="center")
 
-    userID = UserCredentials.loginUser.getUserID()
     cur.execute(
         "SELECT valueKeyA, valueKeyB,  valueKeyC, valueKeyD FROM keysComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
         (userID, assignmentModuleCode, assignmentNo))
@@ -303,27 +294,10 @@ def selectAssignment():
                   str(valueKeyBDisplay) + " - Comment B \n" + "Key C: + " +
                   str(valueKeyCDisplay) + " - Comment C \n" + "Key D: + " +
                   str(valueKeyDDisplay) + " - Comment D \n"
-                  + "Key E: Finish grading\n"
-                  +
-                  "Canned Comment 1: Key 1\n"
-                  +
-                  "Canned Comment 2: Key 2\n"
-                  +
-                  "Canned Comment 3: Key 3\n"
-                  +
-                  "Canned Comment 4: Key 4\n"
-                  +
-                  "Canned Comment 5: Key 5\n"
-                  +
-                  "Category A: Ctrl + A\n"
-                  +
-                  "Category B: Ctrl + B\n"
-                  +
-                  "Category C: Ctrl + C\n"
-                  +
-                  "Category D: Ctrl + D\n"
-                  +
-                  "Category E: Ctrl + E\n", wraplengt=345, font=("Arial", 12)).pack()
+                  + "Key E: Finish grading\n" + "Canned Comment 1: Key 1\n" + "Canned Comment 2: Key 2\n" +
+                  "Canned Comment 3: Key 3\n" + "Canned Comment 4: Key 4\n" + "Canned Comment 5: Key 5\n" +
+                  "Category A: Ctrl + A\n" + "Category B: Ctrl + B\n" + "Category C: Ctrl + C\n" +
+                  "Category D: Ctrl + D\n" + "Category E: Ctrl + E\n", wraplengt=345, font=("Arial", 12)).pack()
 
     studentFinalGrade = tk.Label(window, wraplengt=350, font=("Arial", 12))
     studentFinalGrade.place(x=790, y=570)
@@ -334,22 +308,22 @@ def selectAssignment():
     keystrokeGrading: tk.Text = tk.Text(window, height="1", width="27", font=("Calibri", 12))
     keystrokeGrading.place(x=792, y=540)
 
-    GradeTextBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
-    GradeTextBox.place(x=45, y=730)
+    assignmentCommentsBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
+    assignmentCommentsBox.place(x=45, y=730)
 
-    # Scrollbar on X and Y axis of GradeTextBox
-    GradeTextBoxScrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=GradeTextBox.yview)
-    GradeTextBox['yscroll'] = GradeTextBoxScrollbar.set
-    GradeTextBox.insert(tk.END, "***Grade/Comments***\n")
+    # Scrollbar on X and Y axis of assignmentCommentsBox
+    GradeTextBoxScrollbar = tk.Scrollbar(window, orient=tk.VERTICAL, command=assignmentCommentsBox.yview)
+    assignmentCommentsBox['yscroll'] = GradeTextBoxScrollbar.set
+    assignmentCommentsBox.insert(tk.END, "***Grade/Comments***\n")
 
-    GradeTextBoxScrollbar.place(in_=GradeTextBox, relx=1.0, relheight=1.0, bordermode="outside")
+    GradeTextBoxScrollbar.place(in_=assignmentCommentsBox, relx=1.0, relheight=1.0, bordermode="outside")
 
     # Opens the file and copies the contents into the text box for editing
     global assignment
     try:
         assignment = open(file, encoding="ISO-8859-1").read()
     except FileNotFoundError:
-        print("Implement this please")
+        print("Implement solution")
 
     def highlightingTextInFile():
         savingFilePDF = re.sub('\t', '', item_text[0] + ".pdf")
@@ -371,10 +345,10 @@ def selectAssignment():
             doc.close()
             os.remove(gradedFilesFolder + "\\" + savingFilePDF)
 
-        except RuntimeError:
-            print("PDF file may be open")
+        except RuntimeError as error:
+            print("PDF file may be open" + str(error))
 
-    class TextLineNumbers(tk.Canvas):
+    class AssignmentLineNumbers(tk.Canvas):
 
         def __init__(self, *args, **kwargs):
             tk.Canvas.__init__(self, *args, **kwargs)
@@ -396,7 +370,7 @@ def selectAssignment():
                 self.create_text(2, y, anchor="nw", text=linenum)
                 i = self.textwidget.index("%s+1line" % i)
 
-    class generatingLineNumbersLive(tk.Text):
+    class generatingLineNumbers(tk.Text):
         def __init__(self, *args, **kwargs):
             tk.Text.__init__(self, *args, **kwargs)
 
@@ -420,12 +394,12 @@ def selectAssignment():
             # return what the actual widget returned
             return result
 
-    class lineNumbers(tk.Frame):
+    class gradingAttributes(tk.Frame):
         def __init__(self, *args, **kwargs):
             tk.Frame.__init__(self, *args, **kwargs)
-            self.text = generatingLineNumbersLive(self, width=84, wrap=tk.NONE, height=35)
+            self.text = generatingLineNumbers(self, width=84, wrap=tk.NONE, height=35)
             self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
-            self.codeLineNumbers = TextLineNumbers(self, width=30, bg="deep sky blue")
+            self.codeLineNumbers = AssignmentLineNumbers(self, width=30, bg="deep sky blue")
             self.codeLineNumbers.attach(self.text)
 
             self.codeLineNumbers.pack(side="left", fill="y")
@@ -486,7 +460,6 @@ def selectAssignment():
             highlightingTextInFile()
 
         def submitAssignment(self, _event=None):
-            userIDNo = UserCredentials.loginUser.getUserID()
             assignmentFilePath = GradingFunctionality.AccessingFiles.getFilepath()
             cur.execute(
                 "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
@@ -514,7 +487,7 @@ def selectAssignment():
                     time_graded = datetime.datetime.now()
                     insertAssignments = "INSERT INTO assignments (user_id, modulecode, assignmentNo, student_id, filename, final_grade, graded_status, time_graded, filepath) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                     assignmentValues = (
-                        userIDNo, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y',
+                        userID, assignmentModuleCode, assignmentNo, selection, item_text[0], final, 'Y',
                         time_graded, assignmentFilePath)
                     # Executes the insertion ans passes values username and password into the insertion
                     cur.execute(insertAssignments, assignmentValues)
@@ -547,7 +520,7 @@ def selectAssignment():
 
         def addAssignmentComments(self, _event=None):
             self.text.insert(tk.END, "\n")
-            self.text.insert(tk.INSERT, GradeTextBox.get("1.0", "end-1c"))
+            self.text.insert(tk.INSERT, assignmentCommentsBox.get("1.0", "end-1c"))
 
         # If window is closed mid grading, save the file in the folder
         def on_closingWindow(self):
@@ -560,4 +533,4 @@ def selectAssignment():
             # Call on_closingwindow() to save assignment if backbutton is pressed
             self.on_closingWindow()
 
-    lineNumbers(window).place(x=60, y=95)
+    gradingAttributes(window).place(x=60, y=95)
