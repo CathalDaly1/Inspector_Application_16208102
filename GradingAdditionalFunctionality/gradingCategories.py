@@ -110,7 +110,7 @@ def gradingCategoriesScreen():
                 # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(insertCategories, val1)
                 conn.commit()
-                newCommentsSaved_lbl = tk.Label(window, text="Grading Categories have been saved",
+                newCommentsSaved_lbl = tk.Label(window, text="Grading Categories have been saved\t\t\t",
                                                 font=("Calibri", 10))
                 newCommentsSaved_lbl.place(x=230, y=315)
 
@@ -119,7 +119,7 @@ def gradingCategoriesScreen():
                 val2 = (categoryA, categoryB, categoryC, categoryD, categoryE, userID, moduleCode, assignmentNo)
                 cur.execute(updateCategories, val2)
                 conn.commit()
-                commentsUpdated_lbl = tk.Label(window, text="Grading Categories have been updated",
+                commentsUpdated_lbl = tk.Label(window, text="Grading Categories have been updated\t\t\t",
                                                font=("Calibri", 10))
                 commentsUpdated_lbl.place(x=250, y=315)
 

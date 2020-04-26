@@ -4,6 +4,7 @@ import DBConnection.connectToDB
 from UserCredentials import loginUser
 import GradingFunctionality.AccessingFiles
 
+
 def cannedCommentScreen():
     """
     This method creates the tkinter window, labels and entry boxes in order for the user to enter
@@ -123,7 +124,8 @@ def cannedCommentScreen():
 
             return [comment1, comment2, comment3, comment4, comment5]
         else:
-            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No. in previous screen", fg="red",
+            error_lbl = tk.Label(window, text="Please enter Module Code and Assignment No. in previous screen",
+                                 fg="red",
                                  font=("Calibri", 10))
             error_lbl.place(x=180, y=315)
 

@@ -1,17 +1,16 @@
 import os
 import re
 import tkinter as tk
-from pathlib import Path
 from tkinter import ttk, messagebox
 
 import psycopg2
 
 import DBConnection.connectToDB
-import GradingFunctionality.cannedComments
+import GradingAdditionalFunctionality.cannedComments
 from UserCredentials import loginUser
-import GradingFunctionality.ChangingGrades
+import GradingAdditionalFunctionality.changingGrades
 import GradingFunctionality.AssignmentGrading
-import GradingFunctionality.gradingCategories
+import GradingAdditionalFunctionality.gradingCategories
 
 
 class FileDisplayWindow(tk.Tk):
@@ -19,14 +18,7 @@ class FileDisplayWindow(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-
-        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-        path = Path(ROOT_DIR)
-        # Get the parent folder of the project
-        parentPath = str(path.parent)
-        correctParentPath = (parentPath.replace("\\", "/"))
-
-        # tk.Tk.iconbitmap(self, default=correctParentPath + '/InspectorImage/Inspector.ico')
+        tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -175,7 +167,6 @@ class FileSelectionWindow(tk.Frame):
         def selectAssignment():
             checkPath = assignmentFilePath.replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
             if os.path.exists(checkPath):
-                print("getting here")
                 GradingFunctionality.AssignmentGrading.selectAssignment()
             else:
                 fileDoesNotExistError_lbl = tk.Label(self, text='\tFile does not exist on the file system\t\t', fg="red",
@@ -250,40 +241,34 @@ class FileSelectionWindow(tk.Frame):
 
             # Check if the entered filepath exists on the users file system
             if os.path.exists(assignmentFilePath) and assignmentModuleCode and assignmentNo != "":
-                dirLabel = tk.Label(self, text="\tDirectory Exists\t\t\t", font=("Calibri", 9))
-                dirLabel.place(x=300, y=142)
+                directoryExists_lbl = tk.Label(self, text="\tDirectory Exists\t\t\t", font=("Calibri", 9))
+                directoryExists_lbl.place(x=300, y=142)
 
-                abspath = os.path.abspath(assignmentFilePath)
-                root_node = listBox.insert('', 'end', text=abspath, open=True)
-                process_directory(root_node, abspath)
+                root_node = listBox.insert('', 'end', text=assignmentFilePath, open=True)
+                process_directory(root_node, assignmentFilePath)
 
-                # Loops through the files in the filepath and displays them
-                for filename in os.listdir(assignmentFilePath):
-                    tempList = [[filename]]
-                    # Disable button after it has been clicked once in order for the data to only appear once
-                    displayAssignment.config(state="disabled")
-                    tempList.sort(key=lambda e: e[0], reverse=True)
+                userID = loginUser.getUserID()
+                cur.execute(
+                    "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
+                    (userID, assignmentModuleCode, assignmentNo))
+                keystrokes = cur.fetchone()
+                conn.commit()
 
-                    displayAssignment.config(state="disabled")
+                #  Disable button after it has been clicked once in order for the data to only appear once
+                displayAssignment.config(state="disabled")
+                #  Enable buttons after it has been clicked once in order for the data to only appear once
+                cannedCommentsButton.config(state="active")
+                categoriesButton.config(state="active")
+                selectStudentAssignButton.config(state="active")
 
-                    userID = loginUser.getUserID()
-                    cur.execute(
-                        "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
-                        (userID, assignmentModuleCode, assignmentNo))
-                    vals = cur.fetchone()
-                    conn.commit()
-                    cannedCommentsButton.config(state="active")
-                    categoriesButton.config(state="active")
-                    selectStudentAssignButton.config(state="active")
+                if keystrokes is None:
+                    changeKeyValues()
+                else:
+                    changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
+                                                      command=changeKeyValues)
+                    changeKeyValuesButton.place(x=320, y=500)
 
-                    if vals is None:
-                        changeKeyValues()
-                    else:
-                        changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
-                                                          command=changeKeyValues)
-                        changeKeyValuesButton.place(x=320, y=500)
-
-                    listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
+                listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
 
             else:
                 moduleCodeSaved_lbl = tk.Label(self, text="Please enter the Module Code and Assignment No.\t\t",
@@ -299,13 +284,16 @@ class FileSelectionWindow(tk.Frame):
             display data from the database into the to treeview
             :rtype: object
             """
-            cur1 = conn.cursor()
             global fileExtension
             userID = loginUser.getUserID()
+
             for studentFiles in os.listdir(assignmentFilePath):
+
                 fileExtension = re.search(r'\.\w+$', studentFiles)
-                # Check if file ends with an extension, otherwise it is a folder
+                fileFolderPath = os.path.join(assignmentFilePath, studentFiles)
                 abspath = os.path.join(assignmentFilePath, studentFiles)
+
+                # Check if file ends with an extension, otherwise it is a folder
                 if fileExtension is not None:
                     isdir = os.path.isdir(abspath)
                     listBoxStudentData = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
@@ -314,22 +302,20 @@ class FileSelectionWindow(tk.Frame):
 
                 elif studentFiles == "Graded Assignments":
                     pass
-                    # oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
-                    # process_directory(oid3, abspath)
 
                 else:
                     try:
-                        cur1.execute(
+                        cur.execute(
                             "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL "
                             "and user_id=%s and modulecode=%s and assignmentno=%s",
                             (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                        studentGrade = cur1.fetchone()
+                        studentGrade = cur.fetchone()
 
-                        cur1.execute(
+                        cur.execute(
                             "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL"
                             " and user_id=%s and modulecode=%s and assignmentno=%s",
                             (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                        graded = cur1.fetchone()
+                        graded = cur.fetchone()
 
                         listBoxStudentAssignmentData = listBox.insert(parentNode, 'end', values=(studentFiles,
                                                                                                  graded,
@@ -394,31 +380,6 @@ class FileSelectionWindow(tk.Frame):
             totalEntry: tk.Text = tk.Text(self, height="1", width="10")
             totalEntry.place(x=170, y=733)
 
-            # userID = UserCredentials.loginUser.getUserID()
-            # cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s and assignmentNo = %s",
-            #             (userID, assignmentModuleCode, assignmentNo))
-            # existingKeystrokeValues = cur.fetchone()
-            # conn.commit()
-            #
-            # keyAEntry.delete("1.0", tk.END)
-            # keyBEntry.delete("1.0", tk.END)
-            # keyCEntry.delete("1.0", tk.END)
-            # keyDEntry.delete("1.0", tk.END)
-            # totalEntry.delete("1.0", tk.END)
-            # keyACommentEntry.delete("1.0", tk.END)
-            # keyBCommentEntry.delete("1.0", tk.END)
-            # keyCCommentEntry.delete("1.0", tk.END)
-            # keyDCommentEntry.delete("1.0", tk.END)
-            # keyAEntry.insert("1.0", existingKeystrokeValues[3])
-            # keyBEntry.insert("1.0", existingKeystrokeValues[5])
-            # keyCEntry.insert("1.0", existingKeystrokeValues[7])
-            # keyDEntry.insert("1.0", existingKeystrokeValues[9])
-            # totalEntry.insert("1.0", existingKeystrokeValues[11])
-            # keyACommentEntry.insert("1.0", existingKeystrokeValues[4])
-            # keyBCommentEntry.insert("1.0", existingKeystrokeValues[6])
-            # keyBCommentEntry.insert("1.0", existingKeystrokeValues[8])
-            # keyBCommentEntry.insert("1.0", existingKeystrokeValues[10])
-
             def saveKeysButton():
                 try:
                     valueKeyA1 = int(keyAEntry.get("1.0", tk.END))
@@ -438,7 +399,6 @@ class FileSelectionWindow(tk.Frame):
                     conn.commit()
 
                     if not keystrokeValues:
-
                         insertKeysCommentsSQL = "INSERT INTO keysComments (user_id, moduleCode, assignmentNo, valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         keysCommentsValues = (
                             userID, assignmentModuleCode, assignmentNo, valueKeyA1, commentA1, valueKeyB1, commentB1,
@@ -464,29 +424,29 @@ class FileSelectionWindow(tk.Frame):
                         conn.commit()
 
                         keysSaved_lbl = tk.Label(self, text="Values for Keys updated", font=("Arial", 8))
-                        keysSaved_lbl.place(x=320, y=525)
+                        keysSaved_lbl.place(x=320, y=523)
 
-                        # Collapse key values entry's and labels when button is selected
-                        keyAEntry.destroy()
-                        keyBEntry.destroy()
-                        keyCEntry.destroy()
-                        keyDEntry.destroy()
-                        totalEntry.destroy()
-                        keyA_lbl.destroy()
-                        keyB_lbl.destroy()
-                        keyC_lbl.destroy()
-                        keyD_lbl.destroy()
-                        total_lbl.destroy()
-                        keysHeading_lbl.destroy()
-                        keyAComment_lbl.destroy()
-                        keyACommentEntry.destroy()
-                        keyBComment_lbl.destroy()
-                        keyBCommentEntry.destroy()
-                        keyCComment_lbl.destroy()
-                        keyCCommentEntry.destroy()
-                        keyDComment_lbl.destroy()
-                        keyDCommentEntry.destroy()
-                        saveButton.destroy()
+                    # Collapse key values entry's and labels when button is selected
+                    keyAEntry.destroy()
+                    keyBEntry.destroy()
+                    keyCEntry.destroy()
+                    keyDEntry.destroy()
+                    totalEntry.destroy()
+                    keyA_lbl.destroy()
+                    keyB_lbl.destroy()
+                    keyC_lbl.destroy()
+                    keyD_lbl.destroy()
+                    total_lbl.destroy()
+                    keysHeading_lbl.destroy()
+                    keyAComment_lbl.destroy()
+                    keyACommentEntry.destroy()
+                    keyBComment_lbl.destroy()
+                    keyBCommentEntry.destroy()
+                    keyCComment_lbl.destroy()
+                    keyCCommentEntry.destroy()
+                    keyDComment_lbl.destroy()
+                    keyDCommentEntry.destroy()
+                    saveButton.destroy()
                     changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
                                                       command=changeKeyValues)
                     changeKeyValuesButton.place(x=320, y=500)
@@ -499,7 +459,7 @@ class FileSelectionWindow(tk.Frame):
             saveButton.place(x=300, y=755)
 
         def changeValueOfAllAssignments():
-            GradingFunctionality.ChangingGrades.changeStudentsGrades()
+            GradingAdditionalFunctionality.changingGrades.changeStudentsGrades()
 
         # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
@@ -554,7 +514,7 @@ class FileSelectionWindow(tk.Frame):
 
         # Buttons at the bottom of the student file selection screen
         cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15,
-                                         command=GradingFunctionality.cannedComments.cannedCommentScreen)
+                                         command=GradingAdditionalFunctionality.cannedComments.cannedCommentScreen)
         cannedCommentsButton.place(x=320, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
@@ -565,7 +525,7 @@ class FileSelectionWindow(tk.Frame):
         selectStudentAssignButton.place(x=75, y=470)
 
         categoriesButton = tk.Button(self, text="Add grading categories", width=22,
-                                     command=GradingFunctionality.gradingCategories.gradingCategoriesScreen)
+                                     command=GradingAdditionalFunctionality.gradingCategories.gradingCategoriesScreen)
         categoriesButton.place(x=75, y=500)
 
         cannedCommentsButton.config(state="disabled")

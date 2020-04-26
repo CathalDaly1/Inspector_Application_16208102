@@ -4,7 +4,6 @@ import queue
 import re
 import time
 import tkinter as tk
-from pathlib import Path
 from tkinter import messagebox
 
 import fitz
@@ -28,6 +27,7 @@ def selectAssignment():
 
     the_queue = queue.Queue()
 
+    # Retrieving data from loginUser and AccessingFiles file
     userID = loginUser.getUserID()
     assignmentModuleCode = GradingFunctionality.AccessingFiles.getModuleCode()
     assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
@@ -35,12 +35,11 @@ def selectAssignment():
     item_text = GradingFunctionality.AccessingFiles.getItem()
     filePath = GradingFunctionality.AccessingFiles.getFilepath()
 
+    # Creating a text file which will be used for the highlighting segments of the students assignment
     newTextFile = str(filePath.replace("\\", "/") + "/highlightedText.txt")
     textFile = open(newTextFile, "w")
     textFile.close()
 
-    global file
-    global gradedFilesFolder
     fileExtensionSelection = re.search(r'\.\w+$', selection)
     # Get the click event of the selection from the listbox, use that selection to create a new filepath and add new graded files
     gradedFilesFolder = filePath.replace("\\", "/") + "/" + "Graded Assignments" + "/" + selection + "/"

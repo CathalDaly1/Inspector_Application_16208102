@@ -1,6 +1,4 @@
-import os
 import tkinter as tk
-from pathlib import Path
 from tkinter import *
 
 from UserCredentials import loginUser, registerUser
@@ -11,14 +9,7 @@ class UserMainScreen(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-
-        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-        path = Path(ROOT_DIR)
-        # Get the parent folder of the project
-        parentPath = str(path.parent)
-        correctParentPath = (parentPath.replace("\\", "/"))
-
-        # tk.Tk.iconbitmap(self, default=(correctParentPath + '/InspectorImage/Inspector.ico'))
+        tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
