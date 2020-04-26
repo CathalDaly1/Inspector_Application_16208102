@@ -1,3 +1,5 @@
+import functools
+import operator
 import os
 import tkinter as tk
 from pathlib import Path
@@ -130,6 +132,7 @@ def analyticsScreen():
                 "SELECT DISTINCT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                 (userID, moduleCodeSelection, assignmentSelect))
             studentID = cur.fetchall()
+            conn.commit()
 
             studentIdList = [item for t in studentID for item in t]
             numberOfGradedAssignments = []
@@ -166,6 +169,10 @@ def analyticsScreen():
         assignmentSelect = assignmentCombo.get()
         displayModuleAssignments()
 
+    def convertTuple(pathTuple):
+        convertTup = functools.reduce(operator.add, pathTuple)
+        return convertTup
+
     def exportData():
         """
         This method is called when the 'export data' button is pressed. Exports data from table into an
@@ -175,17 +182,19 @@ def analyticsScreen():
         """
         cur.execute("SELECT modulecode, assignmentno, student_id, filename, final_grade, time_graded, filepath FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
-
         assignmentData = cur.fetchall()
+
+        cur.execute(
+            "SELECT DISTINCT filepath FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
+            (userID, moduleCodeSelection, assignmentSelect))
+        getFilepath = cur.fetchone()
+
         conn.commit()
-        # Get the root directory of the project in the users machine
-        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-        path = Path(ROOT_DIR)
-        # Get the parent folder of the project
-        parentPath = str(path.parent)
-        # Replace the \\ in the filepath with / in order for the application to be able to save the file
-        correctParentPath = (parentPath.replace("\\", "/"))
-        workbook = xlsxwriter.Workbook(correctParentPath + '/ExportedCSVFiles/'
+
+        studentAssignmentFilePathTuple = convertTuple(getFilepath[0])
+        studentAssignmentFilePath = studentAssignmentFilePathTuple.replace("\\", "/")
+
+        workbook = xlsxwriter.Workbook(studentAssignmentFilePath + "/"
                                        + moduleCodeSelection + "-" + assignmentSelect + '.xlsx')
         worksheet = workbook.add_worksheet()
 
@@ -208,7 +217,7 @@ def analyticsScreen():
                     worksheet.write(rows + 1, colindex, col)
             workbook.close()
 
-            print("File location of exported data: " + correctParentPath + '/ExportedCSVFiles/')
+            print("File location of exported data: " + studentAssignmentFilePath + '/ExportedCSVFiles/')
 
             exportDataConfirmed_lbl = tk.Label(window, text="Data Exported and saved", font=("Calibri", 12))
             exportDataConfirmed_lbl.place(x=550, y=125)

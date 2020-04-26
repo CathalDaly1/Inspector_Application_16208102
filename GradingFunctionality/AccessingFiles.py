@@ -1,11 +1,8 @@
 import os
-import pstats
-import queue
 import re
 import tkinter as tk
 from pathlib import Path
 from tkinter import ttk, messagebox
-import cProfile
 
 import psycopg2
 
@@ -16,9 +13,6 @@ import GradingFunctionality.ChangingGrades
 import GradingFunctionality.AssignmentGrading
 import GradingFunctionality.gradingCategories
 
-# initialize queue for thread
-the_queue = queue.Queue()
-profile = cProfile.Profile()
 
 class FileDisplayWindow(tk.Tk):
     """ This method creates the tkinter frame and window along with the elements of the tkinter window. """
@@ -179,15 +173,20 @@ class FileSelectionWindow(tk.Frame):
                 print("Cannot select " + str(error))
 
         def selectAssignment():
-            try:
+            checkPath = assignmentFilePath.replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
+            if os.path.exists(checkPath):
+                print("getting here")
                 GradingFunctionality.AssignmentGrading.selectAssignment()
-            except:
-                pass
+            else:
+                fileDoesNotExistError_lbl = tk.Label(self, text='\tFile does not exist on the file system\t\t', fg="red",
+                                                 font=("Arial", 9))
+                fileDoesNotExistError_lbl.place(x=380, y=460, anchor="center")
 
         def infoLabel():
             global infoText_lbl
             infoText_lbl = tk.Label(self, text="Open Assignment: Double Click Student ID.\n"
-                                               "Click once on filename, click 'Select Assignment'",  anchor='w', fg="red", font=("Arial", 10))
+                                               "Click once on filename, click 'Select Assignment'", anchor='w',
+                                    fg="red", font=("Arial", 10))
             infoText_lbl.place(x=510, y=173)
             deleteInfoLabel()
 
@@ -290,7 +289,8 @@ class FileSelectionWindow(tk.Frame):
                 moduleCodeSaved_lbl = tk.Label(self, text="Please enter the Module Code and Assignment No.\t\t",
                                                fg="red")
                 moduleCodeSaved_lbl.place(x=527, y=85)
-                directoryErrorLbl = tk.Label(self, text="Ensure Entry boxes are filled in and correct", font=("Calibri", 9), fg="red")
+                directoryErrorLbl = tk.Label(self, text="Ensure Entry boxes are filled in and correct",
+                                             font=("Calibri", 9), fg="red")
                 directoryErrorLbl.place(x=298, y=142)
 
         def process_directory(parentNode, assignmentFilePath):
@@ -308,9 +308,9 @@ class FileSelectionWindow(tk.Frame):
                 abspath = os.path.join(assignmentFilePath, studentFiles)
                 if fileExtension is not None:
                     isdir = os.path.isdir(abspath)
-                    oid = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
+                    listBoxStudentData = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
                     if isdir:
-                        process_directory(oid, abspath)
+                        process_directory(listBoxStudentData, abspath)
 
                 elif studentFiles == "Graded Assignments":
                     pass
@@ -320,19 +320,23 @@ class FileSelectionWindow(tk.Frame):
                 else:
                     try:
                         cur1.execute(
-                            "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
+                            "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL "
+                            "and user_id=%s and modulecode=%s and assignmentno=%s",
                             (studentFiles, userID, assignmentModuleCode, assignmentNo))
                         studentGrade = cur1.fetchone()
 
                         cur1.execute(
-                            "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
+                            "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL"
+                            " and user_id=%s and modulecode=%s and assignmentno=%s",
                             (studentFiles, userID, assignmentModuleCode, assignmentNo))
                         graded = cur1.fetchone()
 
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
-                                              open=False)
+                        listBoxStudentAssignmentData = listBox.insert(parentNode, 'end', values=(studentFiles,
+                                                                                                 graded,
+                                                                                                 studentGrade),
+                                                                      open=False)
 
-                        process_directory(oid3, abspath)
+                        process_directory(listBoxStudentAssignmentData, abspath)
                         conn.commit()
 
                     except (psycopg2.Error, AttributeError):
@@ -561,7 +565,7 @@ class FileSelectionWindow(tk.Frame):
         selectStudentAssignButton.place(x=75, y=470)
 
         categoriesButton = tk.Button(self, text="Add grading categories", width=22,
-                                          command=GradingFunctionality.gradingCategories.gradingCategoriesScreen)
+                                     command=GradingFunctionality.gradingCategories.gradingCategoriesScreen)
         categoriesButton.place(x=75, y=500)
 
         cannedCommentsButton.config(state="disabled")
@@ -592,4 +596,3 @@ def getFilepath():
 if __name__ == "__main__":
     app = FileDisplayWindow()
     app.mainloop()
-    the_queue.put(None)

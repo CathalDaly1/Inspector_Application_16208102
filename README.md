@@ -5,6 +5,7 @@ This application will focus on the speed at which assignments can be graded. Thi
 keys on the computer which will represent grades and also keys which will allow the lecturer to access main menu and 
 other features in the application. 
 
+PYTHON VERSION: 3.7.4
 
 PostgreSQL database with Heroku Server - Credentials are as follows:
 Host: ec2-54-217-204-34.eu-west-1.compute.amazonaws.com

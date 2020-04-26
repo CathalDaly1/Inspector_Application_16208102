@@ -15,11 +15,6 @@ import DBConnection.connectToDB
 import GradingFunctionality.AccessingFiles
 import MenuOptions.commandsMenu
 
-conn = DBConnection.connectToDB.connectToDB()
-cur = conn.cursor()
-
-the_queue = queue.Queue()
-
 
 def selectAssignment():
     window = tk.Tk()
@@ -27,7 +22,11 @@ def selectAssignment():
     window.geometry("1200x985+50+50")
     window.resizable(False, False)
     window.attributes("-topmost", 1)
-    menubar = tk.Menu(window)
+
+    conn = DBConnection.connectToDB.connectToDB()
+    cur = conn.cursor()
+
+    the_queue = queue.Queue()
 
     userID = loginUser.getUserID()
     assignmentModuleCode = GradingFunctionality.AccessingFiles.getModuleCode()
@@ -36,22 +35,16 @@ def selectAssignment():
     item_text = GradingFunctionality.AccessingFiles.getItem()
     filePath = GradingFunctionality.AccessingFiles.getFilepath()
 
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    path = Path(ROOT_DIR)
-    # Get the parent folder of the project
-    parentPath = str(path.parent)
-    # Replace the \\ in the filepath with / in order for the application to be able to save the file
-    correctParentPath = (parentPath.replace("\\", "/"))
-    fileHighlightText = (str(correctParentPath) + "/HighlightFiles/highlightedText.txt")
-    print(fileHighlightText)
-    open(fileHighlightText, 'w').close()
+    newTextFile = str(filePath.replace("\\", "/") + "/highlightedText.txt")
+    textFile = open(newTextFile, "w")
+    textFile.close()
 
     global file
     global gradedFilesFolder
     fileExtensionSelection = re.search(r'\.\w+$', selection)
     # Get the click event of the selection from the listbox, use that selection to create a new filepath and add new graded files
     gradedFilesFolder = filePath.replace("\\", "/") + "/" + "Graded Assignments" + "/" + selection + "/"
-    print(gradedFilesFolder)
+
     if not os.path.exists(gradedFilesFolder):
         os.makedirs(gradedFilesFolder)
 
@@ -59,23 +52,11 @@ def selectAssignment():
     # If it is a filename, concat the string of the filepath and the filename
     if fileExtensionSelection is not None:
         file = filePath.replace("\\", "/") + "/" + str(item_text[0])
-        print(file)
 
     # If it is a folder, concat the string of the filepath, the folder and the selection
     else:
         # Get the filename and remove the \t tab which is needed to display listbox with indentation
         file = filePath.replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
-        print(file)
-
-    # Menubar in the top left of the screen
-    file_menu = tk.Menu(menubar, tearoff=0)
-    file_menu.add_command(label="View Keystrokes", command=MenuOptions.commandsMenu.menuOptions)
-    file_menu.add_separator()
-    file_menu.add_command(label="Quit Inspector", command=quit)
-    menubar.add_cascade(label="File", menu=file_menu)
-
-    # display the menu
-    window.config(menu=menubar)
 
     def startGrading(event):
         """
@@ -301,7 +282,7 @@ def selectAssignment():
     keystrokes_lbl.place(x=790, y=95)
     tk.Label(keystrokes_lbl, bg="white", fg="black", text="Key Shortcuts", font=("Calibri Bold", 18)).pack()
     tk.Label(keystrokes_lbl, bg="white", justify=tk.LEFT,
-             text="View detailed keystrokes: File->View Keystrokes" + "\n" + "Key S: Start Grading" + "\n"
+             text="View detailed keystrokes: 'View Keystrokes' Button" + "\n" + "Key S: Start Grading" + "\n"
                   + "Ctrl + S: Submit Assignment" + "\n" + "Ctrl + R: Highlight Text\n"
                   + "Key A: +" + str(valueKeyADisplay) + " - Comment A \n" + "Key B: +" +
                   str(valueKeyBDisplay) + " - Comment B \n" + "Key C: + " +
@@ -351,7 +332,7 @@ def selectAssignment():
         doc = fitz.open(gradedFilesFolder + "\\" + savingFilePDF)
         page = doc[0]
 
-        with open(fileHighlightText, "r") as file2:
+        with open(newTextFile, "r") as file2:
             time.sleep(0.5)
             text1 = file2.read()
 
@@ -453,6 +434,10 @@ def selectAssignment():
             submitButton = tk.Button(window, text="Submit", width=15, command=self.submitAssignment)
             submitButton.place(x=480, y=685)
 
+            detailedKeystrokesButton = tk.Button(window, text="View Keystrokes", width=15,
+                                                 command=MenuOptions.commandsMenu.menuOptions)
+            detailedKeystrokesButton.place(x=670, y=685)
+
             backButton2 = tk.Button(window, text="Back", width=15, command=self.back)
             backButton2.place(x=100, y=685)
 
@@ -540,7 +525,7 @@ def selectAssignment():
                 #     text.tag_delete(tag)
                 self.text.config(foreground='yellow')
 
-            fileContainingText = open(fileHighlightText, "a")
+            fileContainingText = open(newTextFile, "a")
 
             hText = self.text.get(tk.SEL_FIRST, tk.SEL_LAST)
             fileContainingText.write(hText)
@@ -559,7 +544,8 @@ def selectAssignment():
             :rtype: object
             """
             if messagebox.askokcancel("Quit",
-                                      "Do you want to quit grading the assignment?\n File will be saved", parent=window):
+                                      "Do you want to quit grading the assignment?\n File will be saved",
+                                      parent=window):
                 self.submitAssignment()
 
         def back(self, _event=None):
