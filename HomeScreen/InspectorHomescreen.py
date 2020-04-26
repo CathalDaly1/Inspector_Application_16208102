@@ -1,9 +1,11 @@
+import sys
 import tkinter as tk
 
 import EmailSystem.emailSystem
 import UsersAnalytics.userAnalytics
 import GradingFunctionality.AccessingFiles
-import UserCredentials.loginUser
+import GradingFunctionality.AssignmentGrading
+from UserCredentials import loginUser
 
 
 def Homescreen():
@@ -13,7 +15,7 @@ def Homescreen():
     window.geometry("800x800+100+100")
 
     # Get the time logged in from the loginUser file
-    username = UserCredentials.loginUser.getUsername()
+    username = loginUser.getUsername()
     lbl_title = tk.Label(window, text="Inspector - Grading Application", font=("Arial Bold", 20))
     lbl_title.place(x=400, y=70, anchor="center")
 
@@ -21,7 +23,7 @@ def Homescreen():
     username_lbl.place(x=5, y=5)
 
     # Get the time logged in from the loginUser file
-    time_logged_in = UserCredentials.loginUser.getTimeLoggedIn()
+    time_logged_in = loginUser.getTimeLoggedIn()
     loggedIn_lbl = tk.Label(window, fg="black", text="Logged in: " + str(time_logged_in), font=("Calibri", 12))
     loggedIn_lbl.place(x=535, y=5)
 
@@ -86,7 +88,10 @@ def Homescreen():
                                                                                                                y=246)
     prog_keys_lbl.place(x=30, y=400)
 
-    quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=quit, height=2, width=12,
+    def quitInspector():
+        sys.exit(0)
+
+    quit_button = tk.Button(window, text="Quit Inspector", fg="red", command=GradingFunctionality.AssignmentGrading.selectAssignment, height=2, width=12,
                             font=("Calibri", 11))
     quit_button.place(x=30, y=730)
 

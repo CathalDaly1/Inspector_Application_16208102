@@ -1,7 +1,7 @@
 import tkinter as tk
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
+from UserCredentials import loginUser
 import GradingFunctionality.AccessingFiles
 
 
@@ -24,7 +24,7 @@ def menuOptions():
     lbl_title = tk.Label(window, text="Inspector - Keystrokes", font=("Arial Bold", 18))
     lbl_title.pack()
 
-    userID = UserCredentials.loginUser.getUserID()
+    userID = loginUser.getUserID()
     assignmentModuleCode = GradingFunctionality.AccessingFiles.getModuleCode()
     assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
 

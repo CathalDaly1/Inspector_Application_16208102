@@ -1,7 +1,7 @@
 import tkinter as tk
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
+from UserCredentials import loginUser
 import GradingFunctionality.AccessingFiles
 
 def cannedCommentScreen():
@@ -16,7 +16,7 @@ def cannedCommentScreen():
     window.resizable(False, False)
     window.attributes("-topmost", 1)
 
-    userID = UserCredentials.loginUser.getUserID()
+    userID = loginUser.getUserID()
 
     conn = DBConnection.connectToDB.connectToDB()
     cur = conn.cursor()
@@ -108,18 +108,18 @@ def cannedCommentScreen():
                 # Executes the insertion ans passes values username and password into the insertion
                 cur.execute(insertComments, val1)
                 conn.commit()
-                newCommentsSaved_lbl = tk.Label(window, text="Canned Comments have been saved",
+                newCommentsSaved_lbl = tk.Label(window, text="Canned Comments have been saved\t\t\t",
                                                 font=("Calibri", 10))
-                newCommentsSaved_lbl.place(x=250, y=315)
+                newCommentsSaved_lbl.place(x=200, y=315)
 
             else:
                 updateComments = "Update cannedComments set comment1 = %s, comment2 = %s , comment3 = %s , comment4 = %s , comment5 = %s where user_id =%s and moduleCode=%s and assignmentNo = %s"
                 val2 = (comment1, comment2, comment3, comment4, comment5, userID, moduleCode, assignmentNo)
                 cur.execute(updateComments, val2)
                 conn.commit()
-                commentsUpdated_lbl = tk.Label(window, text="Canned Comments have been updated",
+                commentsUpdated_lbl = tk.Label(window, text="Canned Comments have been updated\t\t\t",
                                                font=("Calibri", 10))
-                commentsUpdated_lbl.place(x=250, y=315)
+                commentsUpdated_lbl.place(x=200, y=315)
 
             return [comment1, comment2, comment3, comment4, comment5]
         else:

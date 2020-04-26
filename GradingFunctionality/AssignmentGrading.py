@@ -10,7 +10,7 @@ from tkinter import messagebox
 import fitz
 from fpdf import FPDF
 
-import UserCredentials.loginUser
+from UserCredentials import loginUser
 import DBConnection.connectToDB
 import GradingFunctionality.AccessingFiles
 import MenuOptions.commandsMenu
@@ -29,7 +29,7 @@ def selectAssignment():
     window.attributes("-topmost", 1)
     menubar = tk.Menu(window)
 
-    userID = UserCredentials.loginUser.getUserID()
+    userID = loginUser.getUserID()
     assignmentModuleCode = GradingFunctionality.AccessingFiles.getModuleCode()
     assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
     selection = GradingFunctionality.AccessingFiles.getSelection()
@@ -43,6 +43,7 @@ def selectAssignment():
     # Replace the \\ in the filepath with / in order for the application to be able to save the file
     correctParentPath = (parentPath.replace("\\", "/"))
     fileHighlightText = (str(correctParentPath) + "/HighlightFiles/highlightedText.txt")
+    print(fileHighlightText)
     open(fileHighlightText, 'w').close()
 
     global file
@@ -50,6 +51,7 @@ def selectAssignment():
     fileExtensionSelection = re.search(r'\.\w+$', selection)
     # Get the click event of the selection from the listbox, use that selection to create a new filepath and add new graded files
     gradedFilesFolder = filePath.replace("\\", "/") + "/" + "Graded Assignments" + "/" + selection + "/"
+    print(gradedFilesFolder)
     if not os.path.exists(gradedFilesFolder):
         os.makedirs(gradedFilesFolder)
 
@@ -57,12 +59,13 @@ def selectAssignment():
     # If it is a filename, concat the string of the filepath and the filename
     if fileExtensionSelection is not None:
         file = filePath.replace("\\", "/") + "/" + str(item_text[0])
+        print(file)
 
     # If it is a folder, concat the string of the filepath, the folder and the selection
     else:
         # Get the filename and remove the \t tab which is needed to display listbox with indentation
         file = filePath.replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
-        # file = re.sub('\t', '', file)
+        print(file)
 
     # Menubar in the top left of the screen
     file_menu = tk.Menu(menubar, tearoff=0)

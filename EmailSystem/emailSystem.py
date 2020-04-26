@@ -10,7 +10,7 @@ from tkinter.ttk import Progressbar
 from gevent._compat import izip
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
+from UserCredentials import loginUser
 
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
@@ -26,7 +26,7 @@ def emailSystem():
     window.geometry("850x800+100+100")
     window.resizable(False, False)
 
-    userID = UserCredentials.loginUser.getUserID()
+    userID = loginUser.getUserID()
 
     lbl_title = tk.Label(window, text="Inspector - Mailing System", font=("Arial Bold", 18))
     lbl_title.place(x=400, y=50, anchor="center")

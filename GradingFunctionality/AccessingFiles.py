@@ -1,24 +1,24 @@
 import os
+import pstats
 import queue
 import re
 import tkinter as tk
 from pathlib import Path
 from tkinter import ttk, messagebox
+import cProfile
 
 import psycopg2
-from PIL import ImageTk
 
 import DBConnection.connectToDB
 import GradingFunctionality.cannedComments
-import UserCredentials.loginUser
-import UserCredentials.LoginRegistrationScreen
+from UserCredentials import loginUser
 import GradingFunctionality.ChangingGrades
 import GradingFunctionality.AssignmentGrading
 import GradingFunctionality.gradingCategories
 
 # initialize queue for thread
 the_queue = queue.Queue()
-
+profile = cProfile.Profile()
 
 class FileDisplayWindow(tk.Tk):
     """ This method creates the tkinter frame and window along with the elements of the tkinter window. """
@@ -30,8 +30,9 @@ class FileDisplayWindow(tk.Tk):
         path = Path(ROOT_DIR)
         # Get the parent folder of the project
         parentPath = str(path.parent)
+        correctParentPath = (parentPath.replace("\\", "/"))
 
-        tk.Tk.iconbitmap(self, default=parentPath + '/InspectorImage/Inspector.ico')
+        # tk.Tk.iconbitmap(self, default=correctParentPath + '/InspectorImage/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -206,7 +207,7 @@ class FileSelectionWindow(tk.Frame):
 
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
-                userID = UserCredentials.loginUser.getUserID()
+                userID = loginUser.getUserID()
 
                 try:
                     cur.execute(
@@ -253,6 +254,10 @@ class FileSelectionWindow(tk.Frame):
                 dirLabel = tk.Label(self, text="\tDirectory Exists\t\t\t", font=("Calibri", 9))
                 dirLabel.place(x=300, y=142)
 
+                abspath = os.path.abspath(assignmentFilePath)
+                root_node = listBox.insert('', 'end', text=abspath, open=True)
+                process_directory(root_node, abspath)
+
                 # Loops through the files in the filepath and displays them
                 for filename in os.listdir(assignmentFilePath):
                     tempList = [[filename]]
@@ -260,37 +265,31 @@ class FileSelectionWindow(tk.Frame):
                     displayAssignment.config(state="disabled")
                     tempList.sort(key=lambda e: e[0], reverse=True)
 
-                    # displays the folder and files in that folder
-                    abspath = os.path.abspath(assignmentFilePath)
-                    root_node = listBox.insert('', 'end', text=abspath, open=True)
-                    process_directory(root_node, abspath)
                     displayAssignment.config(state="disabled")
 
-                    userID = UserCredentials.loginUser.getUserID()
-                    if moduleCode and assignmentNo != "":
-                        cur.execute(
-                            "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
-                            (userID, assignmentModuleCode, assignmentNo))
-                        vals = cur.fetchone()
+                    userID = loginUser.getUserID()
+                    cur.execute(
+                        "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
+                        (userID, assignmentModuleCode, assignmentNo))
+                    vals = cur.fetchone()
+                    conn.commit()
+                    cannedCommentsButton.config(state="active")
+                    categoriesButton.config(state="active")
+                    selectStudentAssignButton.config(state="active")
 
-                        cannedCommentsButton.config(state="active")
-                        categoriesButton.config(state="active")
-                        selectStudentAssignButton.config(state="active")
-
-                        if vals is None:
-                            changeKeyValues()
-                        else:
-                            changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
-                                                              command=changeKeyValues)
-                            changeKeyValuesButton.place(x=320, y=500)
+                    if vals is None:
+                        changeKeyValues()
                     else:
-                        moduleCodeSaved_lbl = tk.Label(self, text="Please enter the Module Code and Assignment No.\t\t",
-                                                       fg="red")
-                        moduleCodeSaved_lbl.place(x=527, y=85)
+                        changeKeyValuesButton = tk.Button(self, text="Change Keys values", width=15,
+                                                          command=changeKeyValues)
+                        changeKeyValuesButton.place(x=320, y=500)
 
                     listBox.bind("<Double-Button-1>", doubleClickListboxEvent)
-                refreshListbox()
+
             else:
+                moduleCodeSaved_lbl = tk.Label(self, text="Please enter the Module Code and Assignment No.\t\t",
+                                               fg="red")
+                moduleCodeSaved_lbl.place(x=527, y=85)
                 directoryErrorLbl = tk.Label(self, text="Ensure Entry boxes are filled in and correct", font=("Calibri", 9), fg="red")
                 directoryErrorLbl.place(x=298, y=142)
 
@@ -302,7 +301,7 @@ class FileSelectionWindow(tk.Frame):
             """
             cur1 = conn.cursor()
             global fileExtension
-            userID = UserCredentials.loginUser.getUserID()
+            userID = loginUser.getUserID()
             for studentFiles in os.listdir(assignmentFilePath):
                 fileExtension = re.search(r'\.\w+$', studentFiles)
                 # Check if file ends with an extension, otherwise it is a folder
@@ -313,33 +312,36 @@ class FileSelectionWindow(tk.Frame):
                     if isdir:
                         process_directory(oid, abspath)
 
+                elif studentFiles == "Graded Assignments":
+                    pass
+                    # oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
+                    # process_directory(oid3, abspath)
+
                 else:
-                    if studentFiles == "Graded Assignments":
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
+                    try:
+                        cur1.execute(
+                            "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
+                            (studentFiles, userID, assignmentModuleCode, assignmentNo))
+                        studentGrade = cur1.fetchone()
+
+                        cur1.execute(
+                            "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
+                            (studentFiles, userID, assignmentModuleCode, assignmentNo))
+                        graded = cur1.fetchone()
+
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
+                                              open=False)
+
                         process_directory(oid3, abspath)
+                        conn.commit()
 
-                    else:
-                        try:
-                            cur1.execute(
-                                "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
-                                (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                            studentGrade = cur1.fetchall()
-                            conn.commit()
-                            cur1.execute(
-                                "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL and user_id=%s and modulecode=%s and assignmentno=%s",
-                                (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                            graded = cur1.fetchone()
-                            conn.commit()
-                            oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, graded, studentGrade),
-                                                  open=False)
-                            process_directory(oid3, abspath)
-
-                        except (psycopg2.Error, AttributeError):
-                            # ToDo fix this error in postgresql transaction error, bad practice
-                            conn.rollback()
-                            oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""),
-                                                  open=False)
-                            process_directory(oid3, abspath)
+                    except (psycopg2.Error, AttributeError):
+                        # ToDo fix this error in postgresql transaction error, bad practice
+                        conn.rollback()
+                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""),
+                                              open=False)
+                        process_directory(oid3, abspath)
+                        conn.commit()
 
         def changeKeyValues():
 
@@ -425,7 +427,7 @@ class FileSelectionWindow(tk.Frame):
                     commentC1 = keyCCommentEntry.get("1.0", 'end-1c')
                     commentD1 = keyDCommentEntry.get("1.0", 'end-1c')
 
-                    userID = UserCredentials.loginUser.getUserID()
+                    userID = loginUser.getUserID()
                     cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s and assignmentNo = %s",
                                 (userID, assignmentModuleCode, assignmentNo))
                     keystrokeValues = cur.fetchall()

@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import *
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
+from UserCredentials import loginUser
 
 conn = DBConnection.connectToDB.connectToDB()
 cur = conn.cursor()
@@ -54,7 +54,7 @@ def registerUser():
                 # Closes the connection to the database
                 conn.commit()
                 window.withdraw()
-                UserCredentials.loginUser.LoginUser()
+                loginUser.LoginUser()
         else:
             # If password and confirm password are not the same, display error message
             errorLbl2 = tk.Label(window, text="Please fill in all fields\t\t", font=("Calibri", 10), fg="red")

@@ -1,7 +1,7 @@
 import tkinter as tk
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
+from UserCredentials import loginUser
 import GradingFunctionality.AccessingFiles
 
 
@@ -18,7 +18,7 @@ def gradingCategoriesScreen():
     window.resizable(False, False)
     window.attributes("-topmost", 1)
 
-    userID = UserCredentials.loginUser.getUserID()
+    userID = loginUser.getUserID()
 
     conn = DBConnection.connectToDB.connectToDB()
     cur = conn.cursor()

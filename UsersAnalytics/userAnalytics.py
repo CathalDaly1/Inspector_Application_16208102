@@ -1,4 +1,3 @@
-import collections
 import os
 import tkinter as tk
 from pathlib import Path
@@ -12,7 +11,7 @@ import xlsxwriter
 from xlsxwriter.exceptions import FileCreateError
 
 import DBConnection.connectToDB
-import UserCredentials.loginUser
+from UserCredentials import loginUser
 
 style.use('fivethirtyeight')
 
@@ -32,7 +31,7 @@ def analyticsScreen():
     window.geometry("850x800+100+100")
     window.resizable(False, False)
 
-    userID = UserCredentials.loginUser.getUserID()
+    userID = loginUser.getUserID()
     cur.execute("SELECT count(*) FROM assignments WHERE user_id =%s",
                 (userID,))
     number = cur.fetchone()
