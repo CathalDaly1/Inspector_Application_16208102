@@ -81,12 +81,15 @@ class FileSelectionWindow(tk.Frame):
             Clears the entry boxes which will allow the user to re-enter data
             :rtype: object
             """
+            global assignmentModuleCode, assignmentNo
             displayAssignment.config(state="active")
             cannedCommentsButton.config(state="disabled")
             categoriesButton.config(state="disabled")
             selectStudentAssignButton.config(state="disabled")
             # This clears the table when clear button is clicked
             listBox.delete(*listBox.get_children())
+            assignmentNo = ""
+            assignmentModuleCode = ""
             filePath.delete('0', 'end')
             enterModuleCode.delete('0', 'end')
             enterAssignmentNo.delete('0', 'end')
@@ -296,42 +299,38 @@ class FileSelectionWindow(tk.Frame):
                 # Check if file ends with an extension, otherwise it is a folder
                 if fileExtension is not None:
                     isdir = os.path.isdir(abspath)
-                    listBoxStudentData = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
-                    if isdir:
-                        process_directory(listBoxStudentData, abspath)
+
+                    cur.execute(
+                        "SELECT graded_status FROM assignments WHERE filename =%s and filename IS NOT NULL"
+                        " and user_id=%s and modulecode=%s and assignmentno=%s",
+                        (studentFiles, userID, assignmentModuleCode, assignmentNo))
+                    graded = cur.fetchone()
+
+                    listBox.insert(parentNode, 'end', values=(studentFiles, graded, ""), open=False)
 
                 elif studentFiles == "Graded Assignments":
                     pass
 
                 else:
-                    try:
-                        cur.execute(
-                            "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL "
-                            "and user_id=%s and modulecode=%s and assignmentno=%s",
-                            (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                        studentGrade = cur.fetchone()
+                    cur.execute(
+                        "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL "
+                        "and user_id=%s and modulecode=%s and assignmentno=%s",
+                        (studentFiles, userID, assignmentModuleCode, assignmentNo))
+                    studentGrade = cur.fetchone()
 
-                        cur.execute(
-                            "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL"
-                            " and user_id=%s and modulecode=%s and assignmentno=%s",
-                            (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                        graded = cur.fetchone()
+                    cur.execute(
+                        "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL"
+                        " and user_id=%s and modulecode=%s and assignmentno=%s",
+                        (studentFiles, userID, assignmentModuleCode, assignmentNo))
+                    graded = cur.fetchone()
 
-                        listBoxStudentAssignmentData = listBox.insert(parentNode, 'end', values=(studentFiles,
-                                                                                                 graded,
-                                                                                                 studentGrade),
-                                                                      open=False)
+                    listBoxStudentAssignmentData = listBox.insert(parentNode, 'end', values=(studentFiles,
+                                                                                             graded,
+                                                                                             studentGrade),
+                                                                  open=False)
 
-                        process_directory(listBoxStudentAssignmentData, abspath)
-                        conn.commit()
-
-                    except (psycopg2.Error, AttributeError):
-                        # ToDo fix this error in postgresql transaction error, bad practice
-                        conn.rollback()
-                        oid3 = listBox.insert(parentNode, 'end', values=(studentFiles, "", ""),
-                                              open=False)
-                        process_directory(oid3, abspath)
-                        conn.commit()
+                    process_directory(listBoxStudentAssignmentData, abspath)
+                    conn.commit()
 
         def changeKeyValues():
 

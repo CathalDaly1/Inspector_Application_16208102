@@ -180,9 +180,6 @@ def analyticsScreen():
         a result of the file being opened on the users machine.
         :rtype: object
         """
-        cur.execute("SELECT modulecode, assignmentno, student_id, filename, final_grade, time_graded, filepath FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
-                    (userID, moduleCodeSelection, assignmentSelect))
-        assignmentData = cur.fetchall()
 
         cur.execute(
             "SELECT DISTINCT filepath FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
@@ -206,9 +203,15 @@ def analyticsScreen():
         worksheet.set_column('G:G', 51)
         worksheet.autofilter('A1:G200')
 
+        cur.execute("SELECT modulecode, assignmentno, student_id, filename, final_grade, time_graded, filepath FROM assignments WHERE user_id =%s and modulecode=%s and assignmentno=%s",
+                    (userID, moduleCodeSelection, assignmentSelect))
+        assignmentData = cur.fetchall()
+
         try:
-            # Writes the headings in the DB table into the xls file
+            # Writes the headings from the DB table into the xls file
             for column, heading in enumerate(cur.description):
+                print(column)
+                print(heading)
                 worksheet.write(0, column, heading[0])  # first element of each tuple
 
             # Writes the rows in the DB table into the xls file
