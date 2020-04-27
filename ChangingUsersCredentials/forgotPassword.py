@@ -2,9 +2,9 @@ import hashlib
 import tkinter as tk
 from tkinter import *
 
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 
-conn = DBConnection.connectToDB.connectToDB()
+conn = connectToDB.connectToDatabase()
 cur = conn.cursor()
 
 

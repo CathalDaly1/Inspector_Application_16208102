@@ -5,7 +5,7 @@ from tkinter import ttk, messagebox
 
 import psycopg2
 
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 import GradingAdditionalFunctionality.cannedComments
 from UserCredentials import loginUser
 import GradingAdditionalFunctionality.changingGrades
@@ -18,7 +18,7 @@ class FileDisplayWindow(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/Inspector.ico')
+        # tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -27,7 +27,7 @@ class FileDisplayWindow(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        self.geometry("800x800+100+100")
+        self.geometry("800x800+100+20")
         self.title("Inspector - Grading Application")
         self.resizable(False, False)
 
@@ -58,8 +58,13 @@ class FileSelectionWindow(tk.Frame):
         # Initializing error labels
         filepathErrorLbl = tk.Label(self, text="Please enter a filepath", font=("Arial", 8), fg="red")
 
-        conn = DBConnection.connectToDB.connectToDB()
+        conn = connectToDB.connectToDatabase()
         cur = conn.cursor()
+        userID = loginUser.getUserID()
+
+        global assignmentModuleCode, assignmentNo
+        assignmentNo = ""
+        assignmentModuleCode = ""
 
         def saveModuleCode():
             """
@@ -116,7 +121,7 @@ class FileSelectionWindow(tk.Frame):
                 listboxSelection()
 
             except IndexError:
-                itemSelectedError_lbl = tk.Label(self, text='Please select an item from the list below', fg="red",
+                itemSelectedError_lbl = tk.Label(self, text='Please select an item from the list above', fg="red",
                                                  font=("Arial", 9))
                 itemSelectedError_lbl.place(x=380, y=460, anchor="center")
 
@@ -150,6 +155,7 @@ class FileSelectionWindow(tk.Frame):
         def doubleClickListboxEvent(event):
             """
             Gets the click of the element in the listbox in order to open file in the next window
+            Throw exception if the user selects the empty row in the treeview - Index error
             :param event:
             :rtype: object
             """
@@ -158,25 +164,50 @@ class FileSelectionWindow(tk.Frame):
                 for i in item:
                     global selection
                     selection = listBox.item(i, "values")[0]
-                    treeviewFileExtension = re.search(r'\.\w+$', selection)
-                    # ToDo fix this = fileSelection_errorlbl.destroy()
-                    if treeviewFileExtension is not None:
-                        pass
-                    else:
-                        selection = listBox.item(i, "values")[0]
-            except IndexError as error:
-                print("Cannot select " + str(error))
+            except IndexError:
+                pass
 
         def selectAssignment():
+            """
+            Select assignment from the Listbox on the GUI
+            Error Checking: if the file exists in the file system, if no file is selected and user selects the
+            'select assignment' button
+            :rtype: object
+            """
+            global noKeyValuesEntered_lbl, fileDoesNotExistError_lbl
             checkPath = assignmentFilePath.replace("\\", "/") + "/" + selection + "/" + str(item_text[0])
+
+            cur.execute(
+                "SELECT valueKeyA, valueKeyB,  valueKeyC, valueKeyD FROM keysComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
+                (userID, assignmentModuleCode, assignmentNo))
+            fetchedKeyValuesDisplay = cur.fetchone()
+            conn.commit()
+
             if os.path.exists(checkPath):
-                GradingFunctionality.AssignmentGrading.selectAssignment()
+                if fetchedKeyValuesDisplay is not None:
+                    GradingFunctionality.AssignmentGrading.selectAssignment()
+                else:
+                    noKeyValuesEntered_lbl = tk.Label(self, text='Enter Key values and Comments\t\t', fg="red",
+                                                      font=("Arial", 9))
+                    noKeyValuesEntered_lbl.place(x=440, y=745, anchor="center")
+                    deleteErrorKeyValuesLabel()
             else:
-                fileDoesNotExistError_lbl = tk.Label(self, text='\tFile does not exist on the file system\t\t', fg="red",
-                                                 font=("Arial", 9))
-                fileDoesNotExistError_lbl.place(x=380, y=460, anchor="center")
+                fileDoesNotExistError_lbl = tk.Label(self, text='\tFile does not exist on the file system\t\t',
+                                                     fg="red",
+                                                     font=("Arial", 9))
+                fileDoesNotExistError_lbl.place(x=385, y=460, anchor="center")
+                deleteErrorFileSelectionLabel()
+
+        def deleteInfoLabel():
+            """After 10 seconds the error label is destroyed."""
+            self.after(10000, infoText_lbl.destroy)
+            refreshListbox()
 
         def infoLabel():
+            """
+            Displays a label describing the correct way to select an assignment from the listbox
+            This is displayed if the user incorrectly selects an assignment.
+            """
             global infoText_lbl
             infoText_lbl = tk.Label(self, text="Open Assignment: Double Click Student ID.\n"
                                                "Click once on filename, click 'Select Assignment'", anchor='w',
@@ -184,8 +215,14 @@ class FileSelectionWindow(tk.Frame):
             infoText_lbl.place(x=510, y=173)
             deleteInfoLabel()
 
-        def deleteInfoLabel():
-            self.after(10000, infoText_lbl.destroy)
+        def deleteErrorFileSelectionLabel():
+            """After 10 seconds the error label is destroyed."""
+            self.after(10000, fileDoesNotExistError_lbl.destroy)
+            refreshListbox()
+
+        def deleteErrorKeyValuesLabel():
+            """After 10 seconds the error label is destroyed."""
+            self.after(10000, noKeyValuesEntered_lbl.destroy)
             refreshListbox()
 
         def listboxSelection():
@@ -200,7 +237,6 @@ class FileSelectionWindow(tk.Frame):
 
                 for item in listBox.selection():
                     item_text = listBox.item(item, "values")
-                userID = loginUser.getUserID()
 
                 try:
                     cur.execute(
@@ -250,7 +286,6 @@ class FileSelectionWindow(tk.Frame):
                 root_node = listBox.insert('', 'end', text=assignmentFilePath, open=True)
                 process_directory(root_node, assignmentFilePath)
 
-                userID = loginUser.getUserID()
                 cur.execute(
                     "SELECT * FROM keyscomments WHERE user_id =%s and modulecode = %s and assignmentno = %s",
                     (userID, assignmentModuleCode, assignmentNo))
@@ -288,49 +323,42 @@ class FileSelectionWindow(tk.Frame):
             :rtype: object
             """
             global fileExtension
-            userID = loginUser.getUserID()
 
             for studentFiles in os.listdir(assignmentFilePath):
 
                 fileExtension = re.search(r'\.\w+$', studentFiles)
-                fileFolderPath = os.path.join(assignmentFilePath, studentFiles)
                 abspath = os.path.join(assignmentFilePath, studentFiles)
 
                 # Check if file ends with an extension, otherwise it is a folder
                 if fileExtension is not None:
-                    isdir = os.path.isdir(abspath)
-
-                    cur.execute(
-                        "SELECT graded_status FROM assignments WHERE filename =%s and filename IS NOT NULL"
-                        " and user_id=%s and modulecode=%s and assignmentno=%s",
-                        (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                    graded = cur.fetchone()
-
-                    listBox.insert(parentNode, 'end', values=(studentFiles, graded, ""), open=False)
+                    listBox.insert(parentNode, 'end', values=(studentFiles, "", ""), open=False)
 
                 elif studentFiles == "Graded Assignments":
                     pass
 
                 else:
-                    cur.execute(
-                        "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL "
-                        "and user_id=%s and modulecode=%s and assignmentno=%s",
-                        (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                    studentGrade = cur.fetchone()
+                    try:
+                        cur.execute(
+                            "SELECT SUM (final_grade) FROM assignments WHERE student_id=%s and student_id IS NOT NULL "
+                            "and user_id=%s and modulecode=%s and assignmentno=%s",
+                            (studentFiles, userID, assignmentModuleCode, assignmentNo))
+                        studentGrade = cur.fetchone()
 
-                    cur.execute(
-                        "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL"
-                        " and user_id=%s and modulecode=%s and assignmentno=%s",
-                        (studentFiles, userID, assignmentModuleCode, assignmentNo))
-                    graded = cur.fetchone()
+                        cur.execute(
+                            "SELECT graded_status FROM assignments WHERE student_id =%s and student_id IS NOT NULL"
+                            " and user_id=%s and modulecode=%s and assignmentno=%s",
+                            (studentFiles, userID, assignmentModuleCode, assignmentNo))
+                        graded = cur.fetchone()
 
-                    listBoxStudentAssignmentData = listBox.insert(parentNode, 'end', values=(studentFiles,
-                                                                                             graded,
-                                                                                             studentGrade),
-                                                                  open=False)
+                        listBoxStudentAssignmentData = listBox.insert(parentNode, 'end', values=(studentFiles,
+                                                                                                 graded,
+                                                                                                 studentGrade),
+                                                                      open=False)
 
-                    process_directory(listBoxStudentAssignmentData, abspath)
-                    conn.commit()
+                        process_directory(listBoxStudentAssignmentData, abspath)
+                        conn.commit()
+                    except Exception:
+                        conn.rollback()
 
         def changeKeyValues():
 
@@ -380,6 +408,11 @@ class FileSelectionWindow(tk.Frame):
             totalEntry.place(x=170, y=733)
 
             def saveKeysButton():
+                """
+                Saves the values and comments that have been entered into the entry boxes for the key values and the
+                comments. These key values and comments are then entered into the database.
+                :rtype: object
+                """
                 try:
                     valueKeyA1 = int(keyAEntry.get("1.0", tk.END))
                     valueKeyB1 = int(keyBEntry.get("1.0", tk.END))
@@ -391,7 +424,6 @@ class FileSelectionWindow(tk.Frame):
                     commentC1 = keyCCommentEntry.get("1.0", 'end-1c')
                     commentD1 = keyDCommentEntry.get("1.0", 'end-1c')
 
-                    userID = loginUser.getUserID()
                     cur.execute("SELECT * FROM keysComments WHERE user_id=%s AND moduleCode = %s and assignmentNo = %s",
                                 (userID, assignmentModuleCode, assignmentNo))
                     keystrokeValues = cur.fetchall()
@@ -458,6 +490,10 @@ class FileSelectionWindow(tk.Frame):
             saveButton.place(x=300, y=755)
 
         def changeValueOfAllAssignments():
+            """
+            This method calls the change student grade method in th changingGrades file
+            This method is called when the 'Change assignments marks' button is pressed.
+            """
             GradingAdditionalFunctionality.changingGrades.changeStudentsGrades()
 
         # create Treeview with 3 list boxes
@@ -506,10 +542,7 @@ class FileSelectionWindow(tk.Frame):
         enterAssignmentNo.insert(0, '')
 
         lbl_sub_title = tk.Label(self, text="List of Student Files", font=("Arial", 15))
-        lbl_sub_title.place(x=380, y=180, anchor="center")
-
-        lbl_student_files = tk.Label(self, text="Table of student files listed below", font=("Arial", 12))
-        lbl_student_files.place(x=380, y=200, anchor="center")
+        lbl_sub_title.place(x=380, y=200, anchor="center")
 
         # Buttons at the bottom of the student file selection screen
         cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15,
@@ -517,7 +550,7 @@ class FileSelectionWindow(tk.Frame):
         cannedCommentsButton.place(x=320, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
-        selectStudentAssignButton.place(x=550, y=470)
+        selectStudentAssignButton.place(x=562, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Change assignments marks", fg="black",
                                               command=changeValueOfAllAssignments, width=22)

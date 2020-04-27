@@ -5,7 +5,7 @@ from tkinter import *
 import DBConnection.connectToDB
 from UserCredentials import loginUser
 
-conn = DBConnection.connectToDB.connectToDB()
+conn = DBConnection.connectToDB.connectToDatabase()
 cur = conn.cursor()
 
 

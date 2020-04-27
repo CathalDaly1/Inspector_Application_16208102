@@ -8,7 +8,7 @@ import HomeScreen.InspectorHomescreen
 import ChangingUsersCredentials.forgotPassword
 import ChangingUsersCredentials.forgotUsername
 
-conn = DBConnection.connectToDB.connectToDB()
+conn = DBConnection.connectToDB.connectToDatabase()
 cur = conn.cursor()
 
 

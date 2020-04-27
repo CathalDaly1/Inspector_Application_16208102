@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 from UserCredentials import loginUser
 import GradingFunctionality.AccessingFiles
 
@@ -14,11 +14,11 @@ def menuOptions():
     """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("550x600+1250+50")
+    window.geometry("550x600+1200+20")
     window.resizable(False, False)
     window.attributes("-topmost", 1)
 
-    conn = DBConnection.connectToDB.connectToDB()
+    conn = connectToDB.connectToDatabase()
     cur = conn.cursor()
 
     lbl_title = tk.Label(window, text="Inspector - Keystrokes", font=("Arial Bold", 18))

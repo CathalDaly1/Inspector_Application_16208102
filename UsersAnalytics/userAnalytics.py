@@ -1,8 +1,6 @@
 import functools
 import operator
-import os
 import tkinter as tk
-from pathlib import Path
 from tkinter import ttk
 
 from gevent._compat import izip
@@ -12,12 +10,12 @@ from matplotlib.figure import Figure
 import xlsxwriter
 from xlsxwriter.exceptions import FileCreateError
 
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 from UserCredentials import loginUser
 
 style.use('fivethirtyeight')
 
-conn = DBConnection.connectToDB.connectToDB()
+conn = connectToDB.connectToDatabase()
 cur = conn.cursor()
 
 
@@ -30,7 +28,7 @@ def analyticsScreen():
     """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("850x800+100+100")
+    window.geometry("850x800+100+20")
     window.resizable(False, False)
 
     userID = loginUser.getUserID()
@@ -210,9 +208,8 @@ def analyticsScreen():
         try:
             # Writes the headings from the DB table into the xls file
             for column, heading in enumerate(cur.description):
-                print(column)
-                print(heading)
-                worksheet.write(0, column, heading[0])  # first element of each tuple
+                # first element of each tuple
+                worksheet.write(0, column, heading[0])
 
             # Writes the rows in the DB table into the xls file
             for rows, row in enumerate(assignmentData):
@@ -222,12 +219,13 @@ def analyticsScreen():
 
             print("File location of exported data: " + studentAssignmentFilePath + '/ExportedCSVFiles/')
 
-            exportDataConfirmed_lbl = tk.Label(window, text="Data Exported and saved", font=("Calibri", 12))
+            exportDataConfirmed_lbl = tk.Label(window, text="Data Exported to " + moduleCodeSelection + " file location"
+                                               , font=("Calibri", 12))
             exportDataConfirmed_lbl.place(x=550, y=125)
 
         except FileCreateError as error:
             print(str(error))
-            exportDataConfirmed_lbl = tk.Label(window, text="Error saving file", fg="red", font=("Calibri", 12))
+            exportDataConfirmed_lbl = tk.Label(window, text="Error saving file\t\t\t", fg="red", font=("Calibri", 12))
             exportDataConfirmed_lbl.place(x=550, y=125)
 
     def back():

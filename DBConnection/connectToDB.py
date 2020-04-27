@@ -2,7 +2,7 @@ import sys
 import psycopg2
 
 
-def connectToDB():
+def connectToDatabase():
     """
     This class creates a connection to postgresql database with a Heroku server for the application
     Connect to the database. Throw exception if the system cannot connect to the database.

@@ -2,9 +2,9 @@ import hashlib
 import tkinter as tk
 from tkinter import *
 
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 
-conn = DBConnection.connectToDB.connectToDB()
+conn = connectToDB.connectToDatabase()
 cur = conn.cursor()
 
 
@@ -33,6 +33,7 @@ def forgotUsernameScreen():
         password = password_entry.get()
         confirmPassword = confirm_Password_entry.get()
 
+        # Hashing the password -> entered into the database replacing the users old password
         t_hashed = hashlib.sha256(password.encode())
         t_password = t_hashed.hexdigest()
         cur.execute("SELECT password, email  FROM Users WHERE password =%s and email = %s",

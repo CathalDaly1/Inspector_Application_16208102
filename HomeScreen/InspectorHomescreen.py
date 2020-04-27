@@ -12,7 +12,7 @@ def Homescreen():
     """This method creates the HomeScreen in the application. Creates contents of the tkinter window."""
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("800x800+100+100")
+    window.geometry("800x800+100+20")
 
     # Get the time logged in from the loginUser file
     username = loginUser.getUsername()
@@ -32,27 +32,32 @@ def Homescreen():
     tk.Label(about_text, bg="white", fg="black", text="About Inspector", font=("Calibri Bold", 18)).pack()
     about_text.place(x=30, y=100)
     tk.Label(about_text, bg="white", fg="black",
-             text="\nInspector is a rapid-fire keystroke driven grading assessment\n"
+             text="Inspector is a rapid-fire keystroke driven grading assessment\n"
                   + "application in which lecturers can grade assignments with a\n "
                   + "high turnaround time and decrease the time spent of repetitive\n "
                   + " and rote tasks. The time taken to complete this tedious and  \n "
                   + " repetitive task can be significantly reduced by developing a \n"
                   + " keystroke driven application.\n"
-                  + "\n\nThe pre programmed keys and grading scheme can be tailored\n"
-                  + "to suit your needs in order to assist you in the grading process.\n",
+                  + "-----------------------------------------------------------\n"
+                  + "In order to begin grading, create a folder for each student with the\n"
+                  + "student number as the folder name and their assignment in the folder\n"
+                  + "-----------------------------------------------------------\n"
+                  + "The lecturer can grade assignments that may contain multiple files.\n"
+                  + "The sum of the graded files will be the final result of the assignment.\n"
+                  + "The final grade along with each graded file can be sent to each student. ",
              font=("Calibri", 12)).pack()
 
     # Created Label for pre programmed keys section
     prog_keys_lbl = tk.Label(window, width=100, height=21, relief="solid", bd=1, padx=10, bg="white")
     prog_keys_lbl.pack_propagate(0)
 
-    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys For Grading\n",
+    tk.Label(prog_keys_lbl, bg="white", fg="black", text="Pre-programmed Keys in the Grading Process\n",
              font=("Calibri Bold", 16)).pack()
     tk.Label(prog_keys_lbl, bg="white", fg="black", text="To be begin grading proceed to the next screen:"
-                                                         "\n\t  1) Add the relevant details "
+                                                         "\n\t         1) Add the relevant details "
                                                          "at the beginning of the screen.\n"
                                                          "\t\t 2) Add the values for the pre-programmed keys and "
-                                                         "comments.\n          3) Select"
+                                                         "comments.\n               3) Select "
                                                          "assignment from the list and begin grading.\n",
              font=("Calibri", 12)).place(x=30, y=40)
 

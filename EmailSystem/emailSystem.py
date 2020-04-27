@@ -9,10 +9,10 @@ from tkinter import ttk
 from tkinter.ttk import Progressbar
 from gevent._compat import izip
 
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 from UserCredentials import loginUser
 
-conn = DBConnection.connectToDB.connectToDB()
+conn = connectToDB.connectToDatabase()
 cur = conn.cursor()
 
 
@@ -23,7 +23,7 @@ def emailSystem():
     """
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("850x800+100+100")
+    window.geometry("850x800+100+20")
     window.resizable(False, False)
 
     userID = loginUser.getUserID()
@@ -37,7 +37,6 @@ def emailSystem():
     progress = Progressbar(window, orient=tk.HORIZONTAL,
                            length=100, mode='determinate')
 
-    # As there are duplicates of assignments with module codes have to use distinct
     cur.execute("SELECT DISTINCT modulecode FROM assignments WHERE user_id =%s",
                 (userID,))
     moduleCode = cur.fetchall()
@@ -57,7 +56,6 @@ def emailSystem():
         label_assignment = tk.Label(window, text="Choose Assignment No.: ", font=("Calibri", 14))
         label_assignment.place(x=25, y=125)
 
-        # As there are duplicates of assignments with module codes have to use distinct
         cur.execute("SELECT DISTINCT assignmentNo FROM assignments WHERE user_id =%s and moduleCode = %s",
                     (userID, moduleCodeSelection))
         assignmentSelection = cur.fetchall()
@@ -142,7 +140,7 @@ def emailSystem():
     def convertListToString(s):
         """This method converts a list into a string.
         :param s:
-        :return:
+        :return: the a string which has been converted from a list
         """
         # initialize an empty string
         conversionString = ""
@@ -170,18 +168,13 @@ def emailSystem():
                     (userID, moduleCodeSelection, assignmentSelect))
         studentAssignment = cur.fetchall()
 
-        filenameExt = [item for t in studentAssignment for item in t]
-        fileExtension = ".pdf"
-
-        studentFilesWithExtension = [str(s) + fileExtension for s in filenameExt]
-
         try:
             # looping through several lists using zip
-            for f, a, c, m in zip(studentEmail, studentIdList, studentAssignment, studentFilesWithExtension):
-                # The email and password may be from an admin email account
-                email_user = '16208102@studentmail.ul.ie'
-                email_password = 'Detlef228425'
-                email_send = f
+            for recipients, studentIDNo, filename in zip(studentEmail, studentIdList, studentAssignment):
+                # Email Credentials below can be implemented to be an admin email account
+                email_user = ''
+                email_password = ''
+                email_send = recipients
 
                 subject = emailSubjectEntry.get('1.0', 'end-1c')
 
@@ -197,15 +190,15 @@ def emailSystem():
 
                 cur.execute(
                     "SELECT DISTINCT filepath from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
-                    (userID, moduleCodeSelection, assignmentSelect, a, c))
+                    (userID, moduleCodeSelection, assignmentSelect, studentIDNo, filename))
                 fetchedFilepath = cur.fetchone()
 
                 extractFilepath = (convertListToString(fetchedFilepath))
                 correctPath = (extractFilepath.replace("\\", "/"))
 
                 # Attaching file to the email
-                listOfFiles = os.listdir(str(correctPath) + "/Graded Assignments/" + str(a))
-                filePathString = (str(correctPath) + "/Graded Assignments/" + str(a) + "/")
+                listOfFiles = os.listdir(str(correctPath) + "/Graded Assignments/" + str(studentIDNo))
+                filePathString = (str(correctPath) + "/Graded Assignments/" + str(studentIDNo) + "/")
                 concatPathAndFiles = [filePathString + s for s in listOfFiles]
 
                 # Loop through the files in each folder and attach the graded assignment(s) to the email for each student
@@ -219,7 +212,7 @@ def emailSystem():
                 # Retrieve the students final grade from database
                 cur.execute(
                     "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
-                    (userID, moduleCodeSelection, assignmentSelect, a))
+                    (userID, moduleCodeSelection, assignmentSelect, studentIDNo))
                 studentFinalGrade = cur.fetchall()
 
                 # Fetch grades from database, sum the tuples if there are more than one grade for one student
@@ -232,19 +225,20 @@ def emailSystem():
                 text = msg.as_string()
                 server.sendmail(email_user, email_send, text)
                 server.quit()
-                print("email has been sent to " + f)
+                print("email has been sent to " + recipients)
 
                 emailSent_lbl = tk.Label(window, text="Email Recipients: ", font=("Calibri", 14))
                 emailSent_lbl.place(x=25, y=580)
 
                 emailSentList: tk.Text = tk.Text(window, height="5", width="60")
                 emailSentList.place(x=160, y=580)
-                emailSentList.insert('1.0', "Email has been sent to:" + f)
+                emailSentList.insert('1.0', "Email has been sent to:" + recipients)
 
         # Throw exception: if connection to mail server was unsuccessful
-        except Exception as error:
-            print(str(error))
-            print("Failed to send email")
+        except Exception:
+            studentGradeMessage_lbl = tk.Label(window, text="***Error: Admin email account may not "
+                                                            "be setup in Inspector***", fg="red", font=("Calibri", 12))
+            studentGradeMessage_lbl.place(x=160, y=540)
 
     def back():
         """This method is called when the backbutton is pressed. Window is destroyed and closed."""

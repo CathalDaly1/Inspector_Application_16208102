@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 from UserCredentials import loginUser
 import GradingFunctionality.AccessingFiles
 
@@ -19,7 +19,7 @@ def cannedCommentScreen():
 
     userID = loginUser.getUserID()
 
-    conn = DBConnection.connectToDB.connectToDB()
+    conn = connectToDB.connectToDatabase()
     cur = conn.cursor()
 
     comments_lbl = tk.Label(window, fg="black", text="Enter canned comments below",

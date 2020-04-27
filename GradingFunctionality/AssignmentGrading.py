@@ -10,7 +10,7 @@ import fitz
 from fpdf import FPDF
 
 from UserCredentials import loginUser
-import DBConnection.connectToDB
+from DBConnection import connectToDB
 import GradingFunctionality.AccessingFiles
 import MenuOptions.commandsMenu
 
@@ -18,11 +18,11 @@ import MenuOptions.commandsMenu
 def selectAssignment():
     window = tk.Tk()
     window.title("Inspector - Grading Application")
-    window.geometry("1200x985+50+50")
+    window.geometry("1150x900+50+20")
     window.resizable(False, False)
     window.attributes("-topmost", 1)
 
-    conn = DBConnection.connectToDB.connectToDB()
+    conn = connectToDB.connectToDatabase()
     cur = conn.cursor()
 
     the_queue = queue.Queue()
@@ -237,7 +237,9 @@ def selectAssignment():
                                                                                          gradingCategoryE)
 
     window.bind('s', startGrading)
+    window.bind('S', startGrading)
     bind_id = window.bind("<s>", startGrading)
+    bind_id = window.bind("<S>", startGrading)
 
     def queue_callback():
         try:
@@ -260,10 +262,10 @@ def selectAssignment():
     window.after(100, queue_callback)
 
     assign_correction_lbl = tk.Label(window, text="Assignment correction", font=("Arial Bold", 20))
-    assign_correction_lbl.place(x=400, y=26, anchor="center")
+    assign_correction_lbl.place(x=500, y=35, anchor="center")
 
     subTitle_lbl = tk.Label(window, text="Student: " + selection + "'s Assignment", font=("Arial", 15))
-    subTitle_lbl.place(x=400, y=70, anchor="center")
+    subTitle_lbl.place(x=500, y=70, anchor="center")
 
     cur.execute(
         "SELECT valueKeyA, valueKeyB,  valueKeyC, valueKeyD FROM keysComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
@@ -301,7 +303,7 @@ def selectAssignment():
     keystrokeGrading: tk.Text = tk.Text(window, height="1", width="27", font=("Calibri", 12))
     keystrokeGrading.place(x=792, y=540)
 
-    assignmentCommentsBox = tk.Text(window, wrap=tk.NONE, height=10, width=90, borderwidth=0)
+    assignmentCommentsBox = tk.Text(window, wrap=tk.NONE, height=7, width=90, borderwidth=0)
     assignmentCommentsBox.place(x=45, y=730)
 
     # Scrollbar on X and Y axis of assignmentCommentsBox
@@ -425,7 +427,7 @@ def selectAssignment():
 
             addComments = tk.Button(window, text="Add comments above", width=25,
                                     command=self.addAssignmentComments)
-            addComments.place(x=285, y=910)
+            addComments.place(x=285, y=850)
 
             highlightButton = tk.Button(window, text="Highlight", width=15, command=self.highlightCode)
             highlightButton.place(x=300, y=685)
@@ -470,8 +472,8 @@ def selectAssignment():
         def submitAssignment(self, _event=None):
             assignmentFilePath = GradingFunctionality.AccessingFiles.getFilepath()
             cur.execute(
-                "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s",
-                (userID, selection, item_text[0], assignmentModuleCode))
+                "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s and assignmentNo = %s",
+                (userID, selection, item_text[0], assignmentModuleCode, assignmentNo,))
             vals = cur.fetchone()
             conn.commit()
 
@@ -480,8 +482,8 @@ def selectAssignment():
                         item_text[0]):
                     try:
                         cur.execute(
-                            "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s",
-                            (final, userID, assignmentModuleCode, selection, item_text[0],))
+                            "Update assignments set final_grade = %s where user_id =%s and modulecode = %s and student_id = %s and filename = %s and assignmentno = %s",
+                            (final, userID, assignmentModuleCode, selection, item_text[0], assignmentNo,))
                         conn.commit()
 
                         window.withdraw()
