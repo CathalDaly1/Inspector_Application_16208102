@@ -22,7 +22,7 @@ def forgotPasswordScreen():
 
     def changeUsersPassword():
         """
-        The data entered into the form is crosschecked with the users previous data in the database
+        The data entered into the form is verified with the users previous data in the database
         If the username and email entered in the form is equal to that in the database, their
         new password will be updated and entered into the database.
         """

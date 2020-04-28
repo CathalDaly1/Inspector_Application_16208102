@@ -132,6 +132,7 @@ def emailSystem():
         cur.execute("SELECT DISTINCT student_id from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
         studentID = cur.fetchall()
+        conn.commit()
 
         studentIdList = [item for t in studentID for item in t]
 
@@ -139,7 +140,7 @@ def emailSystem():
 
     def convertListToString(s):
         """This method converts a list into a string.
-        :param s:
+        :param s: The elemets in the list which will be converted into a list
         :return: the a string which has been converted from a list
         """
         # initialize an empty string
@@ -167,6 +168,7 @@ def emailSystem():
         cur.execute("SELECT filename from assignments where user_id=%s and modulecode=%s and assignmentno=%s",
                     (userID, moduleCodeSelection, assignmentSelect))
         studentAssignment = cur.fetchall()
+        conn.commit()
 
         try:
             # looping through several lists using zip
@@ -192,6 +194,7 @@ def emailSystem():
                     "SELECT DISTINCT filepath from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s and filename=%s",
                     (userID, moduleCodeSelection, assignmentSelect, studentIDNo, filename))
                 fetchedFilepath = cur.fetchone()
+                conn.commit()
 
                 extractFilepath = (convertListToString(fetchedFilepath))
                 correctPath = (extractFilepath.replace("\\", "/"))
@@ -214,6 +217,7 @@ def emailSystem():
                     "SELECT final_grade from assignments where user_id=%s and modulecode=%s and assignmentno=%s and student_id=%s",
                     (userID, moduleCodeSelection, assignmentSelect, studentIDNo))
                 studentFinalGrade = cur.fetchall()
+                conn.commit()
 
                 # Fetch grades from database, sum the tuples if there are more than one grade for one student
                 sumOfGrades = [sum(x) for x in izip(*studentFinalGrade)]

@@ -87,7 +87,7 @@ def gradingCategoriesScreen():
         into the cannedComments table in the postgresql database table. If the module code entered has
         comments already associated with it in the database the comments will be updated, otherwise
         the comments will just be inserted into the database.
-        :return:
+        :return: array of categories which have been saved
         """
         moduleCode = AccessingFiles.getModuleCode()
         assignmentNo = AccessingFiles.getAssignmentNo()
@@ -105,6 +105,7 @@ def gradingCategoriesScreen():
             categoryE = categoriesEntryE.get("1.0", 'end-1c')
 
             if not gradingCategory:
+                # Insert new categories into the database
                 insertCategories = "INSERT INTO gradingCategories (user_id, moduleCode, assignmentNo, categoryA, categoryB, categoryC, categoryD, categoryE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 val1 = (userID, moduleCode, assignmentNo, categoryA, categoryB, categoryC, categoryD, categoryE)
                 # Executes the insertion ans passes values username and password into the insertion
@@ -115,6 +116,7 @@ def gradingCategoriesScreen():
                 newCommentsSaved_lbl.place(x=230, y=315)
 
             else:
+                # Update the existing categories in the database if are categories that are already in the database
                 updateCategories = "Update gradingCategories set categoryA = %s, categoryB = %s , categoryC = %s , categoryD = %s , categoryE = %s where user_id =%s and moduleCode=%s and assignmentNo = %s"
                 val2 = (categoryA, categoryB, categoryC, categoryD, categoryE, userID, moduleCode, assignmentNo)
                 cur.execute(updateCategories, val2)

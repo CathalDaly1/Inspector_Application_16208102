@@ -85,7 +85,7 @@ def cannedCommentScreen():
         into the cannedComments table in the postgresql database table. If the module code entered has
         comments already associated with it in the database the comments will be updated, otherwise
         the comments will just be inserted into the database.
-        :return:
+        :return: array of comments that have been saved
         """
         moduleCode = AccessingFiles.getModuleCode()
         assignmentNo = AccessingFiles.getAssignmentNo()

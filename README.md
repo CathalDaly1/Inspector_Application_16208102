@@ -10,11 +10,11 @@ other features in the application.
 
 *EXECUTABLE FILES:* 
 I have created two executable files whcih are located in \Inspector_Application\ folder. 
-The first- 'InspectorApplication --onedir executable' was created using Pyinstaller --onedir
+The first- 'InspectorApplication.ink' was created using Pyinstaller --onedir
 This executable files requires the build folders to be located on the file machine on which it is being run. 
-I have created a shortcut which will allow the user to place the executable in different locations on their file system
+This file is a shortcut which will allow the user to place the executable in different locations on their file system
 
-The second executable - 'InspectorApplication --onefile executable' was created using Pyinstaller --onefile
+The second executable - 'InspectorApplication.exe' was created using Pyinstaller --onefile
 This executable file does not reply on the build and dist files being on the users file system
 This executable can be sent to other machines and it will run as normal without any files. The --onefile builds a
 one-file bundled executable. 

@@ -75,12 +75,12 @@ def selectAssignment():
             "SELECT valueKeyA, commentA, valueKeyB, commentB, valueKeyC, commentC, valueKeyD, commentD, total FROM keysComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
             (userID, assignmentModuleCode, assignmentNo))
         fetchedKeyValues = cur.fetchone()
-        conn.commit()
 
         cur.execute(
             "SELECT categoryA, categoryB, categoryC, categoryD, categoryE FROM gradingCategories WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",
             (userID, assignmentModuleCode, assignmentNo))
         fetchedCategories = cur.fetchone()
+        conn.commit()
 
         global total1
         total1 = fetchedKeyValues[8]
@@ -450,9 +450,18 @@ def selectAssignment():
             window.protocol("WM_DELETE_WINDOW", self.on_closingWindow)
 
         def _on_change(self, event):
+            """
+            If there us a mouse click on the text box or a new line is entered in the text box it will load the
+            line numbers.
+            :param event: event is called when something occurs in the assignment grading text box
+            """
             self.codeLineNumbers.redraw()
 
         def savePDFFile(self):
+            """
+            This method copies the code in the assignment grading text box and creates a pdf file which will be used
+            in order to highlight text
+            """
             s = self.text.get("1.0", tk.END)
             f = open(file, "w", encoding='utf-8')
             f.write(s)
@@ -470,6 +479,15 @@ def selectAssignment():
             highlightingTextInFile()
 
         def submitAssignment(self, _event=None):
+            """
+            This method is used to submit the students assignment grade to the database. If a grade for the student
+            already exists in the database and the user selects that assignment for grading, they will be prompted
+            with an message box asking if they want to regrade the assignment. If they select yes then they can regrade
+            the assignment and the new grade will be updated in the database. If the assignment has not been graded
+            previously the grade and assignment details will be inserted into the database. savePDFFile method is
+            called when the assignment is submitted.
+            :param _event: event called when keystroke ctrl+s is pressed
+            """
             assignmentFilePath = AccessingFiles.getFilepath()
             cur.execute(
                 "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s and assignmentNo = %s",

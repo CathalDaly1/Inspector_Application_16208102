@@ -37,7 +37,7 @@ class FileDisplayWindow(tk.Tk):
     def show_frame(self, cont):
         """
         This method initializes the frame
-        :param cont:
+        :param cont: cont is the FileSelectionWindow frame
         """
         frame = self.frames[cont]
         frame.tkraise()
@@ -563,22 +563,42 @@ class FileSelectionWindow(tk.Frame):
 
 
 def getModuleCode():
+    """
+    Get the module code that has been entered into the module code entry box
+    :return: assignment module code from the entry box
+    """
     return assignmentModuleCode
 
 
 def getAssignmentNo():
+    """
+    Get the assignment number that has been entered into the Assigment No. entry box
+    :return: Assignment No. from the entry box
+    """
     return assignmentNo
 
 
 def getSelection():
+    """
+    get the filename that has been selected in the listbox
+    :return: filename from the listbox selection
+    """
     return selection
 
 
 def getItem():
+    """
+    get the folder name that has been double clicked in the listbox
+    :return: folder name from the listbox when double clicked
+    """
     return item_text
 
 
 def getFilepath():
+    """
+    Get the filepath that has been entered into the Assignment FilePath entry box
+    :return: filepath from the entry box
+    """
     return assignmentFilePath
 
 
