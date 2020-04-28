@@ -9,7 +9,6 @@ class UserMainScreen(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        # tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)

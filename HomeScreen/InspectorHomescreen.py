@@ -1,10 +1,9 @@
 import sys
 import tkinter as tk
 
-import EmailSystem.emailSystem
-import UsersAnalytics.userAnalytics
-import GradingFunctionality.AccessingFiles
-import GradingFunctionality.AssignmentGrading
+from EmailSystem import emailSystem
+from UsersAnalytics import userAnalytics
+from GradingFunctionality import AccessingFiles
 from UserCredentials import loginUser
 
 
@@ -106,15 +105,15 @@ def Homescreen():
     quit_button.place(x=30, y=730)
 
     view_analytics = tk.Button(window, text="View Analytics", fg="black",
-                               command=UsersAnalytics.userAnalytics.analyticsScreen, height=2,
+                               command=userAnalytics.analyticsScreen, height=2,
                                width=12, font=("Calibri", 11))
     view_analytics.place(x=250, y=730)
 
     send_emails = tk.Button(window, text="Email System", fg="black",
-                            command=EmailSystem.emailSystem.emailSystem, font=("Calibri", 11), height=2, width=12)
+                            command=emailSystem.emailSystem, font=("Calibri", 11), height=2, width=12)
     send_emails.place(x=450, y=730)
 
     proceed_button = tk.Button(window, text="Proceed", fg="black",
-                               command=GradingFunctionality.AccessingFiles.FileDisplayWindow, height=2,
+                               command=AccessingFiles.FileDisplayWindow, height=2,
                                width=12, font=("Calibri", 11))
     proceed_button.place(x=650, y=730)

@@ -6,11 +6,9 @@ from tkinter import ttk, messagebox
 import psycopg2
 
 from DBConnection import connectToDB
-import GradingAdditionalFunctionality.cannedComments
+from GradingFunctionality import AssignmentGrading
 from UserCredentials import loginUser
-import GradingAdditionalFunctionality.changingGrades
-import GradingFunctionality.AssignmentGrading
-import GradingAdditionalFunctionality.gradingCategories
+from GradingAdditionalFunctionality import changingGrades, gradingCategories, cannedComments
 
 
 class FileDisplayWindow(tk.Tk):
@@ -18,7 +16,6 @@ class FileDisplayWindow(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        # tk.Tk.iconbitmap(self, default='C:/Users/catha/PycharmProjects/Inspector_Application/Inspector.ico')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -185,7 +182,7 @@ class FileSelectionWindow(tk.Frame):
 
             if os.path.exists(checkPath):
                 if fetchedKeyValuesDisplay is not None:
-                    GradingFunctionality.AssignmentGrading.selectAssignment()
+                    AssignmentGrading.selectAssignment()
                 else:
                     noKeyValuesEntered_lbl = tk.Label(self, text='Enter Key values and Comments\t\t', fg="red",
                                                       font=("Arial", 9))
@@ -494,7 +491,7 @@ class FileSelectionWindow(tk.Frame):
             This method calls the change student grade method in th changingGrades file
             This method is called when the 'Change assignments marks' button is pressed.
             """
-            GradingAdditionalFunctionality.changingGrades.changeStudentsGrades()
+            changingGrades.changeStudentsGrades()
 
         # create Treeview with 3 list boxes
         cols = ('Student ID + files', 'Graded', 'Student Grade')
@@ -546,7 +543,7 @@ class FileSelectionWindow(tk.Frame):
 
         # Buttons at the bottom of the student file selection screen
         cannedCommentsButton = tk.Button(self, text="Canned Comments", width=15,
-                                         command=GradingAdditionalFunctionality.cannedComments.cannedCommentScreen)
+                                         command=cannedComments.cannedCommentScreen)
         cannedCommentsButton.place(x=320, y=470)
 
         selectStudentAssignButton = tk.Button(self, text="Select Assignment", fg="black", command=fileAccess, width=15)
@@ -557,7 +554,7 @@ class FileSelectionWindow(tk.Frame):
         selectStudentAssignButton.place(x=75, y=470)
 
         categoriesButton = tk.Button(self, text="Add grading categories", width=22,
-                                     command=GradingAdditionalFunctionality.gradingCategories.gradingCategoriesScreen)
+                                     command=gradingCategories.gradingCategoriesScreen)
         categoriesButton.place(x=75, y=500)
 
         cannedCommentsButton.config(state="disabled")

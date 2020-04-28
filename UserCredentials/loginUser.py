@@ -3,12 +3,11 @@ import hashlib
 import tkinter as tk
 from tkinter import *
 
-import DBConnection.connectToDB
-import HomeScreen.InspectorHomescreen
-import ChangingUsersCredentials.forgotPassword
-import ChangingUsersCredentials.forgotUsername
+from DBConnection import connectToDB
+from HomeScreen import InspectorHomescreen
+from ChangingUsersCredentials import forgotPassword, forgotUsername
 
-conn = DBConnection.connectToDB.connectToDatabase()
+conn = connectToDB.connectToDatabase()
 cur = conn.cursor()
 
 
@@ -55,7 +54,7 @@ def LoginUser():
         if rows:
             for row in rows:
                 if username == row[0] and t_password == row[1]:
-                    HomeScreen.InspectorHomescreen.Homescreen()
+                    InspectorHomescreen.Homescreen()
                     window.destroy()
         else:
             # Clears the text in the entry box
@@ -69,7 +68,7 @@ def LoginUser():
         forgot password screen.
         :param event:
         """
-        ChangingUsersCredentials.forgotPassword.forgotPasswordScreen()
+        forgotPassword.forgotPasswordScreen()
 
     def callbackUsername(event):
         """
@@ -77,7 +76,7 @@ def LoginUser():
         forgot username screen.
         :param event:
         """
-        ChangingUsersCredentials.forgotUsername.forgotUsernameScreen()
+        forgotUsername.forgotUsernameScreen()
 
     Label(window, text="").pack()
     Label(window, text="Please enter your credentials below", font=("Calibri Bold", 18)).pack()

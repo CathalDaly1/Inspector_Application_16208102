@@ -2,7 +2,7 @@ import tkinter as tk
 
 from DBConnection import connectToDB
 from UserCredentials import loginUser
-import GradingFunctionality.AccessingFiles
+from GradingFunctionality import AccessingFiles
 
 
 def gradingCategoriesScreen():
@@ -55,8 +55,8 @@ def gradingCategoriesScreen():
         saved in the database.
         :rtype: object
         """
-        moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
-        assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
+        moduleCode = AccessingFiles.getModuleCode()
+        assignmentNo = AccessingFiles.getAssignmentNo()
 
         if moduleCode and assignmentNo != "":
             try:
@@ -89,8 +89,8 @@ def gradingCategoriesScreen():
         the comments will just be inserted into the database.
         :return:
         """
-        moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
-        assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
+        moduleCode = AccessingFiles.getModuleCode()
+        assignmentNo = AccessingFiles.getAssignmentNo()
 
         if moduleCode or assignmentNo != "":
             cur.execute("SELECT * FROM gradingCategories WHERE user_id=%s AND moduleCode = %s AND assignmentno = %s",

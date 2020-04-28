@@ -2,7 +2,7 @@ import tkinter as tk
 
 from DBConnection import connectToDB
 from UserCredentials import loginUser
-import GradingFunctionality.AccessingFiles
+from GradingFunctionality import AccessingFiles
 
 
 def menuOptions():
@@ -25,8 +25,8 @@ def menuOptions():
     lbl_title.pack()
 
     userID = loginUser.getUserID()
-    assignmentModuleCode = GradingFunctionality.AccessingFiles.getModuleCode()
-    assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
+    assignmentModuleCode = AccessingFiles.getModuleCode()
+    assignmentNo = AccessingFiles.getAssignmentNo()
 
     cur.execute(
         "SELECT comment1, comment2, comment3, comment4, comment5 FROM cannedComments WHERE user_id =%s and moduleCode = %s and assignmentNo = %s",

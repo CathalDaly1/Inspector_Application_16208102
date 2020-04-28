@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from DBConnection import connectToDB
-import GradingFunctionality.AccessingFiles
+from GradingFunctionality import AccessingFiles
 
 
 def changeStudentsGrades():
@@ -19,8 +19,8 @@ def changeStudentsGrades():
     conn = connectToDB.connectToDatabase()
     cur = conn.cursor()
 
-    moduleCode = GradingFunctionality.AccessingFiles.getModuleCode()
-    assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
+    moduleCode = AccessingFiles.getModuleCode()
+    assignmentNo = AccessingFiles.getAssignmentNo()
 
     def saveAddedMarks():
         """This method adds a certain mark to all assignments in the database that have already been graded."""

@@ -11,8 +11,8 @@ from fpdf import FPDF
 
 from UserCredentials import loginUser
 from DBConnection import connectToDB
-import GradingFunctionality.AccessingFiles
-import MenuOptions.commandsMenu
+from GradingFunctionality import AccessingFiles
+from MenuOptions import commandsMenu
 
 
 def selectAssignment():
@@ -29,11 +29,11 @@ def selectAssignment():
 
     # Retrieving data from loginUser and AccessingFiles file
     userID = loginUser.getUserID()
-    assignmentModuleCode = GradingFunctionality.AccessingFiles.getModuleCode()
-    assignmentNo = GradingFunctionality.AccessingFiles.getAssignmentNo()
-    selection = GradingFunctionality.AccessingFiles.getSelection()
-    item_text = GradingFunctionality.AccessingFiles.getItem()
-    filePath = GradingFunctionality.AccessingFiles.getFilepath()
+    assignmentModuleCode = AccessingFiles.getModuleCode()
+    assignmentNo = AccessingFiles.getAssignmentNo()
+    selection = AccessingFiles.getSelection()
+    item_text = AccessingFiles.getItem()
+    filePath = AccessingFiles.getFilepath()
 
     # Creating a text file which will be used for the highlighting segments of the students assignment
     newTextFile = str(filePath.replace("\\", "/") + "/highlightedText.txt")
@@ -436,7 +436,7 @@ def selectAssignment():
             submitButton.place(x=480, y=685)
 
             detailedKeystrokesButton = tk.Button(window, text="View Keystrokes", width=15,
-                                                 command=MenuOptions.commandsMenu.menuOptions)
+                                                 command=commandsMenu.menuOptions)
             detailedKeystrokesButton.place(x=670, y=685)
 
             backButton2 = tk.Button(window, text="Back", width=15, command=self.back)
@@ -470,7 +470,7 @@ def selectAssignment():
             highlightingTextInFile()
 
         def submitAssignment(self, _event=None):
-            assignmentFilePath = GradingFunctionality.AccessingFiles.getFilepath()
+            assignmentFilePath = AccessingFiles.getFilepath()
             cur.execute(
                 "SELECT * FROM assignments WHERE user_id =%s and student_id = %s and filename = %s and moduleCode = %s and assignmentNo = %s",
                 (userID, selection, item_text[0], assignmentModuleCode, assignmentNo,))
