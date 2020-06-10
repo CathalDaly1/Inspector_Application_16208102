@@ -1,5 +1,5 @@
 # Inspector_Application 
-## Developed By Cathal Daly - 16208102
+## Developed By Cathal Daly
 PYTHON VERSION: 3.7.4 used in the project
 
 Inspector is a grading application that will be used by Lecturers in the University of Limerick. 
