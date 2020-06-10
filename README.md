@@ -37,13 +37,3 @@ one-file bundled executable.
 9). Select assignment by 'Double Clicking' on folder name in listbox and then 'clicking' the file name
 10). Click 'select assignment' button and begin grading. 
 
-
-*PostgreSQL database with Heroku Server - Credentials are as follows*
-Host: ec2-54-217-204-34.eu-west-1.compute.amazonaws.com
-Database: d7tfsem11o8afc
-User: hjzzzxkldardcd
-Port: 5432
-Password: 7e4dd09652f3fafaa1f8af3701b741f8c4563ba06e1ea643670d82c758b8c493
-URI: postgres://hjzzzxkldardcd:7e4dd09652f3fafaa1f8af3701b741f8c4563ba06e1ea643670d82c758b8c493@ec2-54-217-204-34.eu-west-1.compute.amazonaws.com:5432/d7tfsem11o8afc
-Heroku CLI: heroku pg:psql postgresql-objective-79505 --app inspector-server
-
